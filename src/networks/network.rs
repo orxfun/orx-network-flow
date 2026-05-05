@@ -1,1 +1,3 @@
-pub trait Network {}
+pub trait Network {
+    type NodeIdx;
+}
