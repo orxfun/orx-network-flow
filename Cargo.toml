@@ -1,0 +1,12 @@
+[package]
+name = "orx-network-flow"
+version = "1.0.0"
+edition = "2024"
+authors = ["orxfun <orx.ugur.arikan@gmail.com>"]
+description = "placeholder"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/orxfun/orx-network-flow/"
+keywords = ["placeholder"]
+categories = ["placeholder"]
+
+[dependencies]
