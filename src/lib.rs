@@ -12,7 +12,11 @@
 )]
 #![no_std]
 
+#[cfg(any(test, feature = "std"))]
+extern crate std;
+
 extern crate alloc;
 
 pub mod mcnf;
 pub mod networks;
+mod std_utils;

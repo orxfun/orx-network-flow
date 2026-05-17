@@ -11,3 +11,7 @@ categories = ["placeholder"]
 
 [dependencies]
 num = { version = "0.4.3", default-features = false }
+
+[features]
+default = ["std"]
+std = []
