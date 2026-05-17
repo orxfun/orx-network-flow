@@ -1,9 +1,8 @@
-use crate::{mcnf::flow::Flow, networks::Network};
+use crate::networks::Network;
 
-pub struct Mcnf<N, F>
+pub struct Mcnf<N>
 where
     N: Network,
-    F: Flow,
 {
     network: N,
 }
