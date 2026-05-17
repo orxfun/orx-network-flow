@@ -1,11 +1,11 @@
-use crate::networks::Flow;
+use crate::{networks::Flow, std_utils::Idx};
 
 pub trait Network {
     type Flow: Flow;
 
-    type NodeIdx;
+    type NodeIdx: Idx;
 
-    type EdgeIdx;
+    type EdgeIdx: Idx;
 
     fn edge_capacity(&self) -> Self::Flow;
 }

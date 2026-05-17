@@ -1,10 +1,9 @@
-use crate::{mcnf::commodity::Commodity, networks::Network};
-use alloc::vec::Vec;
+use crate::{mcnf::commodity::Commodity, networks::Network, std_utils::Map};
 
 pub struct Mcnf<N>
 where
     N: Network,
 {
     network: N,
-    commodities: Vec<Commodity<N>>,
+    commodities: Map<N::NodeIdx, Commodity<N>>,
 }
