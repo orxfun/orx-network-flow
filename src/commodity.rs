@@ -1,6 +1,7 @@
-use crate::space_time::SpaceTime;
+use crate::{impl_from_usize, indices::Index};
 
-pub struct Commodity {
-    ori: SpaceTime,
-    des: SpaceTime,
-}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Commodity(usize);
+
+impl_from_usize!(Commodity);
+impl Index for Commodity {}

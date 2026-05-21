@@ -10,4 +10,8 @@ impl<K: MapKey, V> Spaces<K, V> {
             map: Default::default(),
         }
     }
+
+    pub fn push_or_update(&mut self, key: K, data: V) -> Space {
+        self.map.push_or_update(key, data)
+    }
 }
