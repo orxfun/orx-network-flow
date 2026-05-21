@@ -26,6 +26,7 @@ mod commodity_data;
 mod indices;
 pub mod mcnf;
 pub mod networks;
+mod problem;
 mod space;
 mod space_time;
 mod spaces;
