@@ -1,11 +1,13 @@
-use crate::std_utils::{Map, MapKey};
-use alloc::vec::Vec;
+use crate::{indices::IndexMap, space::Space, std_utils::MapKey};
 
-pub struct Spaces<D: MapKey> {
-    data: Vec<D>,
-    map_to_idx: Map<D, usize>,
+pub struct Spaces<K: MapKey, V> {
+    map: IndexMap<K, V, Space>,
 }
 
-impl<D: MapKey> Spaces<D> {
-    //
+impl<K: MapKey, V> Spaces<K, V> {
+    pub fn new() -> Self {
+        Self {
+            map: Default::default(),
+        }
+    }
 }
