@@ -17,6 +17,9 @@ extern crate std;
 
 extern crate alloc;
 
+#[cfg(test)]
+mod tests;
+
 mod commodity;
 pub mod mcnf;
 pub mod networks;
