@@ -13,5 +13,5 @@ categories = ["placeholder"]
 num = { version = "0.4.3", default-features = false }
 
 [features]
-default = ["std"]
+default = []
 std = []
