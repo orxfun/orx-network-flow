@@ -1,8 +1,7 @@
-#[derive(Clone, Copy, Debug)]
+use crate::{impl_from_usize, indices::Index};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Space(usize);
 
-impl Space {
-    pub(crate) fn new(index: usize) -> Self {
-        Self(index)
-    }
-}
+impl_from_usize!(Space);
+impl Index for Space {}
