@@ -18,8 +18,9 @@ extern crate std;
 extern crate alloc;
 
 mod commodity;
-mod location;
 pub mod mcnf;
 pub mod networks;
+mod space;
 mod space_time;
 mod std_utils;
+mod time;

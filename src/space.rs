@@ -1,2 +1,2 @@
 #[derive(Clone, Copy, Debug)]
-pub struct Location(usize);
+pub struct Space(usize);
