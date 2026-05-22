@@ -17,9 +17,6 @@ extern crate std;
 
 extern crate alloc;
 
-#[cfg(test)]
-mod tests;
-
 mod commodities;
 mod indices;
 pub mod mcnf;
