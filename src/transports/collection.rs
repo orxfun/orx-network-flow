@@ -21,4 +21,12 @@ impl<K: MapKey> Transports<K> {
     pub fn push(&mut self, key: K, data: TransportData) -> Transport {
         self.map.push_or_update(key, data)
     }
+
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
+
+    pub fn get_by_key(&self, key: K) -> Option<&TransportData> {
+        self.map.get_by_key(key)
+    }
 }

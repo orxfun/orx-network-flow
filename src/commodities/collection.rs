@@ -24,4 +24,12 @@ impl<K: MapKey> Commodities<K> {
         let data = CommodityData::new(ori, des);
         self.map.push_or_update(key, data)
     }
+
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
+
+    pub fn get_by_key(&self, key: K) -> Option<&CommodityData> {
+        self.map.get_by_key(key)
+    }
 }

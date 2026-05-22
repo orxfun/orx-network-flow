@@ -1,6 +1,7 @@
 use crate::problem::ProblemBuilder;
 use alloc::string::String;
 use alloc::vec;
+use std::dbg;
 
 struct MyCommodity {
     origin: String,
@@ -39,4 +40,7 @@ fn build_problem_push() {
         );
     }
     let problem = builder.finish();
+
+    let c1 = problem.commodity(0);
+    dbg!(c1);
 }

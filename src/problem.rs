@@ -18,8 +18,16 @@ where
     S: MapKey,
     K: MapKey,
 {
-    pub fn commodity(&self, key: K) -> &CommodityData {
-        todo!()
+    pub fn len_spaces(&self) -> usize {
+        self.spaces.len()
+    }
+
+    pub fn len_commodities(&self) -> usize {
+        self.commodities.len()
+    }
+
+    pub fn commodity(&self, key: K) -> Option<&CommodityData> {
+        self.commodities.get_by_key(key)
     }
 }
 

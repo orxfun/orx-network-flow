@@ -1,5 +1,6 @@
 use crate::space_time::SpaceTime;
 
+#[derive(Debug)]
 pub struct CommodityData {
     ori: SpaceTime,
     des: SpaceTime,
