@@ -32,4 +32,8 @@ impl<K: MapKey> Commodities<K> {
     pub fn get_by_key(&self, key: K) -> Option<&CommodityData> {
         self.map.get_by_key(key)
     }
+
+    pub fn entries(&self) -> impl Iterator<Item = (Commodity, &K, &CommodityData)> {
+        self.map.entries()
+    }
 }

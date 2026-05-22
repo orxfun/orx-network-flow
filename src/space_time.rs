@@ -7,4 +7,12 @@ impl SpaceTime {
     pub fn new(space: Space, time: impl Into<Time>) -> Self {
         Self(space, time.into())
     }
+
+    pub fn space(&self) -> Space {
+        self.0
+    }
+
+    pub fn time(&self) -> Time {
+        self.1
+    }
 }

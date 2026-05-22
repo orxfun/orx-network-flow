@@ -47,4 +47,13 @@ impl<K: MapKey, V, I: Index> IndexMap<K, V, I> {
         let pos = *self.key_to_index.get(&key)?;
         Some(&self.data[pos])
     }
+
+    pub fn entries(&self) -> impl Iterator<Item = (I, &K, &V)>
+    where
+        usize: From<I>,
+    {
+        self.key_to_index
+            .iter()
+            .map(|(key, pos)| ((*pos).into(), key, &self.data[*pos]))
+    }
 }

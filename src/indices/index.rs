@@ -13,5 +13,11 @@ macro_rules! impl_from_usize {
                 Self(value)
             }
         }
+
+        impl From<$typename> for usize {
+            fn from(value: $typename) -> Self {
+                value.0
+            }
+        }
     };
 }
