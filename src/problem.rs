@@ -1,4 +1,4 @@
-use crate::commodities::Commodity;
+use crate::commodities::{Commodity, CommodityData};
 use crate::space_time::SpaceTime;
 use crate::spaces::Spaces;
 use crate::time::Time;
@@ -18,6 +18,9 @@ where
     S: MapKey,
     K: MapKey,
 {
+    pub fn commodity(&self, key: K) -> &CommodityData {
+        todo!()
+    }
 }
 
 // builder
@@ -56,14 +59,14 @@ where
         ready_time: impl Into<Time>,
         destination: S,
         due_time: impl Into<Time>,
-    ) -> Commodity {
+    ) {
         let ori_space = self.0.spaces.push(origin);
         let ori = SpaceTime::new(ori_space, ready_time.into());
 
         let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
-        self.0.commodities.push(key, ori, des)
+        _ = self.0.commodities.push(key, ori, des);
     }
 
     pub fn finish(self) -> Problem<S, K> {

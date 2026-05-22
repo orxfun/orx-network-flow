@@ -38,4 +38,9 @@ impl<K: MapKey, V, I: Index> IndexMap<K, V, I> {
             }
         }
     }
+
+    pub fn get_by_key(&self, key: K) -> Option<&V> {
+        let pos = *self.key_to_index.get(&key)?;
+        Some(&self.data[pos])
+    }
 }
