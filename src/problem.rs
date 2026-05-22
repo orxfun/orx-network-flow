@@ -12,24 +12,32 @@ where
     commodities: Commodities,
 }
 
-impl<S> Default for Problem<S>
+impl<S> Problem<S> where S: MapKey {}
+
+// builder
+
+pub struct ProblemBuilder<S>(Problem<S>)
+where
+    S: MapKey;
+
+impl<S> Default for ProblemBuilder<S>
 where
     S: MapKey,
 {
     fn default() -> Self {
-        Self {
-            spaces: Default::default(),
+        Self(Problem {
             commodities: Default::default(),
-        }
+            spaces: Default::default(),
+        })
     }
 }
 
-impl<S> Problem<S>
+impl<S> ProblemBuilder<S>
 where
     S: MapKey,
 {
     pub fn new() -> Self {
-        Self::default()
+        Default::default()
     }
 
     pub fn push_commodity(
@@ -39,12 +47,16 @@ where
         destination: S,
         due_time: impl Into<Time>,
     ) -> Commodity {
-        let ori_space = self.spaces.push(origin);
+        let ori_space = self.0.spaces.push(origin);
         let ori = SpaceTime::new(ori_space, ready_time.into());
 
-        let des_space = self.spaces.push(destination);
+        let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
-        self.commodities.push(ori, des)
+        self.0.commodities.push(ori, des)
+    }
+
+    pub fn finish(self) -> Problem<S> {
+        self.0
     }
 }
