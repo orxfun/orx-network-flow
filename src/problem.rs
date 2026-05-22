@@ -4,25 +4,33 @@ use crate::spaces::Spaces;
 use crate::time::Time;
 use crate::{commodities::Commodities, std_utils::MapKey};
 
-pub struct Problem<S>
+pub struct Problem<S, K>
 where
     S: MapKey,
+    K: MapKey,
 {
     spaces: Spaces<S>,
-    commodities: Commodities,
+    commodities: Commodities<K>,
 }
 
-impl<S> Problem<S> where S: MapKey {}
+impl<S, K> Problem<S, K>
+where
+    S: MapKey,
+    K: MapKey,
+{
+}
 
 // builder
 
-pub struct ProblemBuilder<S>(Problem<S>)
-where
-    S: MapKey;
-
-impl<S> Default for ProblemBuilder<S>
+pub struct ProblemBuilder<S, K>(Problem<S, K>)
 where
     S: MapKey,
+    K: MapKey;
+
+impl<S, K> Default for ProblemBuilder<S, K>
+where
+    S: MapKey,
+    K: MapKey,
 {
     fn default() -> Self {
         Self(Problem {
@@ -32,9 +40,10 @@ where
     }
 }
 
-impl<S> ProblemBuilder<S>
+impl<S, K> ProblemBuilder<S, K>
 where
     S: MapKey,
+    K: MapKey,
 {
     pub fn new() -> Self {
         Default::default()
@@ -42,6 +51,7 @@ where
 
     pub fn push_commodity(
         &mut self,
+        key: K,
         origin: S,
         ready_time: impl Into<Time>,
         destination: S,
@@ -53,10 +63,10 @@ where
         let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
-        self.0.commodities.push(ori, des)
+        self.0.commodities.push(key, ori, des)
     }
 
-    pub fn finish(self) -> Problem<S> {
+    pub fn finish(self) -> Problem<S, K> {
         self.0
     }
 }
