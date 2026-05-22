@@ -1,11 +1,11 @@
-use crate::spaces::{Space, SpaceData};
+use crate::spaces::Space;
 use crate::{indices::IndexMap, std_utils::MapKey};
 
-pub struct Spaces<K: MapKey, D: SpaceData> {
-    map: IndexMap<K, D, Space>,
+pub struct Spaces<K: MapKey> {
+    map: IndexMap<K, (), Space>,
 }
 
-impl<K: MapKey, D: SpaceData> Default for Spaces<K, D> {
+impl<K: MapKey> Default for Spaces<K> {
     fn default() -> Self {
         Self {
             map: Default::default(),
@@ -13,12 +13,12 @@ impl<K: MapKey, D: SpaceData> Default for Spaces<K, D> {
     }
 }
 
-impl<K: MapKey, D: SpaceData> Spaces<K, D> {
+impl<K: MapKey> Spaces<K> {
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn push_or_update(&mut self, key: K, data: D) -> Space {
-        self.map.push_or_update(key, data)
+    pub fn push(&mut self, key: K) -> Space {
+        self.map.push_or_update(key, ())
     }
 }
