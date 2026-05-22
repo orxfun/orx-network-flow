@@ -21,8 +21,6 @@ extern crate alloc;
 mod tests;
 
 mod commodities;
-mod commodity;
-mod commodity_data;
 mod indices;
 pub mod mcnf;
 pub mod networks;

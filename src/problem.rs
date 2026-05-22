@@ -1,6 +1,6 @@
-use crate::commodity::Commodity;
+use crate::commodities::Commodity;
 use crate::space_time::SpaceTime;
-use crate::spaces::{Space, Spaces};
+use crate::spaces::Spaces;
 use crate::time::Time;
 use crate::{commodities::Commodities, std_utils::MapKey};
 
