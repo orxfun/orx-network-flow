@@ -1,8 +1,8 @@
 use crate::transports::{Transport, TransportData};
-use crate::{indices::IndexMap, std_utils::MapKey};
+use crate::{indices::IdxMap, std_utils::MapKey};
 
 pub struct Transports<K: MapKey> {
-    map: IndexMap<K, TransportData, Transport>,
+    map: IdxMap<K, TransportData, Transport>,
 }
 
 impl<K: MapKey> Default for Transports<K> {

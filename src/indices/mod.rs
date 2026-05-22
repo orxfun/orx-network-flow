@@ -1,5 +1,7 @@
 mod index;
 mod index_map;
+mod index_vec;
 
-pub use index::Index;
-pub use index_map::IndexMap;
+pub use index::Idx;
+pub(crate) use index::IdxCore;
+pub use index_map::IdxMap;

@@ -1,8 +1,8 @@
 use crate::spaces::Space;
-use crate::{indices::IndexMap, std_utils::MapKey};
+use crate::{indices::IdxMap, std_utils::MapKey};
 
 pub struct Spaces<K: MapKey> {
-    map: IndexMap<K, (), Space>,
+    map: IdxMap<K, (), Space>,
 }
 
 impl<K: MapKey> Default for Spaces<K> {

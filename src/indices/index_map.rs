@@ -1,15 +1,15 @@
-use crate::indices::index::Index;
+use crate::indices::index::Idx;
 use crate::std_utils::{Map, MapKey};
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 
-pub struct IndexMap<K: MapKey, V, I: Index> {
+pub struct IdxMap<K: MapKey, V, I: Idx> {
     index_and_data: Vec<(K, V)>,
     key_to_index: Map<K, usize>,
     p: PhantomData<fn() -> I>,
 }
 
-impl<K: MapKey, V, I: Index> Default for IndexMap<K, V, I> {
+impl<K: MapKey, V, I: Idx> Default for IdxMap<K, V, I> {
     fn default() -> Self {
         Self {
             index_and_data: Default::default(),
@@ -19,11 +19,7 @@ impl<K: MapKey, V, I: Index> Default for IndexMap<K, V, I> {
     }
 }
 
-impl<K: MapKey, V, I: Index> IndexMap<K, V, I> {
-    pub fn new() -> Self {
-        Default::default()
-    }
-
+impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
     pub fn push_or_update(&mut self, key: K, data: V) -> I {
         match self.key_to_index.get(&key) {
             Some(&pos) => {
@@ -49,14 +45,14 @@ impl<K: MapKey, V, I: Index> IndexMap<K, V, I> {
         Some(&self.index_and_data[pos].1)
     }
 
-    pub fn entries(&self) -> impl Iterator<Item = (I, &K, &V)>
-    where
-        usize: From<I>,
-    {
-        // self.key_to_index
-        //     .iter()
-        //     .map(|(key, pos)| ((*pos).into(), key, &self.index_and_data[*pos]))
+    pub fn get_by_idx(&self, idx: I) -> Option<&V> {
+        todo!()
+    }
 
-        core::iter::empty()
+    pub fn entries(&self) -> impl Iterator<Item = (I, &K, &V)> {
+        self.index_and_data
+            .iter()
+            .enumerate()
+            .map(|(pos, (key, data))| (I::from(pos), key, data))
     }
 }

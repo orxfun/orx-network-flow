@@ -1,7 +1,3 @@
-use crate::{impl_from_usize, indices::Index};
+use crate::{impl_idx, indices::Idx};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Transport(usize);
-
-impl_from_usize!(Transport);
-impl Index for Transport {}
+impl_idx!(Transport, TransportVec);

@@ -1,10 +1,10 @@
 use crate::commodities::{Commodity, CommodityData};
-use crate::indices::IndexMap;
+use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
 use crate::std_utils::MapKey;
 
 pub struct Commodities<K: MapKey> {
-    map: IndexMap<K, CommodityData, Commodity>,
+    map: IdxMap<K, CommodityData, Commodity>,
 }
 
 impl<K: MapKey> Default for Commodities<K> {
@@ -16,10 +16,6 @@ impl<K: MapKey> Default for Commodities<K> {
 }
 
 impl<K: MapKey> Commodities<K> {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     pub fn push(&mut self, key: K, ori: SpaceTime, des: SpaceTime) -> Commodity {
         let data = CommodityData::new(ori, des);
         self.map.push_or_update(key, data)
