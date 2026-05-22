@@ -1,7 +1,7 @@
-mod commodities;
+mod collection;
 mod commodity;
-mod commodity_data;
+mod data;
 
-pub use commodities::Commodities;
+pub use collection::Commodities;
 pub use commodity::Commodity;
-pub use commodity_data::CommodityData;
+pub use data::CommodityData;
