@@ -25,7 +25,6 @@ impl<K: MapKey, V, I: Index> IndexMap<K, V, I> {
     }
 
     pub fn push_or_update(&mut self, key: K, data: V) -> I {
-        debug_assert!(!self.key_to_index.contains_key(&key));
         match self.key_to_index.get(&key) {
             Some(&pos) => {
                 self.data[pos] = data;
