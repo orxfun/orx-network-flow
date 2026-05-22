@@ -9,3 +9,16 @@ where
     spaces: Spaces<S, Sd>,
     commodities: Commodities,
 }
+
+impl<S, Sd> Default for Problem<S, Sd>
+where
+    S: MapKey,
+    Sd: SpaceData,
+{
+    fn default() -> Self {
+        Self {
+            spaces: Default::default(),
+            commodities: Default::default(),
+        }
+    }
+}
