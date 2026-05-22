@@ -1,4 +1,4 @@
-use crate::{space::Space, time::Time};
+use crate::{spaces::Space, time::Time};
 
 #[derive(Clone, Copy, Debug)]
 pub struct SpaceTime(Space, Time);
