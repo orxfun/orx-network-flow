@@ -5,7 +5,7 @@ use crate::spaces::Spaces;
 
 pub struct Problem<V: Variant> {
     pub(super) spaces: Spaces<V::S>,
-    pub(super) commodities: Commodities<V::K>,
+    pub(super) commodities: Commodities<V>,
 }
 
 impl<V: Variant> Problem<V> {
@@ -17,7 +17,7 @@ impl<V: Variant> Problem<V> {
         self.commodities.len()
     }
 
-    pub fn commodity(&self, key: V::K) -> Option<&CommodityData> {
+    pub fn commodity(&self, key: V::K) -> Option<&CommodityData<V>> {
         self.commodities.get_by_key(key)
     }
 }

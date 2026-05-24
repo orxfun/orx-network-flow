@@ -1,3 +1,3 @@
-use crate::{impl_idx, indices::Idx};
+use crate::impl_idx;
 
 impl_idx!(Commodity, CommodityVec);

@@ -1,14 +1,15 @@
-use crate::space_time::SpaceTime;
+use crate::{Variant, space_time::SpaceTime};
 
 #[derive(Debug)]
-pub struct CommodityData {
+pub struct CommodityData<V: Variant> {
     ori: SpaceTime,
     des: SpaceTime,
+    amount: V::A,
 }
 
-impl CommodityData {
-    pub fn new(ori: SpaceTime, des: SpaceTime) -> Self {
-        Self { ori, des }
+impl<V: Variant> CommodityData<V> {
+    pub fn new(ori: SpaceTime, des: SpaceTime, amount: V::A) -> Self {
+        Self { ori, des, amount }
     }
 
     pub fn origin(&self) -> SpaceTime {
@@ -17,5 +18,9 @@ impl CommodityData {
 
     pub fn destination(&self) -> SpaceTime {
         self.des
+    }
+
+    pub fn amount(&self) -> V::A {
+        self.amount
     }
 }

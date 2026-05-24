@@ -1,24 +1,31 @@
-use core::marker::PhantomData;
-
 use crate::problem::ProblemBuilder;
 use crate::problem::variant::Variant;
 use alloc::string::String;
 use alloc::vec;
+use core::marker::PhantomData;
 
 struct MyCommodity {
     origin: String,
     destination: String,
     ready_time: u64,
     due_time: u64,
+    amount: u64,
 }
 
 impl MyCommodity {
-    fn new(origin: String, destination: String, ready_time: u64, due_time: u64) -> Self {
+    fn new(
+        origin: String,
+        destination: String,
+        ready_time: u64,
+        due_time: u64,
+        amount: u64,
+    ) -> Self {
         Self {
             origin,
             destination,
             ready_time,
             due_time,
+            amount,
         }
     }
 }
@@ -36,8 +43,8 @@ impl<'a> Variant for MyVariant<'a> {
 #[test]
 fn build_problem_push() {
     let commodities = vec![
-        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 10),
-        MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12),
+        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 10, 150),
+        MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12, 290),
     ];
 
     let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
@@ -49,6 +56,7 @@ fn build_problem_push() {
             commodity.ready_time,
             &commodity.destination,
             commodity.due_time,
+            commodity.amount,
         );
     }
     let problem = builder.finish();

@@ -1,21 +1,28 @@
-use std::marker::PhantomData;
-
 use orx_network_flow::{ProblemBuilder, Variant};
+use std::marker::PhantomData;
 
 struct MyCommodity {
     origin: String,
     destination: String,
     ready_time: u64,
     due_time: u64,
+    amount: u64,
 }
 
 impl MyCommodity {
-    fn new(origin: String, destination: String, ready_time: u64, due_time: u64) -> Self {
+    fn new(
+        origin: String,
+        destination: String,
+        ready_time: u64,
+        due_time: u64,
+        amount: u64,
+    ) -> Self {
         Self {
             origin,
             destination,
             ready_time,
             due_time,
+            amount,
         }
     }
 }
@@ -32,8 +39,8 @@ impl<'a> Variant for MyVariant<'a> {
 
 fn main() {
     let commodities = vec![
-        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 10),
-        MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12),
+        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 10, 150),
+        MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12, 290),
     ];
 
     let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
@@ -45,6 +52,7 @@ fn main() {
             commodity.ready_time,
             &commodity.destination,
             commodity.due_time,
+            commodity.amount,
         );
     }
     let problem = builder.finish();
