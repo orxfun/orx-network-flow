@@ -15,6 +15,7 @@ impl<V: Variant> Debug for Problem<V> {
         writeln!(f, "Problem")?;
         writeln!(f, "  spaces: {}", self.len_spaces())?;
         writeln!(f, "  commodities: {}", self.len_commodities())?;
+        writeln!(f, "  transports: {}", self.len_transports())?;
 
         writeln!(f)?;
         writeln!(f, "Spaces")?;
@@ -142,6 +143,111 @@ impl<V: Variant> Debug for Problem<V> {
         )?;
 
         for row in &commodity_rows {
+            writeln!(
+                f,
+                "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",
+                row[0],
+                row[1],
+                row[2],
+                row[3],
+                row[4],
+                row[5],
+                row[6],
+                w0 = widths[0],
+                w1 = widths[1],
+                w2 = widths[2],
+                w3 = widths[3],
+                w4 = widths[4],
+                w5 = widths[5],
+                w6 = widths[6]
+            )?;
+        }
+
+        writeln!(f)?;
+        writeln!(f, "Transports")?;
+        let transport_entries: Vec<_> = self.transports.entries().collect();
+
+        let transport_header = [
+            "index",
+            "key",
+            "origin",
+            "destination",
+            "dep_time",
+            "arr_time",
+            "capacity",
+        ];
+
+        let mut transport_rows: Vec<[alloc::string::String; 7]> =
+            Vec::with_capacity(transport_entries.len());
+        for (transport, key, data) in transport_entries {
+            let origin = data.origin();
+            let destination = data.destination();
+
+            let ori_idx = origin.space();
+            let des_idx = destination.space();
+
+            let ori_key = space_keys_by_index.get(ori_idx).and_then(|x| *x);
+            let des_key = space_keys_by_index.get(des_idx).and_then(|x| *x);
+
+            let ori_cell = ori_key
+                .map(|x| format!("{:?}", x))
+                .unwrap_or_else(|| "-".into());
+            let des_cell = des_key
+                .map(|x| format!("{:?}", x))
+                .unwrap_or_else(|| "-".into());
+
+            transport_rows.push([
+                format!("{}", transport),
+                format!("{:?}", key),
+                ori_cell,
+                des_cell,
+                format!("{:?}", origin.time()),
+                format!("{:?}", destination.time()),
+                format!("{:?}", data.capacity()),
+            ]);
+        }
+
+        let mut widths = [0usize; 7];
+        for i in 0..7 {
+            let cell_width = transport_rows
+                .iter()
+                .map(|row| row[i].len())
+                .max()
+                .unwrap_or(0);
+            widths[i] = usize::max(transport_header[i].len(), cell_width);
+        }
+
+        writeln!(
+            f,
+            "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",
+            transport_header[0],
+            transport_header[1],
+            transport_header[2],
+            transport_header[3],
+            transport_header[4],
+            transport_header[5],
+            transport_header[6],
+            w0 = widths[0],
+            w1 = widths[1],
+            w2 = widths[2],
+            w3 = widths[3],
+            w4 = widths[4],
+            w5 = widths[5],
+            w6 = widths[6]
+        )?;
+        writeln!(
+            f,
+            "{}-+-{}-+-{}-+-{}-+-{}-+-{}-+-{}",
+            "-".repeat(widths[0]),
+            "-".repeat(widths[1]),
+            "-".repeat(widths[2]),
+            "-".repeat(widths[3]),
+            "-".repeat(widths[4]),
+            "-".repeat(widths[5]),
+            "-".repeat(widths[6])
+        )?;
+
+        for row in &transport_rows {
             writeln!(
                 f,
                 "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",

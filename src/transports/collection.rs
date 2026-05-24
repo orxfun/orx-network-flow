@@ -28,4 +28,8 @@ impl<V: Variant> Transports<V> {
     pub fn get_by_key(&self, key: &V::T) -> Option<&TransportData<V>> {
         self.map.get_by_key(key)
     }
+
+    pub fn entries(&self) -> impl Iterator<Item = (Transport, &V::T, &TransportData<V>)> {
+        self.map.entries()
+    }
 }

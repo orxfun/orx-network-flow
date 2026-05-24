@@ -20,8 +20,6 @@ extern crate alloc;
 mod commodities;
 mod flow_units;
 mod indices;
-pub mod mcnf;
-pub mod networks;
 mod problem;
 mod space_time;
 mod spaces;
