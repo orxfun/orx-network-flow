@@ -1,5 +1,5 @@
 use crate::{problem::Problem, spaces::VecSpace, std_utils::MapKey};
-use alloc::{format, vec, vec::Vec};
+use alloc::{format, vec::Vec};
 use core::fmt::Debug;
 
 impl<S, K> Debug for Problem<S, K>
@@ -55,11 +55,13 @@ where
             "-".repeat(spaces_key_width)
         )?;
         for (space, key) in space_entries {
+            let space_cell = format!("{}", space);
+            let key_cell = format!("{:?}", key);
             writeln!(
                 f,
                 "{:>index_w$} | {:<key_w$}",
-                space,
-                format!("{:?}", key),
+                space_cell,
+                key_cell,
                 index_w = spaces_index_width,
                 key_w = spaces_key_width
             )?;
