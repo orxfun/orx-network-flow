@@ -1,4 +1,7 @@
+use crate::graph::{edge::Edge, node::Node};
+use alloc::vec::Vec;
+
 pub struct Graph<N, E> {
-    a: N,
-    b: E,
+    nodes: Vec<Node<N>>,
+    edges: Vec<Edge<E>>,
 }
