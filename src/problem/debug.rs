@@ -75,9 +75,10 @@ impl<V: Variant> Debug for Problem<V> {
             "destination",
             "ready_time",
             "due_time",
+            "amount",
         ];
 
-        let mut commodity_rows: Vec<[alloc::string::String; 6]> =
+        let mut commodity_rows: Vec<[alloc::string::String; 7]> =
             Vec::with_capacity(commodity_entries.len());
         for (commodity, key, data) in commodity_entries {
             let origin = data.origin();
@@ -96,11 +97,12 @@ impl<V: Variant> Debug for Problem<V> {
                 format!("{:?}", des_key),
                 format!("{:?}", origin.time()),
                 format!("{:?}", destination.time()),
+                format!("{:?}", data.amount()),
             ]);
         }
 
-        let mut widths = [0usize; 6];
-        for i in 0..6 {
+        let mut widths = [0usize; 7];
+        for i in 0..7 {
             let cell_width = commodity_rows
                 .iter()
                 .map(|row| row[i].len())
@@ -111,47 +113,52 @@ impl<V: Variant> Debug for Problem<V> {
 
         writeln!(
             f,
-            "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$}",
+            "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",
             commodity_header[0],
             commodity_header[1],
             commodity_header[2],
             commodity_header[3],
             commodity_header[4],
             commodity_header[5],
+            commodity_header[6],
             w0 = widths[0],
             w1 = widths[1],
             w2 = widths[2],
             w3 = widths[3],
             w4 = widths[4],
-            w5 = widths[5]
+            w5 = widths[5],
+            w6 = widths[6]
         )?;
         writeln!(
             f,
-            "{}-+-{}-+-{}-+-{}-+-{}-+-{}",
+            "{}-+-{}-+-{}-+-{}-+-{}-+-{}-+-{}",
             "-".repeat(widths[0]),
             "-".repeat(widths[1]),
             "-".repeat(widths[2]),
             "-".repeat(widths[3]),
             "-".repeat(widths[4]),
-            "-".repeat(widths[5])
+            "-".repeat(widths[5]),
+            "-".repeat(widths[6])
         )?;
 
         for row in &commodity_rows {
             writeln!(
                 f,
-                "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$}",
+                "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",
                 row[0],
                 row[1],
                 row[2],
                 row[3],
                 row[4],
                 row[5],
+                row[6],
                 w0 = widths[0],
                 w1 = widths[1],
                 w2 = widths[2],
                 w3 = widths[3],
                 w4 = widths[4],
-                w5 = widths[5]
+                w5 = widths[5],
+                w6 = widths[6]
             )?;
         }
 
