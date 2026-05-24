@@ -1,4 +1,4 @@
-use crate::{amounts::Amount, std_utils::MapKey};
+use crate::{flow_units::FlowUnit, std_utils::MapKey};
 
 pub trait Variant {
     /// Space key
@@ -7,5 +7,6 @@ pub trait Variant {
     /// Commodity key
     type K: MapKey;
 
-    type A: Amount;
+    /// Flow unit
+    type F: FlowUnit;
 }

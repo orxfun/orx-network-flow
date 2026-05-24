@@ -26,7 +26,7 @@ impl<V: Variant> ProblemBuilder<V> {
         ready_time: impl Into<Time>,
         destination: V::S,
         due_time: impl Into<Time>,
-        amount: V::A,
+        amount: V::F,
     ) {
         let ori_space = self.0.spaces.push(origin);
         let ori = SpaceTime::new(ori_space, ready_time.into());

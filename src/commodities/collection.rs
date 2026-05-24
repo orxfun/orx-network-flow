@@ -16,7 +16,7 @@ impl<V: Variant> Default for Commodities<V> {
 }
 
 impl<V: Variant> Commodities<V> {
-    pub fn push(&mut self, key: V::K, ori: SpaceTime, des: SpaceTime, amount: V::A) -> Commodity {
+    pub fn push(&mut self, key: V::K, ori: SpaceTime, des: SpaceTime, amount: V::F) -> Commodity {
         let data = CommodityData::new(ori, des, amount);
         self.map.push_or_update(key, data)
     }

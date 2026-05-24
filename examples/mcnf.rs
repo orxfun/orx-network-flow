@@ -34,7 +34,7 @@ impl<'a> Variant for MyVariant<'a> {
 
     type K = usize;
 
-    type A = u64;
+    type F = u64;
 }
 
 fn main() {

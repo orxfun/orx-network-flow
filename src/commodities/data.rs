@@ -4,11 +4,11 @@ use crate::{Variant, space_time::SpaceTime};
 pub struct CommodityData<V: Variant> {
     ori: SpaceTime,
     des: SpaceTime,
-    amount: V::A,
+    amount: V::F,
 }
 
 impl<V: Variant> CommodityData<V> {
-    pub fn new(ori: SpaceTime, des: SpaceTime, amount: V::A) -> Self {
+    pub fn new(ori: SpaceTime, des: SpaceTime, amount: V::F) -> Self {
         Self { ori, des, amount }
     }
 
@@ -20,7 +20,7 @@ impl<V: Variant> CommodityData<V> {
         self.des
     }
 
-    pub fn amount(&self) -> V::A {
+    pub fn amount(&self) -> V::F {
         self.amount
     }
 }
