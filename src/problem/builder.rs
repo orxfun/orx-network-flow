@@ -1,20 +1,11 @@
-use crate::commodities::{Commodity, CommodityData};
 use crate::problem::Problem;
+use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
-use crate::spaces::Spaces;
 use crate::time::Time;
-use crate::{commodities::Commodities, std_utils::MapKey};
 
-pub struct ProblemBuilder<S, K>(Problem<S, K>)
-where
-    S: MapKey,
-    K: MapKey;
+pub struct ProblemBuilder<V: Variant>(Problem<V>);
 
-impl<S, K> Default for ProblemBuilder<S, K>
-where
-    S: MapKey,
-    K: MapKey,
-{
+impl<V: Variant> Default for ProblemBuilder<V> {
     fn default() -> Self {
         Self(Problem {
             commodities: Default::default(),
@@ -23,21 +14,17 @@ where
     }
 }
 
-impl<S, K> ProblemBuilder<S, K>
-where
-    S: MapKey,
-    K: MapKey,
-{
+impl<V: Variant> ProblemBuilder<V> {
     pub fn new() -> Self {
         Default::default()
     }
 
     pub fn push_commodity(
         &mut self,
-        key: K,
-        origin: S,
+        key: V::K,
+        origin: V::S,
         ready_time: impl Into<Time>,
-        destination: S,
+        destination: V::S,
         due_time: impl Into<Time>,
     ) {
         let ori_space = self.0.spaces.push(origin);
@@ -49,7 +36,7 @@ where
         _ = self.0.commodities.push(key, ori, des);
     }
 
-    pub fn finish(self) -> Problem<S, K> {
+    pub fn finish(self) -> Problem<V> {
         self.0
     }
 }

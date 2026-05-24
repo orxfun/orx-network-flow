@@ -8,3 +8,4 @@ mod variant;
 
 pub use builder::ProblemBuilder;
 pub use prob::Problem;
+pub use variant::Variant;

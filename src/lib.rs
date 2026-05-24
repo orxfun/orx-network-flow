@@ -29,4 +29,4 @@ mod std_utils;
 mod time;
 mod transports;
 
-pub use problem::{Problem, ProblemBuilder};
+pub use problem::{Problem, ProblemBuilder, Variant};

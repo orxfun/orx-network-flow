@@ -1,4 +1,7 @@
+use core::marker::PhantomData;
+
 use crate::problem::ProblemBuilder;
+use crate::problem::variant::Variant;
 use alloc::string::String;
 use alloc::vec;
 
@@ -20,6 +23,16 @@ impl MyCommodity {
     }
 }
 
+struct MyVariant<'a>(PhantomData<&'a ()>);
+
+impl<'a> Variant for MyVariant<'a> {
+    type S = &'a str;
+
+    type K = usize;
+
+    type A = u64;
+}
+
 #[test]
 fn build_problem_push() {
     let commodities = vec![
@@ -27,7 +40,7 @@ fn build_problem_push() {
         MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12),
     ];
 
-    let mut builder: ProblemBuilder<&str, usize> = ProblemBuilder::new();
+    let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
 
     for (k, commodity) in commodities.iter().enumerate() {
         builder.push_commodity(

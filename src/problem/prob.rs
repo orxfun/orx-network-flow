@@ -1,23 +1,14 @@
-use crate::commodities::{Commodity, CommodityData};
-use crate::space_time::SpaceTime;
+use crate::commodities::Commodities;
+use crate::commodities::CommodityData;
+use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
-use crate::time::Time;
-use crate::{commodities::Commodities, std_utils::MapKey};
 
-pub struct Problem<S, K>
-where
-    S: MapKey,
-    K: MapKey,
-{
-    pub(super) spaces: Spaces<S>,
-    pub(super) commodities: Commodities<K>,
+pub struct Problem<V: Variant> {
+    pub(super) spaces: Spaces<V::S>,
+    pub(super) commodities: Commodities<V::K>,
 }
 
-impl<S, K> Problem<S, K>
-where
-    S: MapKey,
-    K: MapKey,
-{
+impl<V: Variant> Problem<V> {
     pub fn len_spaces(&self) -> usize {
         self.spaces.len()
     }
@@ -26,7 +17,7 @@ where
         self.commodities.len()
     }
 
-    pub fn commodity(&self, key: K) -> Option<&CommodityData> {
+    pub fn commodity(&self, key: V::K) -> Option<&CommodityData> {
         self.commodities.get_by_key(key)
     }
 }

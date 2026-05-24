@@ -1,4 +1,6 @@
-use orx_network_flow::ProblemBuilder;
+use std::marker::PhantomData;
+
+use orx_network_flow::{ProblemBuilder, Variant};
 
 struct MyCommodity {
     origin: String,
@@ -18,13 +20,23 @@ impl MyCommodity {
     }
 }
 
+struct MyVariant<'a>(PhantomData<&'a ()>);
+
+impl<'a> Variant for MyVariant<'a> {
+    type S = &'a str;
+
+    type K = usize;
+
+    type A = u64;
+}
+
 fn main() {
     let commodities = vec![
         MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 10),
         MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12),
     ];
 
-    let mut builder: ProblemBuilder<&str, usize> = ProblemBuilder::new();
+    let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
 
     for (k, commodity) in commodities.iter().enumerate() {
         builder.push_commodity(

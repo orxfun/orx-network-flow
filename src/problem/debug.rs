@@ -1,12 +1,9 @@
-use crate::{problem::Problem, spaces::VecSpace, std_utils::MapKey};
+use crate::problem::{Problem, variant::Variant};
+use crate::spaces::VecSpace;
 use alloc::{format, vec::Vec};
 use core::fmt::Debug;
 
-impl<S, K> Debug for Problem<S, K>
-where
-    S: MapKey,
-    K: MapKey,
-{
+impl<V: Variant> Debug for Problem<V> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let space_entries = self.spaces.entries();
         let mut space_keys_by_index: VecSpace<_> = (0..space_entries.len()).map(|_| None).collect();
