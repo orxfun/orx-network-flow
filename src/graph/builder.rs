@@ -20,7 +20,6 @@ impl<N, E> GraphBuilder<N, E> {
         self.0.nodes[head].add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
 
-    #[cfg(test)]
     pub fn validate(&self) {
         let num_nodes = self.0.nodes.len();
         let num_edges = self.0.edges.len();

@@ -9,6 +9,7 @@ fn main() {
     builder.edge((), 1, 3);
     builder.edge((), 2, 3);
 
+    builder.validate();
     let graph = builder.finish();
 
     graph.print();
