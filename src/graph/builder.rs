@@ -19,4 +19,8 @@ impl<N, E> GraphBuilder<N, E> {
         self.0.nodes[tail].add_out_edge(edges_idx, head, head_in_edge_idx);
         self.0.nodes[head].add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
+
+    pub fn finish(self) -> Graph<N, E> {
+        self.0
+    }
 }
