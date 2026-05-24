@@ -19,6 +19,7 @@ extern crate alloc;
 
 mod commodities;
 mod flow_units;
+mod graph;
 mod indices;
 mod problem;
 mod space_time;
