@@ -2,10 +2,12 @@ use crate::commodities::Commodities;
 use crate::commodities::CommodityData;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
+use crate::transports::Transports;
 
 pub struct Problem<V: Variant> {
     pub(super) spaces: Spaces<V::S>,
     pub(super) commodities: Commodities<V>,
+    pub(super) transports: Transports<V>,
 }
 
 impl<V: Variant> Problem<V> {

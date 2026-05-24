@@ -10,6 +10,7 @@ impl<V: Variant> Default for ProblemBuilder<V> {
         Self(Problem {
             commodities: Default::default(),
             spaces: Default::default(),
+            transports: Default::default(),
         })
     }
 }
