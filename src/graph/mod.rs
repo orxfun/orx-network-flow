@@ -1,3 +1,4 @@
+mod builder;
 mod edge;
 mod graph;
 mod in_edge;
