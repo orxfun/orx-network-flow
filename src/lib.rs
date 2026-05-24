@@ -28,4 +28,5 @@ mod std_utils;
 mod time;
 mod transports;
 
+pub use graph::Graph;
 pub use problem::{Problem, ProblemBuilder, Variant};

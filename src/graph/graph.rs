@@ -1,4 +1,4 @@
-use crate::graph::{GraphBuilder, edge::Edge, node::Node};
+use crate::graph::{builder::GraphBuilder, edge::Edge, node::Node};
 use alloc::vec::Vec;
 
 pub struct Graph<N, E> {
