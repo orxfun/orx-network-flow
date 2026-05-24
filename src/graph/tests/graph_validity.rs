@@ -9,4 +9,6 @@ fn graph_validity() {
     builder.edge((), 1, 2);
     builder.edge((), 1, 3);
     builder.edge((), 2, 3);
+
+    builder.validate();
 }

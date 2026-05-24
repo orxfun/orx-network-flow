@@ -12,4 +12,16 @@ impl InEdge {
             tail_out_edge_idx,
         }
     }
+
+    pub fn edges_idx(&self) -> usize {
+        self.edges_idx
+    }
+
+    pub fn tail(&self) -> usize {
+        self.tail
+    }
+
+    pub fn tail_out_edge_idx(&self) -> usize {
+        self.tail_out_edge_idx
+    }
 }

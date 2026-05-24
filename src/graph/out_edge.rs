@@ -12,4 +12,16 @@ impl OutEdge {
             head_in_edge_idx,
         }
     }
+
+    pub fn edges_idx(&self) -> usize {
+        self.edges_idx
+    }
+
+    pub fn head(&self) -> usize {
+        self.head
+    }
+
+    pub fn head_in_edge_idx(&self) -> usize {
+        self.head_in_edge_idx
+    }
 }
