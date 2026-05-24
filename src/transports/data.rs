@@ -1,12 +1,13 @@
-use crate::space_time::SpaceTime;
+use crate::{Variant, space_time::SpaceTime};
 
-pub struct TransportData {
+pub struct TransportData<V: Variant> {
     ori: SpaceTime,
     des: SpaceTime,
+    cap: V::F,
 }
 
-impl TransportData {
-    pub fn new(ori: SpaceTime, des: SpaceTime) -> Self {
-        Self { ori, des }
+impl<V: Variant> TransportData<V> {
+    pub fn new(ori: SpaceTime, des: SpaceTime, cap: V::F) -> Self {
+        Self { ori, des, cap }
     }
 }

@@ -1,11 +1,12 @@
+use crate::Variant;
+use crate::indices::IdxMap;
 use crate::transports::{Transport, TransportData};
-use crate::{indices::IdxMap, std_utils::MapKey};
 
-pub struct Transports<K: MapKey> {
-    map: IdxMap<K, TransportData, Transport>,
+pub struct Transports<V: Variant> {
+    map: IdxMap<V::T, TransportData<V>, Transport>,
 }
 
-impl<K: MapKey> Default for Transports<K> {
+impl<V: Variant> Default for Transports<V> {
     fn default() -> Self {
         Self {
             map: Default::default(),
@@ -13,12 +14,12 @@ impl<K: MapKey> Default for Transports<K> {
     }
 }
 
-impl<K: MapKey> Transports<K> {
+impl<V: Variant> Transports<V> {
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn push(&mut self, key: K, data: TransportData) -> Transport {
+    pub fn push(&mut self, key: V::T, data: TransportData<V>) -> Transport {
         self.map.push_or_update(key, data)
     }
 
@@ -26,7 +27,7 @@ impl<K: MapKey> Transports<K> {
         self.map.len()
     }
 
-    pub fn get_by_key(&self, key: K) -> Option<&TransportData> {
+    pub fn get_by_key(&self, key: V::T) -> Option<&TransportData<V>> {
         self.map.get_by_key(key)
     }
 }

@@ -7,6 +7,9 @@ pub trait Variant {
     /// Commodity key
     type K: MapKey;
 
+    /// Transport key
+    type T: MapKey;
+
     /// Flow unit
     type F: FlowUnit;
 }
