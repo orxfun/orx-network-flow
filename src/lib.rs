@@ -17,6 +17,7 @@ extern crate std;
 
 extern crate alloc;
 
+mod amounts;
 mod commodities;
 mod indices;
 pub mod mcnf;
