@@ -1,5 +1,6 @@
 use crate::Variant;
 use crate::indices::IdxMap;
+use crate::space_time::SpaceTime;
 use crate::transports::{Transport, TransportData};
 
 pub struct Transports<V: Variant> {
@@ -15,11 +16,12 @@ impl<V: Variant> Default for Transports<V> {
 }
 
 impl<V: Variant> Transports<V> {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn push2(&mut self, key: V::T, data: TransportData<V>) -> Transport {
+        self.map.push_or_update(key, data)
     }
 
-    pub fn push(&mut self, key: V::T, data: TransportData<V>) -> Transport {
+    pub fn push(&mut self, key: V::T, ori: SpaceTime, des: SpaceTime, capacity: V::F) -> Transport {
+        let data = TransportData::new(ori, des, capacity);
         self.map.push_or_update(key, data)
     }
 
