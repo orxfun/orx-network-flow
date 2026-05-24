@@ -2,6 +2,7 @@ use crate::commodities::Commodities;
 use crate::commodities::CommodityData;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
+use crate::transports::TransportData;
 use crate::transports::Transports;
 
 pub struct Problem<V: Variant> {
@@ -19,7 +20,15 @@ impl<V: Variant> Problem<V> {
         self.commodities.len()
     }
 
-    pub fn commodity(&self, key: V::K) -> Option<&CommodityData<V>> {
+    pub fn commodity(&self, key: &V::K) -> Option<&CommodityData<V>> {
         self.commodities.get_by_key(key)
+    }
+
+    pub fn len_transports(&self) -> usize {
+        self.transports.len()
+    }
+
+    pub fn transport(&self, key: &V::T) -> Option<&TransportData<V>> {
+        self.transports.get_by_key(key)
     }
 }

@@ -1,5 +1,4 @@
 use orx_network_flow::{ProblemBuilder, Variant};
-use std::marker::PhantomData;
 
 struct MyCommodity {
     origin: String,
@@ -27,10 +26,10 @@ impl MyCommodity {
     }
 }
 
-struct MyVariant<'a>(PhantomData<&'a ()>);
+struct MyVariant;
 
-impl<'a> Variant for MyVariant<'a> {
-    type S = &'a str;
+impl Variant for MyVariant {
+    type S = String;
 
     type K = usize;
 
@@ -50,17 +49,34 @@ fn main() {
     for (k, commodity) in commodities.iter().enumerate() {
         builder.push_commodity(
             k,
-            &commodity.origin,
+            commodity.origin.clone(),
             commodity.ready_time,
-            &commodity.destination,
+            commodity.destination.clone(),
             commodity.due_time,
             commodity.amount,
         );
     }
+    builder.push_transport(
+        String::from("AMS-BRU-12"),
+        String::from("AMS"),
+        6u64,
+        String::from("BRU"),
+        17u64,
+        1000,
+    );
+    builder.push_transport(
+        String::from("BRU-LEJ-26"),
+        String::from("BRU"),
+        8u64,
+        String::from("EMA"),
+        12u64,
+        800,
+    );
     let problem = builder.finish();
 
+    assert_eq!(problem.len_spaces(), 4);
     assert_eq!(problem.len_commodities(), 2);
-    assert_eq!(problem.len_spaces(), 3);
+    assert_eq!(problem.len_transports(), 2);
 
     println!("{problem:?}");
 }

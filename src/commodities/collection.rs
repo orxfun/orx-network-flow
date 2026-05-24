@@ -25,7 +25,7 @@ impl<V: Variant> Commodities<V> {
         self.map.len()
     }
 
-    pub fn get_by_key(&self, key: V::K) -> Option<&CommodityData<V>> {
+    pub fn get_by_key(&self, key: &V::K) -> Option<&CommodityData<V>> {
         self.map.get_by_key(key)
     }
 

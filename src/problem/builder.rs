@@ -42,16 +42,16 @@ impl<V: Variant> ProblemBuilder<V> {
         &mut self,
         key: V::T,
         origin: V::S,
-        ready_time: impl Into<Time>,
+        departure_time: impl Into<Time>,
         destination: V::S,
-        due_time: impl Into<Time>,
+        arrival_time: impl Into<Time>,
         capacity: V::F,
     ) {
         let ori_space = self.0.spaces.push(origin);
-        let ori = SpaceTime::new(ori_space, ready_time.into());
+        let ori = SpaceTime::new(ori_space, departure_time.into());
 
         let des_space = self.0.spaces.push(destination);
-        let des = SpaceTime::new(des_space, due_time.into());
+        let des = SpaceTime::new(des_space, arrival_time.into());
 
         _ = self.0.transports.push(key, ori, des, capacity);
     }

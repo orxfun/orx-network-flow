@@ -16,10 +16,6 @@ impl<V: Variant> Default for Transports<V> {
 }
 
 impl<V: Variant> Transports<V> {
-    pub fn push2(&mut self, key: V::T, data: TransportData<V>) -> Transport {
-        self.map.push_or_update(key, data)
-    }
-
     pub fn push(&mut self, key: V::T, ori: SpaceTime, des: SpaceTime, capacity: V::F) -> Transport {
         let data = TransportData::new(ori, des, capacity);
         self.map.push_or_update(key, data)
@@ -29,7 +25,7 @@ impl<V: Variant> Transports<V> {
         self.map.len()
     }
 
-    pub fn get_by_key(&self, key: V::T) -> Option<&TransportData<V>> {
+    pub fn get_by_key(&self, key: &V::T) -> Option<&TransportData<V>> {
         self.map.get_by_key(key)
     }
 }
