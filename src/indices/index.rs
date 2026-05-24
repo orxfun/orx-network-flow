@@ -29,6 +29,14 @@ macro_rules! impl_idx {
 
         impl crate::indices::Idx for $idx {}
 
+        impl core::fmt::Display for $idx {
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
+
+        // vec
+
         pub struct $idx_vec<T>(alloc::vec::Vec<T>);
 
         impl<T> core::ops::Index<$idx> for $idx_vec<T> {
@@ -56,6 +64,12 @@ macro_rules! impl_idx {
 
             pub fn push(&mut self, value: T) {
                 self.0.push(value);
+            }
+        }
+
+        impl<T> FromIterator<T> for $idx_vec<T> {
+            fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+                Self(iter.into_iter().collect())
             }
         }
     };
