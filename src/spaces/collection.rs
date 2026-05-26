@@ -14,10 +14,6 @@ impl<K: MapKey> Default for Spaces<K> {
 }
 
 impl<K: MapKey> Spaces<K> {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     pub fn push(&mut self, key: K) -> Space {
         self.map.push_or_update(key, ())
     }
@@ -26,11 +22,10 @@ impl<K: MapKey> Spaces<K> {
         self.map.len()
     }
 
-    pub fn entries(&self) -> alloc::vec::Vec<(Space, &K)> {
+    pub fn entries(&self) -> impl Iterator<Item = (Space, &K)> {
         self.map
             .entries()
             .into_iter()
             .map(|(space, key, _)| (space, key))
-            .collect()
     }
 }

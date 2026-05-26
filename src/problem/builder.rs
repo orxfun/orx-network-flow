@@ -8,8 +8,9 @@ pub struct ProblemBuilder<V: Variant>(Problem<V>);
 impl<V: Variant> Default for ProblemBuilder<V> {
     fn default() -> Self {
         Self(Problem {
-            commodities: Default::default(),
             spaces: Default::default(),
+            vehicle_types: Default::default(),
+            commodities: Default::default(),
             transports: Default::default(),
         })
     }
@@ -22,7 +23,7 @@ impl<V: Variant> ProblemBuilder<V> {
 
     pub fn push_commodity(
         &mut self,
-        key: V::K,
+        commodity_key: V::K,
         origin: V::S,
         ready_time: impl Into<Time>,
         destination: V::S,
@@ -35,25 +36,28 @@ impl<V: Variant> ProblemBuilder<V> {
         let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
-        _ = self.0.commodities.push(key, ori, des, amount);
+        _ = self.0.commodities.push(commodity_key, ori, des, amount);
     }
 
     pub fn push_transport(
         &mut self,
-        key: V::T,
+        transport_key: V::T,
+        vehicle_type_key: V::V,
         origin: V::S,
         departure_time: impl Into<Time>,
         destination: V::S,
         arrival_time: impl Into<Time>,
         capacity: V::F,
     ) {
+        let vehicle_type = self.0.vehicle_types.push(vehicle_type_key);
+
         let ori_space = self.0.spaces.push(origin);
         let ori = SpaceTime::new(ori_space, departure_time.into());
 
         let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, arrival_time.into());
 
-        _ = self.0.transports.push(key, ori, des, capacity);
+        _ = self.0.transports.push(transport_key, ori, des, capacity);
     }
 
     pub fn finish(self) -> Problem<V> {

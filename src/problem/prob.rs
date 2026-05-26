@@ -4,9 +4,11 @@ use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
 use crate::transports::TransportData;
 use crate::transports::Transports;
+use crate::vehicle_types::VehicleTypes;
 
 pub struct Problem<V: Variant> {
     pub(super) spaces: Spaces<V::S>,
+    pub(super) vehicle_types: VehicleTypes<V>,
     pub(super) commodities: Commodities<V>,
     pub(super) transports: Transports<V>,
 }

@@ -5,7 +5,7 @@ use core::fmt::Debug;
 
 impl<V: Variant> Debug for Problem<V> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        let space_entries = self.spaces.entries();
+        let space_entries: Vec<_> = self.spaces.entries().collect();
         let mut space_keys_by_index: VecSpace<_> = (0..space_entries.len()).map(|_| None).collect();
 
         for (space, key) in &space_entries {
