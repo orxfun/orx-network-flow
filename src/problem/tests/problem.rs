@@ -37,6 +37,8 @@ impl<'a> Variant for MyVariant<'a> {
 
     type K = usize;
 
+    type V = String;
+
     type T = String;
 
     type F = u64;
