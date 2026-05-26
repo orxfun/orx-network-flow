@@ -148,11 +148,18 @@ impl<V: Variant> Debug for Problem<V> {
             let ori_key = space_keys_by_index.get(ori_idx).and_then(|x| *x);
             let des_key = space_keys_by_index.get(des_idx).and_then(|x| *x);
 
+            let ori_cell = ori_key
+                .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
+                .unwrap_or_else(|| "-".into());
+            let des_cell = des_key
+                .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
+                .unwrap_or_else(|| "-".into());
+
             commodity_rows.push([
                 format!("{}", commodity),
                 format!("{:?}", key),
-                format!("{:?}", ori_key),
-                format!("{:?}", des_key),
+                ori_cell,
+                des_cell,
                 format!("{:?}", origin.time()),
                 format!("{:?}", destination.time()),
                 format!("{:?}", data.amount()),
