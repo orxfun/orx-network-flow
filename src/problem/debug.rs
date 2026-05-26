@@ -35,7 +35,7 @@ impl<V: Variant> Debug for Problem<V> {
 
         for (_, _, data) in &transport_entries {
             let vehicle_idx = data.vehicle();
-            let vehicle_data = self.vehicles.get(vehicle_idx).unwrap();
+            let vehicle_data = self.vehicles.get_by_idx(vehicle_idx).unwrap();
             let vehicle_type_idx = vehicle_data.vehicle_type();
 
             let cap = data.capacity();
@@ -230,7 +230,7 @@ impl<V: Variant> Debug for Problem<V> {
                 .iter()
                 .map(|(vehicle, _)| {
                     self.vehicles
-                        .get(*vehicle)
+                        .get_by_idx(*vehicle)
                         .and_then(|vehicle_data| {
                             vehicle_type_keys_by_index
                                 .get(vehicle_data.vehicle_type().into_inner())
@@ -265,7 +265,7 @@ impl<V: Variant> Debug for Problem<V> {
             let key_cell = format!("{}", format!("{:?}", key).trim_matches('"'));
             let vehicle_type_cell = self
                 .vehicles
-                .get(vehicle)
+                .get_by_idx(vehicle)
                 .and_then(|vehicle_data| {
                     vehicle_type_keys_by_index
                         .get(vehicle_data.vehicle_type().into_inner())

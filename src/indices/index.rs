@@ -1,7 +1,7 @@
-use core::fmt::Debug;
+use core::{fmt::Debug, hash::Hash};
 
 pub trait Idx:
-    Debug + Clone + Copy + Send + Sync + PartialEq + Eq + PartialOrd + Ord + From<usize>
+    Debug + Clone + Copy + Send + Sync + PartialEq + Eq + PartialOrd + Ord + From<usize> + Hash
 {
 }
 
@@ -12,7 +12,7 @@ pub(crate) trait IdxCore {
 #[macro_export]
 macro_rules! impl_idx {
     ($idx:ident, $idx_vec:ident) => {
-        #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $idx(usize);
 
         impl From<usize> for $idx {
