@@ -19,7 +19,7 @@ impl MinConnTime {
 
 impl Default for MinConnTime {
     fn default() -> Self {
-        Self::new(Time::from(0u64), Time::from(0u64))
+        Self::new(Time::from(0i64), Time::from(0i64))
     }
 }
 

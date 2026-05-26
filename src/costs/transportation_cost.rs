@@ -1,7 +1,7 @@
+use crate::cost::Cost;
 use crate::vehicle_types::VehicleType;
 use crate::{Problem, Variant};
 use crate::{commodities::Commodity, std_utils::Map, transports::Transport, vehicles::Vehicle};
-use num::Zero;
 
 pub struct TransportationCost<V: Variant> {
     global: V::C,
@@ -14,7 +14,7 @@ pub struct TransportationCost<V: Variant> {
 
 impl<V: Variant> Default for TransportationCost<V> {
     fn default() -> Self {
-        Self::new(Zero::zero())
+        Self::new(Cost::zero())
     }
 }
 

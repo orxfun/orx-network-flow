@@ -7,8 +7,8 @@ use core::marker::PhantomData;
 struct MyCommodity {
     origin: String,
     destination: String,
-    ready_time: u64,
-    due_time: u64,
+    ready_time: i64,
+    due_time: i64,
     amount: u64,
 }
 
@@ -16,8 +16,8 @@ impl MyCommodity {
     fn new(
         origin: String,
         destination: String,
-        ready_time: u64,
-        due_time: u64,
+        ready_time: i64,
+        due_time: i64,
         amount: u64,
     ) -> Self {
         Self {

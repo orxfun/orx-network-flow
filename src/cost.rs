@@ -1,6 +1,18 @@
-use core::ops::Neg;
-use num::{Num, Zero};
+use crate::time::Time;
+use core::ops::{Mul, Neg};
 
-pub trait Cost: Clone + Copy + Num + Zero + Neg<Output = Self> {}
+pub trait Cost: Default + Clone + Copy + Neg<Output = Self> + Mul<Time, Output = Self> {
+    fn zero() -> Self {
+        Self::default()
+    }
+}
 
-impl<C: Clone + Copy + Num + Zero + Neg<Output = Self>> Cost for C {}
+impl Cost for i64 {}
+
+impl Mul<Time> for i64 {
+    type Output = Self;
+
+    fn mul(self, rhs: Time) -> Self::Output {
+        self * rhs.inner()
+    }
+}

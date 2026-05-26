@@ -3,7 +3,7 @@ use crate::time::Time;
 use crate::{Problem, Variant};
 use crate::{commodities::Commodity, spaces::Space, std_utils::Map, transports::Transport};
 
-pub struct LatenessCost<V: Variant> {
+pub struct EarlinessCost<V: Variant> {
     global_per_unit: V::C,
     by_commodity_per_unit: Map<Commodity, V::C>,
     by_destination_per_unit: Map<Space, V::C>,
@@ -11,16 +11,16 @@ pub struct LatenessCost<V: Variant> {
     by_commodity_transport: Map<(Commodity, Transport), V::C>,
 }
 
-impl<V: Variant> Default for LatenessCost<V> {
+impl<V: Variant> Default for EarlinessCost<V> {
     fn default() -> Self {
         Self::new(Cost::zero())
     }
 }
 
-impl<V: Variant> LatenessCost<V> {
-    pub fn new(global_lateness_cost_per_unit: V::C) -> Self {
+impl<V: Variant> EarlinessCost<V> {
+    pub fn new(global_earliness_cost_per_unit: V::C) -> Self {
         Self {
-            global_per_unit: global_lateness_cost_per_unit,
+            global_per_unit: global_earliness_cost_per_unit,
             by_commodity_per_unit: Default::default(),
             by_destination_per_unit: Default::default(),
             by_commodity_destination_per_unit: Default::default(),
@@ -28,34 +28,34 @@ impl<V: Variant> LatenessCost<V> {
         }
     }
 
-    pub fn commodity_specific(&mut self, commodity: Commodity, lateness_cost_per_unit: V::C) {
+    pub fn commodity_specific(&mut self, commodity: Commodity, earliness_cost_per_unit: V::C) {
         self.by_commodity_per_unit
-            .insert(commodity, lateness_cost_per_unit);
+            .insert(commodity, earliness_cost_per_unit);
     }
 
-    pub fn destination_specific(&mut self, destination: Space, lateness_cost_per_unit: V::C) {
+    pub fn destination_specific(&mut self, destination: Space, earliness_cost_per_unit: V::C) {
         self.by_destination_per_unit
-            .insert(destination, lateness_cost_per_unit);
+            .insert(destination, earliness_cost_per_unit);
     }
 
     pub fn commodity_destination_specific(
         &mut self,
         commodity: Commodity,
         destination: Space,
-        lateness_cost_per_unit: V::C,
+        earliness_cost_per_unit: V::C,
     ) {
         self.by_commodity_destination_per_unit
-            .insert((commodity, destination), lateness_cost_per_unit);
+            .insert((commodity, destination), earliness_cost_per_unit);
     }
 
     pub fn commodity_transport_specific(
         &mut self,
         commodity: Commodity,
         transport: Transport,
-        lateness_cost: V::C,
+        earliness_cost: V::C,
     ) {
         self.by_commodity_transport
-            .insert((commodity, transport), lateness_cost);
+            .insert((commodity, transport), earliness_cost);
     }
 
     pub fn cost(&self, prob: &Problem<V>, commodity: Commodity, transport: Transport) -> V::C {
@@ -67,9 +67,9 @@ impl<V: Variant> LatenessCost<V> {
         let commodity_des = prob.commodity_by_idx(commodity).destination();
         let transport_des = prob.transport_by_idx(transport).destination();
 
-        let lateness = transport_des.time() - commodity_des.time();
+        let earliness = commodity_des.time() - transport_des.time();
 
-        if lateness <= Time::zero() {
+        if earliness <= Time::zero() {
             return Cost::zero();
         }
 
@@ -82,17 +82,17 @@ impl<V: Variant> LatenessCost<V> {
             .by_commodity_destination_per_unit
             .get(&(commodity, des))
         {
-            return *cost * lateness;
+            return *cost * earliness;
         }
 
         if let Some(cost) = self.by_destination_per_unit.get(&des) {
-            return *cost * lateness;
+            return *cost * earliness;
         }
 
         if let Some(cost) = self.by_commodity_per_unit.get(&commodity) {
-            return *cost * lateness;
+            return *cost * earliness;
         }
 
-        self.global_per_unit * lateness
+        self.global_per_unit * earliness
     }
 }

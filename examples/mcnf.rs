@@ -3,8 +3,8 @@ use orx_network_flow::{ProblemBuilder, Variant};
 struct MyCommodity {
     origin: String,
     destination: String,
-    ready_time: u64,
-    due_time: u64,
+    ready_time: i64,
+    due_time: i64,
     amount: u64,
 }
 
@@ -12,8 +12,8 @@ impl MyCommodity {
     fn new(
         origin: String,
         destination: String,
-        ready_time: u64,
-        due_time: u64,
+        ready_time: i64,
+        due_time: i64,
         amount: u64,
     ) -> Self {
         Self {
@@ -71,9 +71,9 @@ fn main() {
         12,
         String::from("77X"),
         String::from("AMS"),
-        6u64,
+        6i64,
         String::from("BRU"),
-        17u64,
+        17i64,
         1000,
     );
     builder.push_transport(
@@ -81,9 +81,9 @@ fn main() {
         11,
         String::from("77X"),
         String::from("BRU"),
-        8u64,
+        8i64,
         String::from("EMA"),
-        12u64,
+        12i64,
         800,
     );
     let problem = builder.finish();

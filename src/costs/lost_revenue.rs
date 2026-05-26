@@ -1,5 +1,4 @@
-use crate::{Variant, commodities::Commodity, std_utils::Map};
-use num::Zero;
+use crate::{Variant, commodities::Commodity, cost::Cost, std_utils::Map};
 
 pub struct LostRevenue<V: Variant> {
     global: V::C,
@@ -8,7 +7,7 @@ pub struct LostRevenue<V: Variant> {
 
 impl<V: Variant> Default for LostRevenue<V> {
     fn default() -> Self {
-        Self::new(Zero::zero())
+        Self::new(Cost::zero())
     }
 }
 
