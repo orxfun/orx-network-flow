@@ -13,4 +13,6 @@ fn main() {
     let graph = builder.finish();
 
     graph.print();
+
+    println!("\n\nDOT\n{}", graph.to_dot_string());
 }
