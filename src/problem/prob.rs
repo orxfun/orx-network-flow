@@ -24,6 +24,10 @@ impl<V: Variant> Problem<V> {
         self.vehicle_types.len()
     }
 
+    pub fn len_vehicles(&self) -> usize {
+        self.vehicles.len()
+    }
+
     pub fn len_commodities(&self) -> usize {
         self.commodities.len()
     }
