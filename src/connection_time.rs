@@ -63,6 +63,43 @@ impl ConnectionTime {
         self.by_space.insert(space, ct);
     }
 
+    pub fn vehicle_type_specific_conn_time(
+        &mut self,
+        first_vehicle_type: VehicleType,
+        second_vehicle_type: VehicleType,
+        same_vehicle: Time,
+        changed_vehicle: Time,
+    ) {
+        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        self.by_vehicle_type
+            .insert((first_vehicle_type, second_vehicle_type), ct);
+    }
+
+    pub fn space_and_vehicle_type_specific_conn_time(
+        &mut self,
+        space: Space,
+        first_vehicle_type: VehicleType,
+        second_vehicle_type: VehicleType,
+        same_vehicle: Time,
+        changed_vehicle: Time,
+    ) {
+        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        self.by_space_vehicle_type
+            .insert((space, first_vehicle_type, second_vehicle_type), ct);
+    }
+
+    pub fn transport_specific_conn_time(
+        &mut self,
+        first_transport: Transport,
+        second_transport: Transport,
+        same_vehicle: Time,
+        changed_vehicle: Time,
+    ) {
+        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        self.by_transport
+            .insert((first_transport, second_transport), ct);
+    }
+
     pub fn conn_time<V: Variant>(&self, prob: &Problem<V>, f: Transport, g: Transport) -> Time {
         debug_assert_eq!(
             prob.transport_by_idx(f).destination().space(),
