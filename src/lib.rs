@@ -18,6 +18,7 @@ extern crate std;
 extern crate alloc;
 
 mod commodities;
+mod connection_time;
 mod flow_units;
 mod graph;
 mod indices;
