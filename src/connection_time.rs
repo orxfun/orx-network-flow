@@ -8,6 +8,15 @@ struct MinConnTime {
     changed_vehicle: Time,
 }
 
+impl Default for MinConnTime {
+    fn default() -> Self {
+        Self {
+            same_vehicle: Time::from(0u64),
+            changed_vehicle: Time::from(0u64),
+        }
+    }
+}
+
 impl MinConnTime {
     fn conn_time(&self, same_vehicle: bool) -> Time {
         match same_vehicle {
@@ -17,6 +26,7 @@ impl MinConnTime {
     }
 }
 
+#[derive(Default)]
 pub struct ConnectionTime {
     global: MinConnTime,
     by_space: Map<Space, MinConnTime>,
@@ -26,6 +36,17 @@ pub struct ConnectionTime {
 }
 
 impl ConnectionTime {
+    pub fn new(same_vehicle: Time, changed_vehicle: Time) -> Self {
+        let global = MinConnTime {
+            same_vehicle,
+            changed_vehicle,
+        };
+        Self {
+            global,
+            ..Default::default()
+        }
+    }
+
     pub fn conn_time<V: Variant>(&self, prob: &Problem<V>, f: Transport, g: Transport) -> Time {
         debug_assert_eq!(
             prob.transport_by_idx(f).destination().space(),
