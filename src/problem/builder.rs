@@ -57,7 +57,10 @@ impl<V: Variant> ProblemBuilder<V> {
         let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, arrival_time.into());
 
-        _ = self.0.transports.push(transport_key, ori, des, capacity);
+        _ = self
+            .0
+            .transports
+            .push(transport_key, vehicle_type, ori, des, capacity);
     }
 
     pub fn finish(self) -> Problem<V> {
