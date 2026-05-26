@@ -1,10 +1,10 @@
-use crate::{Variant, space_time::SpaceTime};
+use crate::Variant;
 
-pub struct VehicleData<V: Variant> {
+pub struct VehicleTypeData<V: Variant> {
     max_capacity: V::F,
 }
 
-impl<V: Variant> VehicleData<V> {
+impl<V: Variant> VehicleTypeData<V> {
     pub fn new(max_capacity: V::F) -> Self {
         Self { max_capacity }
     }

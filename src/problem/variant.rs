@@ -7,6 +7,9 @@ pub trait Variant {
     /// Commodity key
     type K: MapKey;
 
+    /// Vehicle type key
+    type V: MapKey;
+
     /// Transport key
     type T: MapKey;
 
