@@ -14,7 +14,7 @@ impl<V: Variant> Debug for Problem<V> {
         }
 
         let vehicle_type_entries: Vec<_> = self.vehicle_types.entries().collect();
-        let mut vehicle_type_keys_by_index: Vec<Option<&V::V>> =
+        let mut vehicle_type_keys_by_index: Vec<Option<&V::W>> =
             (0..vehicle_type_entries.len()).map(|_| None).collect();
 
         for (vehicle_type, key) in &vehicle_type_entries {

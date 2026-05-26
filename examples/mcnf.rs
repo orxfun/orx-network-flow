@@ -33,7 +33,9 @@ impl Variant for MyVariant {
 
     type K = usize;
 
-    type V = String;
+    type W = String;
+
+    type V = usize;
 
     type T = String;
 

@@ -29,6 +29,7 @@ mod std_utils;
 mod time;
 mod transports;
 mod vehicle_types;
+mod vehicles;
 
 pub use graph::Graph;
 pub use problem::{Problem, ProblemBuilder, Variant};

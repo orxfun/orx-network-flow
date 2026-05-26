@@ -42,7 +42,7 @@ impl<V: Variant> ProblemBuilder<V> {
     pub fn push_transport(
         &mut self,
         transport_key: V::T,
-        vehicle_type_key: V::V,
+        vehicle_type_key: V::W,
         origin: V::S,
         departure_time: impl Into<Time>,
         destination: V::S,

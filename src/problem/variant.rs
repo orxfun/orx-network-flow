@@ -8,6 +8,9 @@ pub trait Variant {
     type K: MapKey;
 
     /// Vehicle type key
+    type W: MapKey;
+
+    /// Vehicle key
     type V: MapKey;
 
     /// Transport key

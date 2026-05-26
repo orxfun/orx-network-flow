@@ -1,5 +1,5 @@
 mod collection;
-mod vehicle;
+mod vehicle_type;
 
 pub use collection::VehicleTypes;
-pub use vehicle::VehicleType;
+pub use vehicle_type::VehicleType;
