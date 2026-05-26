@@ -44,6 +44,8 @@ impl<'a> Variant for MyVariant<'a> {
     type T = String;
 
     type F = u64;
+
+    type C = i64;
 }
 
 #[test]

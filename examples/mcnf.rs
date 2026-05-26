@@ -40,6 +40,8 @@ impl Variant for MyVariant {
     type T = String;
 
     type F = u64;
+
+    type C = i64;
 }
 
 fn main() {
