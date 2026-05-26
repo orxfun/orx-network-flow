@@ -22,11 +22,11 @@ impl<V: Variant> Debug for Problem<V> {
         }
 
         let vehicle_entries: Vec<_> = self.vehicles.entries().collect();
-        let mut vehicle_type_keys_by_index: Vec<Option<&V::V>> =
+        let mut vehicle_keys_by_index: Vec<Option<&V::V>> =
             (0..vehicle_entries.len()).map(|_| None).collect();
 
-        for (vehicle_type, key) in &vehicle_entries {
-            vehicle_type_keys_by_index[(*vehicle_type).into_inner()] = Some(*key);
+        for (vehicle, key) in &vehicle_entries {
+            vehicle_keys_by_index[(*vehicle).into_inner()] = Some(*key);
         }
 
         let transport_entries: Vec<_> = self.transports.entries().collect();
@@ -203,6 +203,89 @@ impl<V: Variant> Debug for Problem<V> {
         }
 
         writeln!(f)?;
+        writeln!(f, "Vehicles")?;
+        let vehicles_header_index = "index";
+        let vehicles_header_key = "key";
+        let vehicles_header_vehicle_type = "vehicle_type";
+        let vehicles_index_width = usize::max(
+            vehicles_header_index.len(),
+            vehicle_entries
+                .iter()
+                .map(|(vehicle, _)| format!("{}", *vehicle).len())
+                .max()
+                .unwrap_or(0),
+        );
+        let vehicles_key_width = usize::max(
+            vehicles_header_key.len(),
+            vehicle_entries
+                .iter()
+                .map(|(_, key)| format!("{:?}", key).trim_matches('"').len())
+                .max()
+                .unwrap_or(0),
+        );
+        let vehicles_vehicle_type_width = usize::max(
+            vehicles_header_vehicle_type.len(),
+            vehicle_entries
+                .iter()
+                .map(|(vehicle, _)| {
+                    self.vehicles
+                        .get(*vehicle)
+                        .and_then(|vehicle_data| {
+                            vehicle_type_keys_by_index
+                                .get(vehicle_data.vehicle_type().into_inner())
+                                .and_then(|x| *x)
+                        })
+                        .map(|key| format!("{:?}", key).trim_matches('"').len())
+                        .unwrap_or(1)
+                })
+                .max()
+                .unwrap_or(0),
+        );
+
+        writeln!(
+            f,
+            "{:>index_w$} | {:<key_w$} | {:<vehicle_type_w$}",
+            vehicles_header_index,
+            vehicles_header_key,
+            vehicles_header_vehicle_type,
+            index_w = vehicles_index_width,
+            key_w = vehicles_key_width,
+            vehicle_type_w = vehicles_vehicle_type_width
+        )?;
+        writeln!(
+            f,
+            "{}-+-{}-+-{}",
+            "-".repeat(vehicles_index_width),
+            "-".repeat(vehicles_key_width),
+            "-".repeat(vehicles_vehicle_type_width)
+        )?;
+        for (vehicle, key) in vehicle_entries {
+            let index_cell = format!("{}", vehicle);
+            let key_cell = format!("{}", format!("{:?}", key).trim_matches('"'));
+            let vehicle_type_cell = self
+                .vehicles
+                .get(vehicle)
+                .and_then(|vehicle_data| {
+                    vehicle_type_keys_by_index
+                        .get(vehicle_data.vehicle_type().into_inner())
+                        .and_then(|x| *x)
+                })
+                .map(|key| format!("{}", format!("{:?}", key).trim_matches('"')))
+                .unwrap_or_else(|| "-".into());
+
+            writeln!(
+                f,
+                "{:>index_w$} | {:<key_w$} | {:<vehicle_type_w$}",
+                index_cell,
+                key_cell,
+                vehicle_type_cell,
+                index_w = vehicles_index_width,
+                key_w = vehicles_key_width,
+                vehicle_type_w = vehicles_vehicle_type_width
+            )?;
+        }
+
+        writeln!(f)?;
         writeln!(f, "Commodities")?;
         let commodity_entries: Vec<_> = self.commodities.entries().collect();
 
@@ -338,7 +421,7 @@ impl<V: Variant> Debug for Problem<V> {
             let des_cell = des_key
                 .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
                 .unwrap_or_else(|| "-".into());
-            let vehicle_type_cell = vehicle_type_keys_by_index
+            let vehicle_cell = vehicle_keys_by_index
                 .get(data.vehicle().into_inner())
                 .and_then(|x| *x)
                 .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
@@ -347,7 +430,7 @@ impl<V: Variant> Debug for Problem<V> {
             transport_rows.push([
                 format!("{}", transport),
                 format!("{}", format!("{:?}", key).trim_matches('"')),
-                vehicle_type_cell,
+                vehicle_cell,
                 ori_cell,
                 des_cell,
                 format!("{:?}", origin.time()),
