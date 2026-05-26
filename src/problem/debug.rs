@@ -21,6 +21,29 @@ impl<V: Variant> Debug for Problem<V> {
             vehicle_type_keys_by_index[(*vehicle_type).into_inner()] = Some(*key);
         }
 
+        let transport_entries: Vec<_> = self.transports.entries().collect();
+        let mut vehicle_type_capacity_bounds: Vec<Option<(V::F, V::F)>> =
+            (0..vehicle_type_entries.len()).map(|_| None).collect();
+
+        for (_, _, data) in &transport_entries {
+            let idx = data.vehicle_type().into_inner();
+            let cap = data.capacity();
+
+            match &mut vehicle_type_capacity_bounds[idx] {
+                Some((min_cap, max_cap)) => {
+                    if cap < *min_cap {
+                        *min_cap = cap;
+                    }
+                    if cap > *max_cap {
+                        *max_cap = cap;
+                    }
+                }
+                None => {
+                    vehicle_type_capacity_bounds[idx] = Some((cap, cap));
+                }
+            }
+        }
+
         writeln!(f, "Problem")?;
         writeln!(f, "  spaces: {}", self.len_spaces())?;
         writeln!(f, "  vehicle_types: {}", self.len_vehicle_types())?;
@@ -79,6 +102,8 @@ impl<V: Variant> Debug for Problem<V> {
         writeln!(f, "VehicleTypes")?;
         let vehicle_types_header_index = "index";
         let vehicle_types_header_key = "key";
+        let vehicle_types_header_min_capacity = "min_capacity";
+        let vehicle_types_header_max_capacity = "max_capacity";
         let vehicle_types_index_width = usize::max(
             vehicle_types_header_index.len(),
             vehicle_type_entries
@@ -95,31 +120,74 @@ impl<V: Variant> Debug for Problem<V> {
                 .max()
                 .unwrap_or(0),
         );
+        let vehicle_types_min_capacity_width = usize::max(
+            vehicle_types_header_min_capacity.len(),
+            vehicle_type_entries
+                .iter()
+                .map(|(vehicle_type, _)| {
+                    vehicle_type_capacity_bounds
+                        .get((*vehicle_type).into_inner())
+                        .and_then(|x| *x)
+                        .map(|(min_cap, _)| format!("{:?}", min_cap).len())
+                        .unwrap_or(1)
+                })
+                .max()
+                .unwrap_or(0),
+        );
+        let vehicle_types_max_capacity_width = usize::max(
+            vehicle_types_header_max_capacity.len(),
+            vehicle_type_entries
+                .iter()
+                .map(|(vehicle_type, _)| {
+                    vehicle_type_capacity_bounds
+                        .get((*vehicle_type).into_inner())
+                        .and_then(|x| *x)
+                        .map(|(_, max_cap)| format!("{:?}", max_cap).len())
+                        .unwrap_or(1)
+                })
+                .max()
+                .unwrap_or(0),
+        );
 
         writeln!(
             f,
-            "{:>index_w$} | {:<key_w$}",
+            "{:>index_w$} | {:<key_w$} | {:<min_w$} | {:<max_w$}",
             vehicle_types_header_index,
             vehicle_types_header_key,
+            vehicle_types_header_min_capacity,
+            vehicle_types_header_max_capacity,
             index_w = vehicle_types_index_width,
-            key_w = vehicle_types_key_width
+            key_w = vehicle_types_key_width,
+            min_w = vehicle_types_min_capacity_width,
+            max_w = vehicle_types_max_capacity_width
         )?;
         writeln!(
             f,
-            "{}-+-{}",
+            "{}-+-{}-+-{}-+-{}",
             "-".repeat(vehicle_types_index_width),
-            "-".repeat(vehicle_types_key_width)
+            "-".repeat(vehicle_types_key_width),
+            "-".repeat(vehicle_types_min_capacity_width),
+            "-".repeat(vehicle_types_max_capacity_width)
         )?;
         for (vehicle_type, key) in vehicle_type_entries {
             let index_cell = format!("{}", vehicle_type);
             let key_cell = format!("{:?}", key);
+            let (min_capacity_cell, max_capacity_cell) = vehicle_type_capacity_bounds
+                .get(vehicle_type.into_inner())
+                .and_then(|x| *x)
+                .map(|(min_cap, max_cap)| (format!("{:?}", min_cap), format!("{:?}", max_cap)))
+                .unwrap_or_else(|| ("-".into(), "-".into()));
             writeln!(
                 f,
-                "{:>index_w$} | {:<key_w$}",
+                "{:>index_w$} | {:<key_w$} | {:<min_w$} | {:<max_w$}",
                 index_cell,
                 key_cell.trim_matches('"'),
+                min_capacity_cell,
+                max_capacity_cell,
                 index_w = vehicle_types_index_width,
-                key_w = vehicle_types_key_width
+                key_w = vehicle_types_key_width,
+                min_w = vehicle_types_min_capacity_width,
+                max_w = vehicle_types_max_capacity_width
             )?;
         }
 
@@ -230,8 +298,6 @@ impl<V: Variant> Debug for Problem<V> {
 
         writeln!(f)?;
         writeln!(f, "Transports")?;
-        let transport_entries: Vec<_> = self.transports.entries().collect();
-
         let transport_header = [
             "index",
             "key",
