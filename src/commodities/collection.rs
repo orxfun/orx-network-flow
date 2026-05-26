@@ -29,6 +29,10 @@ impl<V: Variant> Commodities<V> {
         self.map.get_by_key(key)
     }
 
+    pub fn get_by_idx(&self, idx: Commodity) -> Option<&CommodityData<V>> {
+        self.map.get_by_idx(idx)
+    }
+
     pub fn entries(&self) -> impl Iterator<Item = (Commodity, &V::K, &CommodityData<V>)> {
         self.map.entries()
     }

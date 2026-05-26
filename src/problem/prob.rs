@@ -1,4 +1,5 @@
 use crate::commodities::Commodities;
+use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
@@ -51,6 +52,10 @@ impl<V: Variant> Problem<V> {
     }
 
     // get by idx
+
+    pub(crate) fn commodity_by_idx(&self, idx: Commodity) -> &CommodityData<V> {
+        self.commodities.get_by_idx(idx).expect("validated problem")
+    }
 
     pub(crate) fn transport_by_idx(&self, idx: Transport) -> &TransportData<V> {
         self.transports.get_by_idx(idx).expect("validated problem")

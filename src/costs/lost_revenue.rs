@@ -20,7 +20,7 @@ impl<V: Variant> LostRevenue<V> {
         }
     }
 
-    pub fn push(&mut self, commodity: Commodity, unit_revenue: V::C) {
+    pub fn commodity_specific(&mut self, commodity: Commodity, unit_revenue: V::C) {
         self.lost_revenues.insert(commodity, -unit_revenue);
     }
 
