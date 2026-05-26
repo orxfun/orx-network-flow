@@ -1,3 +1,4 @@
+use crate::indices::IdxCore;
 use crate::problem::{Problem, variant::Variant};
 use crate::spaces::VecSpace;
 use alloc::{format, vec::Vec};
@@ -10,6 +11,14 @@ impl<V: Variant> Debug for Problem<V> {
 
         for (space, key) in &space_entries {
             space_keys_by_index[*space] = Some(*key);
+        }
+
+        let vehicle_type_entries: Vec<_> = self.vehicle_types.entries().collect();
+        let mut vehicle_type_keys_by_index: Vec<Option<&V::V>> =
+            (0..vehicle_type_entries.len()).map(|_| None).collect();
+
+        for (vehicle_type, key) in &vehicle_type_entries {
+            vehicle_type_keys_by_index[(*vehicle_type).into_inner()] = Some(*key);
         }
 
         writeln!(f, "Problem")?;
@@ -62,6 +71,54 @@ impl<V: Variant> Debug for Problem<V> {
                 key_cell,
                 index_w = spaces_index_width,
                 key_w = spaces_key_width
+            )?;
+        }
+
+        writeln!(f)?;
+        writeln!(f, "VehicleTypes")?;
+        let vehicle_types_header_index = "index";
+        let vehicle_types_header_key = "key";
+        let vehicle_types_index_width = usize::max(
+            vehicle_types_header_index.len(),
+            vehicle_type_entries
+                .iter()
+                .map(|(vehicle_type, _)| format!("{}", *vehicle_type).len())
+                .max()
+                .unwrap_or(0),
+        );
+        let vehicle_types_key_width = usize::max(
+            vehicle_types_header_key.len(),
+            vehicle_type_entries
+                .iter()
+                .map(|(_, key)| format!("{:?}", key).len())
+                .max()
+                .unwrap_or(0),
+        );
+
+        writeln!(
+            f,
+            "{:>index_w$} | {:<key_w$}",
+            vehicle_types_header_index,
+            vehicle_types_header_key,
+            index_w = vehicle_types_index_width,
+            key_w = vehicle_types_key_width
+        )?;
+        writeln!(
+            f,
+            "{}-+-{}",
+            "-".repeat(vehicle_types_index_width),
+            "-".repeat(vehicle_types_key_width)
+        )?;
+        for (vehicle_type, key) in vehicle_type_entries {
+            let index_cell = format!("{}", vehicle_type);
+            let key_cell = format!("{:?}", key);
+            writeln!(
+                f,
+                "{:>index_w$} | {:<key_w$}",
+                index_cell,
+                key_cell,
+                index_w = vehicle_types_index_width,
+                key_w = vehicle_types_key_width
             )?;
         }
 
@@ -170,6 +227,7 @@ impl<V: Variant> Debug for Problem<V> {
         let transport_header = [
             "index",
             "key",
+            "vehicle_type",
             "origin",
             "destination",
             "dep_time",
@@ -177,7 +235,7 @@ impl<V: Variant> Debug for Problem<V> {
             "capacity",
         ];
 
-        let mut transport_rows: Vec<[alloc::string::String; 7]> =
+        let mut transport_rows: Vec<[alloc::string::String; 8]> =
             Vec::with_capacity(transport_entries.len());
         for (transport, key, data) in transport_entries {
             let origin = data.origin();
@@ -195,10 +253,16 @@ impl<V: Variant> Debug for Problem<V> {
             let des_cell = des_key
                 .map(|x| format!("{:?}", x))
                 .unwrap_or_else(|| "-".into());
+            let vehicle_type_cell = vehicle_type_keys_by_index
+                .get(data.vehicle_type().into_inner())
+                .and_then(|x| *x)
+                .map(|x| format!("{:?}", x))
+                .unwrap_or_else(|| "-".into());
 
             transport_rows.push([
                 format!("{}", transport),
                 format!("{:?}", key),
+                vehicle_type_cell,
                 ori_cell,
                 des_cell,
                 format!("{:?}", origin.time()),
@@ -207,8 +271,8 @@ impl<V: Variant> Debug for Problem<V> {
             ]);
         }
 
-        let mut widths = [0usize; 7];
-        for i in 0..7 {
+        let mut widths = [0usize; 8];
+        for i in 0..8 {
             let cell_width = transport_rows
                 .iter()
                 .map(|row| row[i].len())
@@ -219,7 +283,7 @@ impl<V: Variant> Debug for Problem<V> {
 
         writeln!(
             f,
-            "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",
+            "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$} | {:<w7$}",
             transport_header[0],
             transport_header[1],
             transport_header[2],
@@ -227,30 +291,33 @@ impl<V: Variant> Debug for Problem<V> {
             transport_header[4],
             transport_header[5],
             transport_header[6],
+            transport_header[7],
             w0 = widths[0],
             w1 = widths[1],
             w2 = widths[2],
             w3 = widths[3],
             w4 = widths[4],
             w5 = widths[5],
-            w6 = widths[6]
+            w6 = widths[6],
+            w7 = widths[7]
         )?;
         writeln!(
             f,
-            "{}-+-{}-+-{}-+-{}-+-{}-+-{}-+-{}",
+            "{}-+-{}-+-{}-+-{}-+-{}-+-{}-+-{}-+-{}",
             "-".repeat(widths[0]),
             "-".repeat(widths[1]),
             "-".repeat(widths[2]),
             "-".repeat(widths[3]),
             "-".repeat(widths[4]),
             "-".repeat(widths[5]),
-            "-".repeat(widths[6])
+            "-".repeat(widths[6]),
+            "-".repeat(widths[7])
         )?;
 
         for row in &transport_rows {
             writeln!(
                 f,
-                "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$}",
+                "{:>w0$} | {:<w1$} | {:<w2$} | {:<w3$} | {:<w4$} | {:<w5$} | {:<w6$} | {:<w7$}",
                 row[0],
                 row[1],
                 row[2],
@@ -258,13 +325,15 @@ impl<V: Variant> Debug for Problem<V> {
                 row[4],
                 row[5],
                 row[6],
+                row[7],
                 w0 = widths[0],
                 w1 = widths[1],
                 w2 = widths[2],
                 w3 = widths[3],
                 w4 = widths[4],
                 w5 = widths[5],
-                w6 = widths[6]
+                w6 = widths[6],
+                w7 = widths[7]
             )?;
         }
 

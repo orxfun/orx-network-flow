@@ -25,6 +25,10 @@ impl<V: Variant> TransportData<V> {
         self.des
     }
 
+    pub fn vehicle_type(&self) -> VehicleType {
+        self.vehicle_type
+    }
+
     pub fn capacity(&self) -> V::F {
         self.cap
     }
