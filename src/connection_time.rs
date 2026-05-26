@@ -8,12 +8,18 @@ struct MinConnTime {
     changed_vehicle: Time,
 }
 
+impl MinConnTime {
+    pub fn new(same_vehicle: Time, changed_vehicle: Time) -> Self {
+        Self {
+            same_vehicle,
+            changed_vehicle,
+        }
+    }
+}
+
 impl Default for MinConnTime {
     fn default() -> Self {
-        Self {
-            same_vehicle: Time::from(0u64),
-            changed_vehicle: Time::from(0u64),
-        }
+        Self::new(Time::from(0u64), Time::from(0u64))
     }
 }
 
@@ -45,6 +51,16 @@ impl ConnectionTime {
             global,
             ..Default::default()
         }
+    }
+
+    pub fn space_specific_conn_time(
+        &mut self,
+        space: Space,
+        same_vehicle: Time,
+        changed_vehicle: Time,
+    ) {
+        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        self.by_space.insert(space, ct);
     }
 
     pub fn conn_time<V: Variant>(&self, prob: &Problem<V>, f: Transport, g: Transport) -> Time {
