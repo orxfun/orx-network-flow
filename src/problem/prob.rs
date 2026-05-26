@@ -18,6 +18,10 @@ impl<V: Variant> Problem<V> {
         self.spaces.len()
     }
 
+    pub fn len_vehicle_types(&self) -> usize {
+        self.vehicle_types.len()
+    }
+
     pub fn len_commodities(&self) -> usize {
         self.commodities.len()
     }

@@ -23,6 +23,7 @@ impl<V: Variant> Debug for Problem<V> {
 
         writeln!(f, "Problem")?;
         writeln!(f, "  spaces: {}", self.len_spaces())?;
+        writeln!(f, "  vehicle_types: {}", self.len_vehicle_types())?;
         writeln!(f, "  commodities: {}", self.len_commodities())?;
         writeln!(f, "  transports: {}", self.len_transports())?;
 
