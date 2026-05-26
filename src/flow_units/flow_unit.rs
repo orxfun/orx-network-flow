@@ -1,3 +1,3 @@
 use core::fmt::Debug;
 
-pub trait FlowUnit: Debug + Clone + Copy {}
+pub trait FlowUnit: Debug + Clone + Copy + PartialOrd {}
