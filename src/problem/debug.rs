@@ -68,7 +68,7 @@ impl<V: Variant> Debug for Problem<V> {
                 f,
                 "{:>index_w$} | {:<key_w$}",
                 space_cell,
-                key_cell,
+                key_cell.trim_matches('"'),
                 index_w = spaces_index_width,
                 key_w = spaces_key_width
             )?;
@@ -116,7 +116,7 @@ impl<V: Variant> Debug for Problem<V> {
                 f,
                 "{:>index_w$} | {:<key_w$}",
                 index_cell,
-                key_cell,
+                key_cell.trim_matches('"'),
                 index_w = vehicle_types_index_width,
                 key_w = vehicle_types_key_width
             )?;
@@ -255,20 +255,20 @@ impl<V: Variant> Debug for Problem<V> {
             let des_key = space_keys_by_index.get(des_idx).and_then(|x| *x);
 
             let ori_cell = ori_key
-                .map(|x| format!("{:?}", x))
+                .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
                 .unwrap_or_else(|| "-".into());
             let des_cell = des_key
-                .map(|x| format!("{:?}", x))
+                .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
                 .unwrap_or_else(|| "-".into());
             let vehicle_type_cell = vehicle_type_keys_by_index
                 .get(data.vehicle_type().into_inner())
                 .and_then(|x| *x)
-                .map(|x| format!("{:?}", x))
+                .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
                 .unwrap_or_else(|| "-".into());
 
             transport_rows.push([
                 format!("{}", transport),
-                format!("{:?}", key),
+                format!("{}", format!("{:?}", key).trim_matches('"')),
                 vehicle_type_cell,
                 ori_cell,
                 des_cell,
