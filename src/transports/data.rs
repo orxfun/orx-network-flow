@@ -1,16 +1,16 @@
-use crate::{Variant, space_time::SpaceTime, vehicle_types::VehicleType};
+use crate::{Variant, space_time::SpaceTime, vehicles::Vehicle};
 
 pub struct TransportData<V: Variant> {
-    vehicle_type: VehicleType,
+    vehicle: Vehicle,
     ori: SpaceTime,
     des: SpaceTime,
     cap: V::F,
 }
 
 impl<V: Variant> TransportData<V> {
-    pub fn new(vehicle_type: VehicleType, ori: SpaceTime, des: SpaceTime, cap: V::F) -> Self {
+    pub fn new(vehicle: Vehicle, ori: SpaceTime, des: SpaceTime, cap: V::F) -> Self {
         Self {
-            vehicle_type,
+            vehicle,
             ori,
             des,
             cap,
@@ -25,8 +25,8 @@ impl<V: Variant> TransportData<V> {
         self.des
     }
 
-    pub fn vehicle_type(&self) -> VehicleType {
-        self.vehicle_type
+    pub fn vehicle(&self) -> Vehicle {
+        self.vehicle
     }
 
     pub fn capacity(&self) -> V::F {

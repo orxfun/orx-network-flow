@@ -2,7 +2,7 @@ use crate::Variant;
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
 use crate::transports::{Transport, TransportData};
-use crate::vehicle_types::VehicleType;
+use crate::vehicles::Vehicle;
 
 pub struct Transports<V: Variant> {
     map: IdxMap<V::T, TransportData<V>, Transport>,
@@ -20,12 +20,12 @@ impl<V: Variant> Transports<V> {
     pub fn push(
         &mut self,
         key: V::T,
-        vehicle_type: VehicleType,
+        vehicle: Vehicle,
         ori: SpaceTime,
         des: SpaceTime,
         capacity: V::F,
     ) -> Transport {
-        let data = TransportData::new(vehicle_type, ori, des, capacity);
+        let data = TransportData::new(vehicle, ori, des, capacity);
         self.map.push_or_update(key, data)
     }
 

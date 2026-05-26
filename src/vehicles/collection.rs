@@ -1,9 +1,10 @@
 use crate::Variant;
 use crate::indices::IdxMap;
-use crate::vehicles::Vehicle;
+use crate::vehicle_types::VehicleType;
+use crate::vehicles::{Vehicle, VehicleData};
 
 pub struct Vehicles<V: Variant> {
-    map: IdxMap<V::V, (), Vehicle>,
+    map: IdxMap<V::V, VehicleData, Vehicle>,
 }
 
 impl<V: Variant> Default for Vehicles<V> {
@@ -15,8 +16,8 @@ impl<V: Variant> Default for Vehicles<V> {
 }
 
 impl<V: Variant> Vehicles<V> {
-    pub fn push(&mut self, key: V::V) -> Vehicle {
-        self.map.push_or_update(key, ())
+    pub fn push(&mut self, key: V::V, vehicle_type: VehicleType) -> Vehicle {
+        self.map.push_or_update(key, VehicleData::new(vehicle_type))
     }
 
     pub fn len(&self) -> usize {

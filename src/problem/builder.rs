@@ -10,6 +10,7 @@ impl<V: Variant> Default for ProblemBuilder<V> {
         Self(Problem {
             spaces: Default::default(),
             vehicle_types: Default::default(),
+            vehicles: Default::default(),
             commodities: Default::default(),
             transports: Default::default(),
         })
@@ -42,6 +43,7 @@ impl<V: Variant> ProblemBuilder<V> {
     pub fn push_transport(
         &mut self,
         transport_key: V::T,
+        vehicle_key: V::V,
         vehicle_type_key: V::W,
         origin: V::S,
         departure_time: impl Into<Time>,
@@ -50,6 +52,7 @@ impl<V: Variant> ProblemBuilder<V> {
         capacity: V::F,
     ) {
         let vehicle_type = self.0.vehicle_types.push(vehicle_type_key);
+        let vehicle = self.0.vehicles.push(vehicle_key, vehicle_type);
 
         let ori_space = self.0.spaces.push(origin);
         let ori = SpaceTime::new(ori_space, departure_time.into());
@@ -60,7 +63,7 @@ impl<V: Variant> ProblemBuilder<V> {
         _ = self
             .0
             .transports
-            .push(transport_key, vehicle_type, ori, des, capacity);
+            .push(transport_key, vehicle, ori, des, capacity);
     }
 
     pub fn finish(self) -> Problem<V> {
