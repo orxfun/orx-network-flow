@@ -21,15 +21,26 @@ impl<V: Variant> Debug for Problem<V> {
             vehicle_type_keys_by_index[(*vehicle_type).into_inner()] = Some(*key);
         }
 
+        let vehicle_entries: Vec<_> = self.vehicles.entries().collect();
+        let mut vehicle_type_keys_by_index: Vec<Option<&V::V>> =
+            (0..vehicle_entries.len()).map(|_| None).collect();
+
+        for (vehicle_type, key) in &vehicle_entries {
+            vehicle_type_keys_by_index[(*vehicle_type).into_inner()] = Some(*key);
+        }
+
         let transport_entries: Vec<_> = self.transports.entries().collect();
         let mut vehicle_type_capacity_bounds: Vec<Option<(V::F, V::F)>> =
             (0..vehicle_type_entries.len()).map(|_| None).collect();
 
         for (_, _, data) in &transport_entries {
-            let idx = data.vehicle_type().into_inner();
+            let vehicle_idx = data.vehicle();
+            let vehicle_data = self.vehicles.get(vehicle_idx).unwrap();
+            let vehicle_type_idx = vehicle_data.vehicle_type();
+
             let cap = data.capacity();
 
-            match &mut vehicle_type_capacity_bounds[idx] {
+            match &mut vehicle_type_capacity_bounds[vehicle_type_idx.into_inner()] {
                 Some((min_cap, max_cap)) => {
                     if cap < *min_cap {
                         *min_cap = cap;
@@ -39,7 +50,7 @@ impl<V: Variant> Debug for Problem<V> {
                     }
                 }
                 None => {
-                    vehicle_type_capacity_bounds[idx] = Some((cap, cap));
+                    vehicle_type_capacity_bounds[vehicle_type_idx.into_inner()] = Some((cap, cap));
                 }
             }
         }
@@ -301,7 +312,7 @@ impl<V: Variant> Debug for Problem<V> {
         let transport_header = [
             "index",
             "key",
-            "vehicle_type",
+            "vehicle",
             "origin",
             "destination",
             "dep_time",
@@ -328,7 +339,7 @@ impl<V: Variant> Debug for Problem<V> {
                 .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
                 .unwrap_or_else(|| "-".into());
             let vehicle_type_cell = vehicle_type_keys_by_index
-                .get(data.vehicle_type().into_inner())
+                .get(data.vehicle().into_inner())
                 .and_then(|x| *x)
                 .map(|x| format!("{}", format!("{:?}", x).trim_matches('"')))
                 .unwrap_or_else(|| "-".into());

@@ -62,6 +62,7 @@ fn main() {
     }
     builder.push_transport(
         String::from("AMS-BRU-12"),
+        12,
         String::from("77X"),
         String::from("AMS"),
         6u64,
@@ -71,6 +72,7 @@ fn main() {
     );
     builder.push_transport(
         String::from("BRU-LEJ-26"),
+        11,
         String::from("77X"),
         String::from("BRU"),
         8u64,

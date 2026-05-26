@@ -1,3 +1,4 @@
+use crate::indices::IdxCore;
 use crate::indices::index::Idx;
 use crate::std_utils::{Map, MapKey};
 use alloc::vec::Vec;
@@ -45,8 +46,12 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
         Some(&self.index_and_data[pos].1)
     }
 
-    pub fn get_by_idx(&self, idx: I) -> Option<&V> {
-        todo!()
+    pub fn get_by_idx(&self, idx: I) -> Option<&V>
+    where
+        I: IdxCore,
+    {
+        let idx = idx.into_inner();
+        self.index_and_data.get(idx).map(|x| &x.1)
     }
 
     pub fn entries(&self) -> impl Iterator<Item = (I, &K, &V)> {
