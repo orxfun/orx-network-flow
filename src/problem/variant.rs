@@ -21,4 +21,6 @@ pub trait Variant {
 
     /// Cost (objective) unit
     type C: Cost;
+
+    fn chargeable_flow(flow: Self::F) -> Self::C;
 }

@@ -42,6 +42,10 @@ impl Variant for MyVariant {
     type F = u64;
 
     type C = i64;
+
+    fn chargeable_flow(flow: Self::F) -> Self::C {
+        flow as i64
+    }
 }
 
 fn main() {
