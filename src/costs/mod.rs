@@ -1,11 +1,11 @@
-mod all_costs;
-mod earliness_cost;
-mod lateness_cost;
+mod all;
+mod earliness;
+mod lateness;
 mod lost_revenue;
 mod transport_cost;
 
-pub use all_costs::Costs;
-pub use earliness_cost::EarlinessCost;
-pub use lateness_cost::LatenessCost;
+pub use all::Costs;
+pub use earliness::EarlinessCost;
+pub use lateness::LatenessCost;
 pub use lost_revenue::LostRevenue;
 pub use transport_cost::TransportCost;

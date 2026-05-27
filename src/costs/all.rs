@@ -1,6 +1,6 @@
 use crate::Variant;
 use crate::cost::Cost;
-use crate::costs::{earliness_cost::EarlinessCost, lateness_cost::LatenessCost};
+use crate::costs::{earliness::EarlinessCost, lateness::LatenessCost};
 use crate::costs::{lost_revenue::LostRevenue, transport_cost::TransportCost};
 
 pub struct Costs<V: Variant> {
