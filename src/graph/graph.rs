@@ -1,8 +1,9 @@
-use crate::graph::{builder::GraphBuilder, edge::Edge, vertex::Vertex};
+use crate::graph::vertex::{VecVertex, Vertex};
+use crate::graph::{builder::GraphBuilder, edge::Edge};
 use alloc::vec::Vec;
 
 pub struct Graph<V, E> {
-    pub(super) vertices: Vec<Vertex<V>>,
+    pub(super) vertices: VecVertex<Vertex<V>>,
     pub(super) edges: Vec<Edge<E>>,
 }
 

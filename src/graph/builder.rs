@@ -1,5 +1,5 @@
 use crate::graph::edge::EIdx;
-use crate::graph::vertex::{VIdx, Vertex};
+use crate::graph::vertex::{VIdx, VecVertex, Vertex};
 use crate::graph::{edge::Edge, graph::Graph};
 use alloc::vec::Vec;
 
@@ -7,25 +7,25 @@ pub struct GraphBuilder<V, E>(Graph<V, E>);
 
 impl<V, E> GraphBuilder<V, E> {
     pub fn new(vertices: impl Iterator<Item = V>) -> Self {
-        let vertices: Vec<_> = vertices.map(Vertex::new).collect();
+        let vertices: VecVertex<_> = vertices.map(Vertex::new).collect();
         let edges = Vec::new();
         let graph = Graph { vertices, edges };
         Self(graph)
     }
 
     pub fn edge(&mut self, data: E, tail: usize, head: usize) {
-        let tail = VIdx(tail);
-        let head = VIdx(head);
+        let tail = VIdx::from(tail);
+        let head = VIdx::from(head);
         let edges_idx = EIdx(self.0.edges.len());
-        let tail_out_edge_idx = self.0.vertices[tail.0].out_edges().len();
-        let head_in_edge_idx = self.0.vertices[head.0].in_edges().len();
+        let tail_out_edge_idx = self.0.vertices[tail].out_edges().len();
+        let head_in_edge_idx = self.0.vertices[head].in_edges().len();
         self.0.edges.push(Edge::new(tail, head, data));
-        self.0.vertices[tail.0].add_out_edge(edges_idx, head, head_in_edge_idx);
-        self.0.vertices[head.0].add_in_edge(edges_idx, tail, tail_out_edge_idx);
+        self.0.vertices[tail].add_out_edge(edges_idx, head, head_in_edge_idx);
+        self.0.vertices[head].add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
 
     pub fn validate(&self) {
-        let num_nodes = self.0.vertices.len();
+        let num_nodes = VIdx::from(self.0.vertices.len());
         let num_edges = self.0.edges.len();
 
         // Ensure all node-side references are valid and consistent with edge endpoints.
@@ -34,7 +34,7 @@ impl<V, E> GraphBuilder<V, E> {
             .vertices
             .iter()
             .enumerate()
-            .map(|(a, b)| (VIdx(a), b))
+            .map(|(a, b)| (VIdx::from(a), b))
         {
             for (tail_out_edge_idx, out_edge) in node.out_edges().iter().enumerate() {
                 let edge_idx = out_edge.edges_idx();
@@ -46,7 +46,7 @@ impl<V, E> GraphBuilder<V, E> {
                 let edge = &self.0.edges[edge_idx.0];
                 let head_idx = out_edge.head();
                 assert!(
-                    head_idx.0 < num_nodes,
+                    head_idx < num_nodes,
                     "out edge has invalid head node index: node={tail_idx}, out_edge_idx={tail_out_edge_idx}, head={head_idx}, num_nodes={num_nodes}"
                 );
 
@@ -62,7 +62,7 @@ impl<V, E> GraphBuilder<V, E> {
                 );
 
                 let head_in_edge_idx = out_edge.head_in_edge_idx();
-                let head_node = &self.0.vertices[head_idx.0];
+                let head_node = &self.0.vertices[head_idx];
                 assert!(
                     head_in_edge_idx < head_node.in_edges().len(),
                     "out edge points to missing reciprocal in edge: tail={tail_idx}, head={head_idx}, edge_idx={edge_idx}, head_in_edge_idx={head_in_edge_idx}"
@@ -93,7 +93,7 @@ impl<V, E> GraphBuilder<V, E> {
             .vertices
             .iter()
             .enumerate()
-            .map(|(a, b)| (VIdx(a), b))
+            .map(|(a, b)| (VIdx::from(a), b))
         {
             for (head_in_edge_idx, in_edge) in node.in_edges().iter().enumerate() {
                 let edge_idx = in_edge.edges_idx();
@@ -105,7 +105,7 @@ impl<V, E> GraphBuilder<V, E> {
                 let edge = &self.0.edges[edge_idx.0];
                 let tail_idx = in_edge.tail();
                 assert!(
-                    tail_idx.0 < num_nodes,
+                    tail_idx < num_nodes,
                     "in edge has invalid tail node index: node={head_idx}, in_edge_idx={head_in_edge_idx}, tail={tail_idx}, num_nodes={num_nodes}"
                 );
 
@@ -121,7 +121,7 @@ impl<V, E> GraphBuilder<V, E> {
                 );
 
                 let tail_out_edge_idx = in_edge.tail_out_edge_idx();
-                let tail_node = &self.0.vertices[tail_idx.0];
+                let tail_node = &self.0.vertices[tail_idx];
                 assert!(
                     tail_out_edge_idx < tail_node.out_edges().len(),
                     "in edge points to missing reciprocal out edge: tail={tail_idx}, head={head_idx}, edge_idx={edge_idx}, tail_out_edge_idx={tail_out_edge_idx}"

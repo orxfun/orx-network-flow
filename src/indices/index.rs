@@ -61,12 +61,20 @@ macro_rules! impl_vec_of_idx {
                 Self(Default::default())
             }
 
+            pub fn len(&self) -> usize {
+                self.0.len()
+            }
+
             pub fn get(&self, index: $idx) -> Option<&T> {
                 self.0.get(index.0)
             }
 
             pub fn push(&mut self, value: T) {
                 self.0.push(value);
+            }
+
+            pub fn iter(&self) -> impl Iterator<Item = &T> {
+                self.0.iter()
             }
         }
 

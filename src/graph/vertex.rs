@@ -1,15 +1,9 @@
 use crate::graph::{edge::EIdx, in_edge::InEdge, out_edge::OutEdge};
+use crate::{impl_idx, impl_vec_of_idx};
 use alloc::vec::Vec;
-use core::fmt::Display;
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
-pub struct VIdx(pub(super) usize);
-
-impl Display for VIdx {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "v{}", self.0)
-    }
-}
+impl_idx!(VIdx);
+impl_vec_of_idx!(VIdx, VecVertex);
 
 pub struct Vertex<V> {
     data: V,
