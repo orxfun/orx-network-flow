@@ -31,6 +31,22 @@ impl<V: Variant> Costs<V> {
         }
     }
 
+    pub fn earliness(&self) -> &EarlinessCost<V> {
+        &self.earliness
+    }
+
+    pub fn lateness(&self) -> &LatenessCost<V> {
+        &self.lateness
+    }
+
+    pub fn lost_revenue(&self) -> &LostRevenue<V> {
+        &self.lost_revenue
+    }
+
+    pub fn transport(&self) -> &TransportCost<V> {
+        &self.transport
+    }
+
     pub fn earliness_mut(&mut self) -> &mut EarlinessCost<V> {
         &mut self.earliness
     }
