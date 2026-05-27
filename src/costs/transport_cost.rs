@@ -4,7 +4,7 @@ use crate::{Problem, Variant};
 use crate::{commodities::Commodity, std_utils::Map, transports::Transport, vehicles::Vehicle};
 
 pub struct TransportCost<V: Variant> {
-    global_per_unit: V::C,
+    global: V::C,
     by_commodity: Map<Commodity, V::C>,
     by_vehicle: Map<Vehicle, V::C>,
     by_transport: Map<Transport, V::C>,
@@ -19,9 +19,9 @@ impl<V: Variant> Default for TransportCost<V> {
 }
 
 impl<V: Variant> TransportCost<V> {
-    pub fn new(global_transport_unit_cost: V::C) -> Self {
+    pub fn new(global_unit_transport_cost: V::C) -> Self {
         Self {
-            global_per_unit: global_transport_unit_cost,
+            global: global_unit_transport_cost,
             by_commodity: Default::default(),
             by_vehicle: Default::default(),
             by_transport: Default::default(),
@@ -30,8 +30,8 @@ impl<V: Variant> TransportCost<V> {
         }
     }
 
-    pub fn global(&mut self, global_per_unit: V::C) {
-        self.global_per_unit = global_per_unit
+    pub fn global(&mut self, global_unit_transport_cost: V::C) {
+        self.global = global_unit_transport_cost
     }
 
     pub fn commodity_specific(&mut self, commodity: Commodity, unit_cost: V::C) {
@@ -92,6 +92,6 @@ impl<V: Variant> TransportCost<V> {
             return *cost;
         }
 
-        self.global_per_unit
+        self.global
     }
 }
