@@ -19,7 +19,7 @@ impl<V, E> Graph<V, E> {
         }
 
         for edge in &self.edges {
-            dot.push_str(&format!("    {} -> {};\n", edge.tail(), edge.head()));
+            dot.push_str(&format!("    {} -> {};\n", edge.tail().0, edge.head().0));
         }
 
         dot.push('}');
