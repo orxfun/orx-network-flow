@@ -29,6 +29,7 @@ mod space_time;
 mod spaces;
 mod std_utils;
 mod time;
+mod time_bounds;
 mod transports;
 mod vehicle_types;
 mod vehicles;
