@@ -13,6 +13,7 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             vehicles: Default::default(),
             commodities: Default::default(),
             transports: Default::default(),
+            costs: Default::default(),
         })
     }
 }

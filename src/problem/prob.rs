@@ -1,6 +1,7 @@
 use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
+use crate::costs::Costs;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
 use crate::transports::Transport;
@@ -17,6 +18,7 @@ pub struct Problem<V: Variant> {
     pub(super) vehicles: Vehicles<V>,
     pub(super) commodities: Commodities<V>,
     pub(super) transports: Transports<V>,
+    pub(super) costs: Costs<V>,
 }
 
 impl<V: Variant> Problem<V> {

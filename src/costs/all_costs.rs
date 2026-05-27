@@ -1,26 +1,22 @@
 use crate::Variant;
+use crate::cost::Cost;
 use crate::costs::{earliness_cost::EarlinessCost, lateness_cost::LatenessCost};
 use crate::costs::{lost_revenue::LostRevenue, transport_cost::TransportCost};
 
-pub struct Cost<V: Variant> {
+pub struct Costs<V: Variant> {
     earliness: EarlinessCost<V>,
     lateness: LatenessCost<V>,
     lost_revenue: LostRevenue<V>,
     transport: TransportCost<V>,
 }
 
-impl<V: Variant> Default for Cost<V> {
+impl<V: Variant> Default for Costs<V> {
     fn default() -> Self {
-        Self::new(
-            Default::default(),
-            Default::default(),
-            Default::default(),
-            Default::default(),
-        )
+        Self::new(Cost::zero(), Cost::zero(), Cost::zero(), Cost::zero())
     }
 }
 
-impl<V: Variant> Cost<V> {
+impl<V: Variant> Costs<V> {
     pub fn new(
         global_earliness_cost_per_unit: V::C,
         global_lateness_cost_per_unit: V::C,
