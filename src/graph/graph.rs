@@ -14,8 +14,8 @@ impl<V, E> Graph<V, E> {
     pub fn to_dot_string(&self) -> String {
         let mut dot = String::from("digraph G {\n");
 
-        for node_idx in 0..self.nodes.len() {
-            dot.push_str(&format!("    {node_idx};\n"));
+        for vertex_idx in 0..self.nodes.len() {
+            dot.push_str(&format!("    {vertex_idx};\n"));
         }
 
         for edge in &self.edges {

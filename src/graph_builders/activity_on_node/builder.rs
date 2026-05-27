@@ -1,12 +1,11 @@
+use crate::graph_builders::activity_on_node::indexer::Indexer;
 use crate::graph_builders::activity_on_node::{edge::EdgeData, vertex::VertexData};
 use crate::{Graph, Problem, Variant};
 
-pub fn build<V: Variant>(problem: &Problem<V>) -> Graph<VertexData, EdgeData> {
-    let num_sources = problem.len_commodities();
-    let num_destinations = problem.len_commodities();
-    let num_transports = problem.len_transports();
+pub fn build<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeData> {
+    let indexer = Indexer::new(prob.len_commodities(), prob.len_transports());
 
-    let v = num_sources + num_destinations + num_transports;
+    let v = indexer.num_vertices();
 
     todo!()
 }

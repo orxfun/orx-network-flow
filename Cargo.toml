@@ -19,6 +19,6 @@ serde_json = { version = "1", default-features = false, features = [
 ], optional = true }
 
 [features]
-default = ["std", "serde-export"]
+default = ["std"]
 std = []
 serde-export = ["dep:serde", "dep:serde_json"]

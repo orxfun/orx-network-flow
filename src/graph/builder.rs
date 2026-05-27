@@ -3,10 +3,10 @@ use crate::graph::vertex::{VIdx, Vertex};
 use crate::graph::{edge::Edge, graph::Graph};
 use alloc::vec::Vec;
 
-pub struct GraphBuilder<N, E>(Graph<N, E>);
+pub struct GraphBuilder<V, E>(Graph<V, E>);
 
-impl<N, E> GraphBuilder<N, E> {
-    pub fn new(num_nodes: usize, data: impl Fn(usize) -> N) -> Self {
+impl<V, E> GraphBuilder<V, E> {
+    pub fn new(num_nodes: usize, data: impl Fn(usize) -> V) -> Self {
         let nodes: Vec<_> = (0..num_nodes).map(data).map(Vertex::new).collect();
         let edges = Vec::new();
         let graph = Graph { nodes, edges };
@@ -135,7 +135,7 @@ impl<N, E> GraphBuilder<N, E> {
         }
     }
 
-    pub fn finish(self) -> Graph<N, E> {
+    pub fn finish(self) -> Graph<V, E> {
         self.0
     }
 }
