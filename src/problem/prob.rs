@@ -8,6 +8,7 @@ use crate::costs::LostRevenue;
 use crate::costs::TransportCost;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
+use crate::time_bounds::TimeBounds;
 use crate::transports::Transport;
 use crate::transports::TransportData;
 use crate::transports::Transports;
@@ -23,6 +24,7 @@ pub struct Problem<V: Variant> {
     pub(super) commodities: Commodities<V>,
     pub(super) transports: Transports<V>,
     pub(super) costs: Costs<V>,
+    pub(super) time_bounds: TimeBounds,
 }
 
 impl<V: Variant> Problem<V> {

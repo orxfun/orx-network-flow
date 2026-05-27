@@ -3,6 +3,7 @@ use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::time::Time;
+use crate::time_bounds::{ConnTimeBounds, LatenessEarlinessBounds};
 
 pub struct ProblemBuilder<V: Variant>(Problem<V>);
 
@@ -15,14 +16,22 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             commodities: Default::default(),
             transports: Default::default(),
             costs: Default::default(),
+            time_bounds: Default::default(),
         })
     }
 }
 
 impl<V: Variant> ProblemBuilder<V> {
+    // create and complete
     pub fn new() -> Self {
         Default::default()
     }
+
+    pub fn finish(self) -> Problem<V> {
+        self.0
+    }
+
+    // build
 
     pub fn push_commodity(
         &mut self,
@@ -68,6 +77,8 @@ impl<V: Variant> ProblemBuilder<V> {
             .push(transport_key, vehicle, ori, des, capacity);
     }
 
+    // costs
+
     pub fn earliness_cost(&mut self) -> &mut EarlinessCost<V> {
         &mut self.0.costs.earliness
     }
@@ -84,7 +95,25 @@ impl<V: Variant> ProblemBuilder<V> {
         &mut self.0.costs.transport
     }
 
-    pub fn finish(self) -> Problem<V> {
-        self.0
+    // time bounds
+
+    pub fn min_conn_time(&mut self) -> &mut ConnTimeBounds {
+        &mut self.0.time_bounds.min_conn_time
+    }
+
+    pub fn max_conn_time(&mut self) -> &mut ConnTimeBounds {
+        &mut self.0.time_bounds.max_conn_time
+    }
+
+    pub fn max_lateness(&mut self) -> &mut LatenessEarlinessBounds {
+        &mut self.0.time_bounds.max_lateness
+    }
+
+    pub fn max_earliness(&mut self) -> &mut LatenessEarlinessBounds {
+        &mut self.0.time_bounds.max_earliness
+    }
+
+    pub fn max_waiting(&mut self) -> &mut LatenessEarlinessBounds {
+        &mut self.0.time_bounds.max_waiting
     }
 }
