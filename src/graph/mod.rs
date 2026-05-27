@@ -6,7 +6,7 @@ mod display;
 mod edge;
 mod graph;
 mod in_edge;
-mod node;
 mod out_edge;
+mod vertex;
 
 pub use graph::Graph;

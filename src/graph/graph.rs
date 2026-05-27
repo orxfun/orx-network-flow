@@ -1,13 +1,13 @@
-use crate::graph::{builder::GraphBuilder, edge::Edge, node::Node};
+use crate::graph::{builder::GraphBuilder, edge::Edge, vertex::Vertex};
 use alloc::{format, string::String, vec::Vec};
 
-pub struct Graph<N, E> {
-    pub(super) nodes: Vec<Node<N>>,
+pub struct Graph<V, E> {
+    pub(super) nodes: Vec<Vertex<V>>,
     pub(super) edges: Vec<Edge<E>>,
 }
 
-impl<N, E> Graph<N, E> {
-    pub fn builder(num_nodes: usize, data: impl Fn(usize) -> N) -> GraphBuilder<N, E> {
+impl<V, E> Graph<V, E> {
+    pub fn builder(num_nodes: usize, data: impl Fn(usize) -> V) -> GraphBuilder<V, E> {
         GraphBuilder::new(num_nodes, data)
     }
 
