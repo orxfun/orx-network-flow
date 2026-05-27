@@ -1,3 +1,3 @@
 use crate::impl_idx;
 
-impl_idx!(Vehicle, VecVehicle);
+impl_idx!(Vehicle);

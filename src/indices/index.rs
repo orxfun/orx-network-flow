@@ -11,7 +11,7 @@ pub(crate) trait IdxCore {
 
 #[macro_export]
 macro_rules! impl_idx {
-    ($idx:ident, $idx_vec:ident) => {
+    ($idx:ident) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $idx(usize);
 
@@ -34,9 +34,12 @@ macro_rules! impl_idx {
                 write!(f, "{}", self.0)
             }
         }
+    };
+}
 
-        // vec
-
+#[macro_export]
+macro_rules! impl_vec_of_idx {
+    ($idx:ident, $idx_vec:ident) => {
         pub struct $idx_vec<T>(alloc::vec::Vec<T>);
 
         impl<T> core::ops::Index<$idx> for $idx_vec<T> {
