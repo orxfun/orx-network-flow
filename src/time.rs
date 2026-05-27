@@ -8,6 +8,10 @@ impl Time {
         Self(0)
     }
 
+    pub fn inf() -> Self {
+        Time(i64::MAX)
+    }
+
     pub(super) fn inner(self) -> i64 {
         self.0
     }

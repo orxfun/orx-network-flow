@@ -3,12 +3,12 @@ use crate::{
     vehicle_types::VehicleType,
 };
 
-struct MinConnTime {
+struct CT {
     same_vehicle: Time,
     changed_vehicle: Time,
 }
 
-impl MinConnTime {
+impl CT {
     pub fn new(same_vehicle: Time, changed_vehicle: Time) -> Self {
         Self {
             same_vehicle,
@@ -17,13 +17,13 @@ impl MinConnTime {
     }
 }
 
-impl Default for MinConnTime {
+impl Default for CT {
     fn default() -> Self {
         Self::new(Time::from(0i64), Time::from(0i64))
     }
 }
 
-impl MinConnTime {
+impl CT {
     fn conn_time(&self, same_vehicle: bool) -> Time {
         match same_vehicle {
             true => self.same_vehicle,
@@ -33,24 +33,24 @@ impl MinConnTime {
 }
 
 #[derive(Default)]
-pub struct ConnectionTime {
-    global: MinConnTime,
-    by_space: Map<Space, MinConnTime>,
-    by_vehicle_type: Map<(VehicleType, VehicleType), MinConnTime>,
-    by_space_vehicle_type: Map<(Space, VehicleType, VehicleType), MinConnTime>,
-    by_transport: Map<(Transport, Transport), MinConnTime>,
+pub struct ConnTime {
+    global: CT,
+    by_space: Map<Space, CT>,
+    by_vehicle_type: Map<(VehicleType, VehicleType), CT>,
+    by_space_vehicle_type: Map<(Space, VehicleType, VehicleType), CT>,
+    by_transport: Map<(Transport, Transport), CT>,
 }
 
-impl ConnectionTime {
+impl ConnTime {
     pub fn new(global_same_vehicle: Time, global_changed_vehicle: Time) -> Self {
         Self {
-            global: MinConnTime::new(global_same_vehicle, global_changed_vehicle),
+            global: CT::new(global_same_vehicle, global_changed_vehicle),
             ..Default::default()
         }
     }
 
     pub fn space_specific(&mut self, space: Space, same_vehicle: Time, changed_vehicle: Time) {
-        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        let ct = CT::new(same_vehicle, changed_vehicle);
         self.by_space.insert(space, ct);
     }
 
@@ -61,7 +61,7 @@ impl ConnectionTime {
         same_vehicle: Time,
         changed_vehicle: Time,
     ) {
-        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        let ct = CT::new(same_vehicle, changed_vehicle);
         self.by_vehicle_type
             .insert((first_vehicle_type, second_vehicle_type), ct);
     }
@@ -74,7 +74,7 @@ impl ConnectionTime {
         same_vehicle: Time,
         changed_vehicle: Time,
     ) {
-        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        let ct = CT::new(same_vehicle, changed_vehicle);
         self.by_space_vehicle_type
             .insert((space, first_vehicle_type, second_vehicle_type), ct);
     }
@@ -86,7 +86,7 @@ impl ConnectionTime {
         same_vehicle: Time,
         changed_vehicle: Time,
     ) {
-        let ct = MinConnTime::new(same_vehicle, changed_vehicle);
+        let ct = CT::new(same_vehicle, changed_vehicle);
         self.by_transport
             .insert((first_transport, second_transport), ct);
     }
