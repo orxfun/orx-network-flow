@@ -1,7 +1,5 @@
-#[cfg(test)]
-mod tests;
-
 mod builder;
+mod dot;
 mod edge;
 mod indexer;
 mod vertex;
