@@ -1,14 +1,8 @@
 use crate::graph::vertex::VIdx;
-use core::fmt::Display;
+use crate::{impl_idx, impl_vec_of_idx};
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
-pub struct EIdx(pub(super) usize);
-
-impl Display for EIdx {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "e{}", self.0)
-    }
-}
+impl_idx!(EIdx);
+impl_vec_of_idx!(EIdx, VecEdge);
 
 pub struct Edge<E> {
     tail: VIdx,

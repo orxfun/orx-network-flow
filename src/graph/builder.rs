@@ -1,14 +1,13 @@
-use crate::graph::edge::EIdx;
+use crate::graph::edge::{EIdx, VecEdge};
 use crate::graph::vertex::{VIdx, VecVertex, Vertex};
 use crate::graph::{edge::Edge, graph::Graph};
-use alloc::vec::Vec;
 
 pub struct GraphBuilder<V, E>(Graph<V, E>);
 
 impl<V, E> GraphBuilder<V, E> {
     pub fn new(vertices: impl Iterator<Item = V>) -> Self {
         let vertices: VecVertex<_> = vertices.map(Vertex::new).collect();
-        let edges = Vec::new();
+        let edges = VecEdge::new();
         let graph = Graph { vertices, edges };
         Self(graph)
     }
@@ -16,7 +15,7 @@ impl<V, E> GraphBuilder<V, E> {
     pub fn edge(&mut self, data: E, tail: usize, head: usize) {
         let tail = VIdx::from(tail);
         let head = VIdx::from(head);
-        let edges_idx = EIdx(self.0.edges.len());
+        let edges_idx = EIdx::from(self.0.edges.len());
         let tail_out_edge_idx = self.0.vertices[tail].out_edges().len();
         let head_in_edge_idx = self.0.vertices[head].in_edges().len();
         self.0.edges.push(Edge::new(tail, head, data));
@@ -26,7 +25,7 @@ impl<V, E> GraphBuilder<V, E> {
 
     pub fn validate(&self) {
         let num_nodes = VIdx::from(self.0.vertices.len());
-        let num_edges = self.0.edges.len();
+        let num_edges = EIdx::from(self.0.edges.len());
 
         // Ensure all node-side references are valid and consistent with edge endpoints.
         for (tail_idx, node) in self
@@ -39,11 +38,11 @@ impl<V, E> GraphBuilder<V, E> {
             for (tail_out_edge_idx, out_edge) in node.out_edges().iter().enumerate() {
                 let edge_idx = out_edge.edges_idx();
                 assert!(
-                    edge_idx.0 < num_edges,
+                    edge_idx < num_edges,
                     "out edge has invalid edge index: node={tail_idx}, out_edge_idx={tail_out_edge_idx}, edge_idx={edge_idx:?}, num_edges={num_edges}"
                 );
 
-                let edge = &self.0.edges[edge_idx.0];
+                let edge = &self.0.edges[edge_idx];
                 let head_idx = out_edge.head();
                 assert!(
                     head_idx < num_nodes,
@@ -98,11 +97,11 @@ impl<V, E> GraphBuilder<V, E> {
             for (head_in_edge_idx, in_edge) in node.in_edges().iter().enumerate() {
                 let edge_idx = in_edge.edges_idx();
                 assert!(
-                    edge_idx.0 < num_edges,
+                    edge_idx < num_edges,
                     "in edge has invalid edge index: node={head_idx}, in_edge_idx={head_in_edge_idx}, edge_idx={edge_idx}, num_edges={num_edges}"
                 );
 
-                let edge = &self.0.edges[edge_idx.0];
+                let edge = &self.0.edges[edge_idx];
                 let tail_idx = in_edge.tail();
                 assert!(
                     tail_idx < num_nodes,
