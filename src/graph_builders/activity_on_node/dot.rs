@@ -11,7 +11,7 @@ impl DotData for (VertexData, EdgeData) {
 
     fn vertex_label(_: &Graph<Self::V, Self::E>, v: VIdx, vertex: &Vertex<Self::V>) -> String {
         match vertex.data() {
-            VertexData::Transport(t) => format!("v{}\n{}", t, v),
+            VertexData::Transport(t) => format!("m{}\n{}", t, v),
             VertexData::Source(c) => format!("s{}\n{}", c, v),
             VertexData::Sink(c) => format!("t{}\n{}", c, v),
         }
