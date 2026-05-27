@@ -9,6 +9,17 @@ pub struct Cost<V: Variant> {
     transport: TransportCost<V>,
 }
 
+impl<V: Variant> Default for Cost<V> {
+    fn default() -> Self {
+        Self::new(
+            Default::default(),
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+    }
+}
+
 impl<V: Variant> Cost<V> {
     pub fn new(
         global_earliness_cost_per_unit: V::C,
