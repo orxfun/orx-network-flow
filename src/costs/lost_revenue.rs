@@ -1,4 +1,6 @@
-use crate::{Variant, commodities::Commodity, cost::Cost, std_utils::Map};
+use crate::{
+    Problem, Variant, commodities::Commodity, cost::Cost, flow_units::FlowUnit, std_utils::Map,
+};
 
 pub struct LostRevenue<V: Variant> {
     global_per_unit: V::C,
@@ -27,10 +29,15 @@ impl<V: Variant> LostRevenue<V> {
         self.lost_revenues.insert(commodity, -unit_revenue);
     }
 
-    pub fn cost(&self, commodity: Commodity) -> V::C {
-        match self.lost_revenues.get(&commodity) {
+    pub fn cost(&self, prob: &Problem<V>, commodity: Commodity) -> V::C {
+        let unit_cost = match self.lost_revenues.get(&commodity) {
             Some(cost) => *cost,
             None => self.global_per_unit,
-        }
+        };
+
+        let commodity = prob.commodity_by_idx(commodity);
+        let amount = V::chargeable_flow(commodity.amount());
+
+        amount * unit_cost
     }
 }

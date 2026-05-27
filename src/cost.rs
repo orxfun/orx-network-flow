@@ -1,7 +1,9 @@
 use crate::time::Time;
 use core::ops::{Mul, Neg};
 
-pub trait Cost: Default + Clone + Copy + Neg<Output = Self> + Mul<Time, Output = Self> {
+pub trait Cost:
+    Default + Clone + Copy + Neg<Output = Self> + Mul<Self, Output = Self> + Mul<Time, Output = Self>
+{
     fn zero() -> Self {
         Self::default()
     }
