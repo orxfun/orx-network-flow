@@ -28,6 +28,10 @@ impl<V: Variant> EarlinessCost<V> {
         }
     }
 
+    pub fn global(&mut self, global_per_unit: V::C) {
+        self.global_per_unit = global_per_unit
+    }
+
     pub fn commodity_specific(&mut self, commodity: Commodity, earliness_cost_per_unit: V::C) {
         self.by_commodity_per_unit
             .insert(commodity, earliness_cost_per_unit);
