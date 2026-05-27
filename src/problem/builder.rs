@@ -1,3 +1,4 @@
+use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
@@ -65,6 +66,22 @@ impl<V: Variant> ProblemBuilder<V> {
             .0
             .transports
             .push(transport_key, vehicle, ori, des, capacity);
+    }
+
+    pub fn earliness_cost(&mut self) -> &mut EarlinessCost<V> {
+        self.0.costs.earliness_mut()
+    }
+
+    pub fn lateness_cost(&mut self) -> &mut LatenessCost<V> {
+        self.0.costs.lateness_mut()
+    }
+
+    pub fn lost_revenue_cost(&mut self) -> &mut LostRevenue<V> {
+        self.0.costs.lost_revenue_mut()
+    }
+
+    pub fn transport_cost(&mut self) -> &mut TransportCost<V> {
+        self.0.costs.transport_mut()
     }
 
     pub fn finish(self) -> Problem<V> {
