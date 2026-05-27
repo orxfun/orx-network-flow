@@ -8,6 +8,8 @@ use crate::costs::LostRevenue;
 use crate::costs::TransportCost;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
+use crate::time_bounds::ConnTimeBounds;
+use crate::time_bounds::LatenessEarlinessBounds;
 use crate::time_bounds::TimeBounds;
 use crate::transports::Transport;
 use crate::transports::TransportData;
@@ -89,5 +91,27 @@ impl<V: Variant> Problem<V> {
 
     pub fn transport_cost(&self) -> &TransportCost<V> {
         &self.costs.transport
+    }
+
+    // time bounds
+
+    pub fn min_conn_time(&self) -> &ConnTimeBounds {
+        &self.time_bounds.min_conn_time
+    }
+
+    pub fn max_conn_time(&self) -> &ConnTimeBounds {
+        &self.time_bounds.max_conn_time
+    }
+
+    pub fn max_lateness(&self) -> &LatenessEarlinessBounds {
+        &self.time_bounds.max_lateness
+    }
+
+    pub fn max_earliness(&self) -> &LatenessEarlinessBounds {
+        &self.time_bounds.max_earliness
+    }
+
+    pub fn max_waiting(&self) -> &LatenessEarlinessBounds {
+        &self.time_bounds.max_waiting
     }
 }
