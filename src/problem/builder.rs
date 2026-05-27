@@ -69,19 +69,19 @@ impl<V: Variant> ProblemBuilder<V> {
     }
 
     pub fn earliness_cost(&mut self) -> &mut EarlinessCost<V> {
-        self.0.costs.earliness_mut()
+        &mut self.0.costs.earliness
     }
 
     pub fn lateness_cost(&mut self) -> &mut LatenessCost<V> {
-        self.0.costs.lateness_mut()
+        &mut self.0.costs.lateness
     }
 
     pub fn lost_revenue_cost(&mut self) -> &mut LostRevenue<V> {
-        self.0.costs.lost_revenue_mut()
+        &mut self.0.costs.lost_revenue
     }
 
     pub fn transport_cost(&mut self) -> &mut TransportCost<V> {
-        self.0.costs.transport_mut()
+        &mut self.0.costs.transport
     }
 
     pub fn finish(self) -> Problem<V> {

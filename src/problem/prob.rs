@@ -2,6 +2,10 @@ use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
 use crate::costs::Costs;
+use crate::costs::EarlinessCost;
+use crate::costs::LatenessCost;
+use crate::costs::LostRevenue;
+use crate::costs::TransportCost;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
 use crate::transports::Transport;
@@ -65,5 +69,23 @@ impl<V: Variant> Problem<V> {
 
     pub(crate) fn vehicle_by_idx(&self, idx: Vehicle) -> &VehicleData {
         self.vehicles.get_by_idx(idx).expect("validated problem")
+    }
+
+    // costs
+
+    pub fn earliness_cost(&self) -> &EarlinessCost<V> {
+        &self.costs.earliness
+    }
+
+    pub fn lateness_cost(&self) -> &LatenessCost<V> {
+        &self.costs.lateness
+    }
+
+    pub fn lost_revenue_cost(&self) -> &LostRevenue<V> {
+        &self.costs.lost_revenue
+    }
+
+    pub fn transport_cost(&self) -> &TransportCost<V> {
+        &self.costs.transport
     }
 }
