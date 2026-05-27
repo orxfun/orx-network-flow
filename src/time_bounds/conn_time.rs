@@ -33,7 +33,7 @@ impl CT {
 }
 
 #[derive(Default)]
-pub struct ConnTime {
+pub struct ConnTimeBounds {
     global: CT,
     by_space: Map<Space, CT>,
     by_vehicle_type: Map<(VehicleType, VehicleType), CT>,
@@ -41,7 +41,7 @@ pub struct ConnTime {
     by_transport: Map<(Transport, Transport), CT>,
 }
 
-impl ConnTime {
+impl ConnTimeBounds {
     pub fn new(global_same_vehicle: Time, global_changed_vehicle: Time) -> Self {
         Self {
             global: CT::new(global_same_vehicle, global_changed_vehicle),
@@ -91,7 +91,7 @@ impl ConnTime {
             .insert((first_transport, second_transport), ct);
     }
 
-    pub fn conn_time<V: Variant>(&self, prob: &Problem<V>, f: Transport, g: Transport) -> Time {
+    pub fn bound<V: Variant>(&self, prob: &Problem<V>, f: Transport, g: Transport) -> Time {
         debug_assert_eq!(
             prob.transport_by_idx(f).destination().space(),
             prob.transport_by_idx(g).origin().space()
