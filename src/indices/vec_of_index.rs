@@ -37,6 +37,10 @@ macro_rules! impl_vec_of_idx {
             pub fn iter(&self) -> impl Iterator<Item = &T> {
                 self.0.iter()
             }
+
+            pub fn indices(&self) -> impl Iterator<Item = $idx> {
+                (0..self.0.len()).map($idx::from)
+            }
         }
 
         impl<T> FromIterator<T> for $idx_vec<T> {
