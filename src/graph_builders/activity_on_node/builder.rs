@@ -4,7 +4,7 @@ use crate::graph_builders::activity_on_node::{edge::EdgeData, vertex::VertexData
 use crate::transports::Transport;
 use crate::{Graph, Problem, Variant};
 
-pub fn build<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeData> {
+pub fn build_aon_graph<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeData> {
     let rng = |len: usize| 0..len;
 
     let indexer = Indexer::new(prob.len_commodities(), prob.len_transports());

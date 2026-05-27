@@ -1,3 +1,4 @@
+use crate::Graph;
 use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
@@ -6,6 +7,8 @@ use crate::costs::EarlinessCost;
 use crate::costs::LatenessCost;
 use crate::costs::LostRevenue;
 use crate::costs::TransportCost;
+use crate::graph_builders::AonGraph;
+use crate::graph_builders::build_aon_graph;
 use crate::problem::variant::Variant;
 use crate::spaces::Spaces;
 use crate::time_bounds::ConnTimeBounds;
@@ -113,5 +116,11 @@ impl<V: Variant> Problem<V> {
 
     pub fn max_waiting(&self) -> &LatenessEarlinessBounds {
         &self.time_bounds.max_waiting
+    }
+
+    // graphs
+
+    pub fn build_aon_graph(&self) -> AonGraph {
+        build_aon_graph(self)
     }
 }
