@@ -1,4 +1,4 @@
-use crate::graph::Graph;
+use crate::graph::{Graph, vertex::VIdx};
 
 #[test]
 fn graph_validity() {
