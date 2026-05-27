@@ -19,9 +19,9 @@ impl<V: Variant> Default for TransportCost<V> {
 }
 
 impl<V: Variant> TransportCost<V> {
-    pub fn new(default_unit_cost: V::C) -> Self {
+    pub fn new(global_transport_unit_cost: V::C) -> Self {
         Self {
-            global: default_unit_cost,
+            global: global_transport_unit_cost,
             by_commodity: Default::default(),
             by_vehicle: Default::default(),
             by_transport: Default::default(),
