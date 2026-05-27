@@ -1,7 +1,8 @@
 use orx_network_flow::Graph;
 
 fn main() {
-    let mut builder = Graph::<(), ()>::builder(4, |_| ());
+    let vertices = (0..4).map(|_| ());
+    let mut builder = Graph::<(), ()>::builder(vertices);
 
     builder.edge((), 0, 1);
     builder.edge((), 0, 2);

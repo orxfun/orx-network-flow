@@ -6,10 +6,10 @@ use alloc::vec::Vec;
 pub struct GraphBuilder<V, E>(Graph<V, E>);
 
 impl<V, E> GraphBuilder<V, E> {
-    pub fn new(num_nodes: usize, data: impl Fn(usize) -> V) -> Self {
-        let nodes: Vec<_> = (0..num_nodes).map(data).map(Vertex::new).collect();
+    pub fn new(vertices: impl Iterator<Item = V>) -> Self {
+        let vertices: Vec<_> = vertices.map(Vertex::new).collect();
         let edges = Vec::new();
-        let graph = Graph { nodes, edges };
+        let graph = Graph { vertices, edges };
         Self(graph)
     }
 
@@ -17,19 +17,25 @@ impl<V, E> GraphBuilder<V, E> {
         let tail = VIdx(tail);
         let head = VIdx(head);
         let edges_idx = EIdx(self.0.edges.len());
-        let tail_out_edge_idx = self.0.nodes[tail.0].out_edges().len();
-        let head_in_edge_idx = self.0.nodes[head.0].in_edges().len();
+        let tail_out_edge_idx = self.0.vertices[tail.0].out_edges().len();
+        let head_in_edge_idx = self.0.vertices[head.0].in_edges().len();
         self.0.edges.push(Edge::new(tail, head, data));
-        self.0.nodes[tail.0].add_out_edge(edges_idx, head, head_in_edge_idx);
-        self.0.nodes[head.0].add_in_edge(edges_idx, tail, tail_out_edge_idx);
+        self.0.vertices[tail.0].add_out_edge(edges_idx, head, head_in_edge_idx);
+        self.0.vertices[head.0].add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
 
     pub fn validate(&self) {
-        let num_nodes = self.0.nodes.len();
+        let num_nodes = self.0.vertices.len();
         let num_edges = self.0.edges.len();
 
         // Ensure all node-side references are valid and consistent with edge endpoints.
-        for (tail_idx, node) in self.0.nodes.iter().enumerate().map(|(a, b)| (VIdx(a), b)) {
+        for (tail_idx, node) in self
+            .0
+            .vertices
+            .iter()
+            .enumerate()
+            .map(|(a, b)| (VIdx(a), b))
+        {
             for (tail_out_edge_idx, out_edge) in node.out_edges().iter().enumerate() {
                 let edge_idx = out_edge.edges_idx();
                 assert!(
@@ -56,7 +62,7 @@ impl<V, E> GraphBuilder<V, E> {
                 );
 
                 let head_in_edge_idx = out_edge.head_in_edge_idx();
-                let head_node = &self.0.nodes[head_idx.0];
+                let head_node = &self.0.vertices[head_idx.0];
                 assert!(
                     head_in_edge_idx < head_node.in_edges().len(),
                     "out edge points to missing reciprocal in edge: tail={tail_idx}, head={head_idx}, edge_idx={edge_idx}, head_in_edge_idx={head_in_edge_idx}"
@@ -82,7 +88,13 @@ impl<V, E> GraphBuilder<V, E> {
         }
 
         // Ensure all in-edge references have a valid reciprocal out-edge.
-        for (head_idx, node) in self.0.nodes.iter().enumerate().map(|(a, b)| (VIdx(a), b)) {
+        for (head_idx, node) in self
+            .0
+            .vertices
+            .iter()
+            .enumerate()
+            .map(|(a, b)| (VIdx(a), b))
+        {
             for (head_in_edge_idx, in_edge) in node.in_edges().iter().enumerate() {
                 let edge_idx = in_edge.edges_idx();
                 assert!(
@@ -109,7 +121,7 @@ impl<V, E> GraphBuilder<V, E> {
                 );
 
                 let tail_out_edge_idx = in_edge.tail_out_edge_idx();
-                let tail_node = &self.0.nodes[tail_idx.0];
+                let tail_node = &self.0.vertices[tail_idx.0];
                 assert!(
                     tail_out_edge_idx < tail_node.out_edges().len(),
                     "in edge points to missing reciprocal out edge: tail={tail_idx}, head={head_idx}, edge_idx={edge_idx}, tail_out_edge_idx={tail_out_edge_idx}"

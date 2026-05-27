@@ -1,8 +1,9 @@
-use crate::graph::{Graph, vertex::VIdx};
+use crate::graph::Graph;
 
 #[test]
 fn graph_validity() {
-    let mut builder = Graph::<(), ()>::builder(4, |_| ());
+    let vertices = (0..4).map(|_| ());
+    let mut builder = Graph::<(), ()>::builder(vertices);
 
     builder.edge((), 0, 1);
     builder.edge((), 0, 2);
@@ -15,7 +16,8 @@ fn graph_validity() {
 
 #[test]
 fn graph_dot_export() {
-    let mut builder = Graph::<(), ()>::builder(3, |_| ());
+    let vertices = (0..3).map(|_| ());
+    let mut builder = Graph::<(), ()>::builder(vertices);
     builder.edge((), 0, 1);
     builder.edge((), 1, 2);
 
