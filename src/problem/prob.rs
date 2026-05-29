@@ -10,7 +10,9 @@ use crate::costs::TransportCost;
 use crate::graph_builders::AonGraph;
 use crate::graph_builders::build_aon_graph;
 use crate::problem::variant::Variant;
+use crate::spaces::Space;
 use crate::spaces::Spaces;
+use crate::std_utils::Set;
 use crate::time_bounds::ConnTimeBounds;
 use crate::time_bounds::LatenessEarlinessBounds;
 use crate::time_bounds::TimeBounds;
@@ -30,6 +32,8 @@ pub struct Problem<V: Variant> {
     pub(super) transports: Transports<V>,
     pub(super) costs: Costs<V>,
     pub(super) time_bounds: TimeBounds,
+    pub(super) ori_spaces: Set<Space>,
+    pub(super) des_spaces: Set<Space>,
 }
 
 impl<V: Variant> Problem<V> {

@@ -1,5 +1,13 @@
 use core::fmt::Debug;
 
+// set
+
+#[cfg(feature = "std")]
+pub type Set<K> = std::collections::hash_set::HashSet<K>;
+
+#[cfg(not(feature = "std"))]
+pub type Set<K> = alloc::collections::btree_set::BTreeSet<K>;
+
 // map
 
 #[cfg(feature = "std")]

@@ -17,6 +17,8 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             transports: Default::default(),
             costs: Default::default(),
             time_bounds: Default::default(),
+            ori_spaces: Default::default(),
+            des_spaces: Default::default(),
         })
     }
 }
@@ -43,9 +45,11 @@ impl<V: Variant> ProblemBuilder<V> {
         amount: V::F,
     ) {
         let ori_space = self.0.spaces.push(origin);
+        self.0.ori_spaces.insert(ori_space);
         let ori = SpaceTime::new(ori_space, ready_time.into());
 
         let des_space = self.0.spaces.push(destination);
+        self.0.des_spaces.insert(des_space);
         let des = SpaceTime::new(des_space, due_time.into());
 
         _ = self.0.commodities.push(commodity_key, ori, des, amount);

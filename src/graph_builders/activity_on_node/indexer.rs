@@ -1,4 +1,6 @@
 use crate::commodities::Commodity;
+use crate::graph::VIdx;
+use crate::indices::IdxCore;
 use crate::{Problem, Variant};
 use crate::{graph_builders::activity_on_node::vertex::VertexData, transports::Transport};
 use core::iter;
@@ -21,5 +23,12 @@ impl Indexer {
 
     pub fn num_vertices(&self) -> usize {
         self.sinks_range.end
+    }
+
+    pub fn source_idx(&self, commodity: Commodity) -> VIdx {
+        let commodity = commodity.into_inner();
+        let idx = self.sources_range.start + commodity;
+        debug_assert!(self.sources_range.contains(&idx));
+        VIdx::from(idx)
     }
 }

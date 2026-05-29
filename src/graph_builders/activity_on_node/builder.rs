@@ -1,4 +1,5 @@
 use crate::commodities::Commodity;
+use crate::graph::GraphBuilder;
 use crate::graph_builders::activity_on_node::indexer::Indexer;
 use crate::graph_builders::activity_on_node::{edge::EdgeData, vertex::VertexData};
 use crate::transports::Transport;
@@ -23,4 +24,11 @@ pub fn build_aon_graph<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeD
     let mut builder = Graph::builder(vertices);
 
     builder.finish()
+}
+
+fn add_source_waiting_edges<V: Variant>(
+    prob: &Problem<V>,
+    builder: &mut GraphBuilder<VertexData, EdgeData>,
+) {
+    //
 }

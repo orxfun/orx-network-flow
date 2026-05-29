@@ -10,6 +10,7 @@ mod out_edge;
 mod vertex;
 mod visualization;
 
+pub use builder::GraphBuilder;
 pub use edge::{EIdx, Edge};
 pub use graph::Graph;
 pub use vertex::{VIdx, Vertex};
