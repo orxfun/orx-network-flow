@@ -1,3 +1,4 @@
+use crate::commodities::Commodity;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
 use crate::problem::variant::Variant;
@@ -32,12 +33,31 @@ impl<V: Variant> ProblemBuilder<V> {
     }
 
     pub fn finish(mut self) -> Problem<V> {
-        for x in self.0.ori_sorted_commodities.values_mut() {
-            x.sort();
+        // sort ori and des commodities by ready time
+
+        let mut ori_sorted_commodities = Default::default();
+        core::mem::swap(
+            &mut ori_sorted_commodities,
+            &mut self.0.ori_sorted_commodities,
+        );
+
+        let mut des_sorted_commodities = Default::default();
+        core::mem::swap(
+            &mut des_sorted_commodities,
+            &mut self.0.des_sorted_commodities,
+        );
+
+        let sort_key = |c: &Commodity| self.0.commodity_by_idx(*c).origin().time();
+        for x in ori_sorted_commodities.values_mut() {
+            x.sort_by_key(&sort_key);
         }
-        for x in self.0.des_sorted_commodities.values_mut() {
-            x.sort();
+
+        for x in des_sorted_commodities.values_mut() {
+            x.sort_by_key(&sort_key);
         }
+
+        self.0.ori_sorted_commodities = ori_sorted_commodities;
+        self.0.des_sorted_commodities = des_sorted_commodities;
 
         self.0
     }
