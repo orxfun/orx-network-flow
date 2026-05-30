@@ -81,9 +81,19 @@ fn main() {
         11,
         String::from("77X"),
         String::from("BRU"),
-        8i64,
+        19i64,
         String::from("EMA"),
-        12i64,
+        22i64,
+        800,
+    );
+    builder.push_transport(
+        String::from("BRU-LEJ-33"),
+        11,
+        String::from("77X"),
+        String::from("BRU"),
+        18i64,
+        String::from("EMA"),
+        20i64,
         800,
     );
     let problem = builder.finish();

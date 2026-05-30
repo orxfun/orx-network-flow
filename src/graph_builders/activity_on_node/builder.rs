@@ -28,6 +28,7 @@ pub fn build_aon_graph<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeD
     edges_transport_transport_waiting(prob, &mut builder, &indexer);
     edges_source_to_transport(prob, &mut builder, &indexer);
     edges_transport_to_sink(prob, &mut builder, &indexer);
+    edges_transport_to_transport(prob, &mut builder, &indexer);
 
     builder.finish()
 }
@@ -151,6 +152,56 @@ fn edges_transport_to_sink<V: Variant>(
                                             let tail = indexer.transport_idx(t).into_inner();
                                             let head = indexer.sink_idx(c).into_inner();
                                             builder.edge(data, tail, head);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn edges_transport_to_transport<V: Variant>(
+    prob: &Problem<V>,
+    builder: &mut GraphBuilder<VertexData, EdgeData>,
+    indexer: &Indexer,
+) {
+    for (_x, des_sorted_transports) in &prob.ori_des_sorted_transports {
+        for (des, tail_sorted_transports) in des_sorted_transports {
+            // tail: x => des
+            if let Some(map_head_sorted_transports) = prob.ori_des_sorted_transports.get(des) {
+                for (_y, head_sorted_transports) in map_head_sorted_transports {
+                    // head: des => y
+
+                    let mut tail_rev = tail_sorted_transports.iter().rev();
+                    let mut head_rev = head_sorted_transports.iter().rev();
+
+                    loop {
+                        let more_tail = tail_rev.len() > 0;
+
+                        match (more_tail, head_rev.next()) {
+                            (false, _) => break,
+                            (true, None) => break,
+                            (true, Some(&tail)) => {
+                                let arrival = prob.transport_by_idx(tail).destination().time();
+
+                                loop {
+                                    match tail_rev.next() {
+                                        None => break,
+                                        Some(&head) => {
+                                            let departure =
+                                                prob.transport_by_idx(head).origin().time();
+                                            // TODO: connection time check
+                                            if arrival <= departure {
+                                                let data =
+                                                    EdgeData::TransportToTransport(tail, head);
+                                                let tail = indexer.transport_idx(tail).into_inner();
+                                                let head = indexer.transport_idx(head).into_inner();
+                                                builder.edge(data, tail, head);
+                                            }
                                         }
                                     }
                                 }
