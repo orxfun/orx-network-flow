@@ -31,4 +31,11 @@ impl Indexer {
         debug_assert!(self.sources_range.contains(&idx));
         VIdx::from(idx)
     }
+
+    pub fn sink_idx(&self, commodity: Commodity) -> VIdx {
+        let commodity = commodity.into_inner();
+        let idx = self.sinks_range.start + commodity;
+        debug_assert!(self.sinks_range.contains(&idx));
+        VIdx::from(idx)
+    }
 }
