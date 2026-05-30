@@ -6,7 +6,6 @@ use crate::graph_builders::AonGraph;
 use crate::graph_builders::build_aon_graph;
 use crate::problem::variant::Variant;
 use crate::spaces::Space;
-use crate::spaces::SpaceOd;
 use crate::spaces::Spaces;
 use crate::std_utils::Map;
 use crate::time_bounds::TimeBounds;
