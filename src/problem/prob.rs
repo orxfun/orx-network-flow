@@ -29,6 +29,7 @@ pub struct Problem<V: Variant> {
     pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub ori_des_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
+    pub des_ori_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
 }
 
 impl<V: Variant> Problem<V> {

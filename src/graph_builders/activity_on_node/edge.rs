@@ -7,5 +7,5 @@ pub enum EdgeData {
     SourceToSink,
     SourceToTransport(Commodity, Transport),
     TransportToTransport,
-    TransportToSink,
+    TransportToSink(Transport, Commodity),
 }

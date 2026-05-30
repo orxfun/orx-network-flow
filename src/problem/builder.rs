@@ -22,6 +22,7 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             ori_sorted_commodities: Default::default(),
             des_sorted_commodities: Default::default(),
             ori_des_sorted_transports: Default::default(),
+            des_ori_sorted_transports: Default::default(),
         })
     }
 }
@@ -59,19 +60,38 @@ impl<V: Variant> ProblemBuilder<V> {
         self.0.ori_sorted_commodities = ori_sorted_commodities;
         self.0.des_sorted_commodities = des_sorted_commodities;
 
-        // sort ori&des transports by departure time
+        // sort ori&des and des&ori transports by departure time
+
         let mut ori_des_sorted_transports = Default::default();
         core::mem::swap(
             &mut ori_des_sorted_transports,
             &mut self.0.ori_des_sorted_transports,
         );
+
+        let mut des_ori_sorted_transports = Default::default();
+        core::mem::swap(
+            &mut des_ori_sorted_transports,
+            &mut self.0.des_ori_sorted_transports,
+        );
+
         let sort_key = |t: &Transport| self.0.transport_by_idx(*t).origin().time();
+
         for des_sorted_transports in ori_des_sorted_transports.values_mut() {
             for x in des_sorted_transports.values_mut() {
                 x.sort_by_key(&sort_key);
             }
         }
+
+        for ori_sorted_transports in des_ori_sorted_transports.values_mut() {
+            for x in ori_sorted_transports.values_mut() {
+                x.sort_by_key(&sort_key);
+            }
+        }
+
         self.0.ori_des_sorted_transports = ori_des_sorted_transports;
+        self.0.des_ori_sorted_transports = des_ori_sorted_transports;
+
+        // finish
 
         self.0
     }

@@ -119,3 +119,45 @@ fn edges_source_to_transport<V: Variant>(
         }
     }
 }
+
+fn edges_transport_to_sink<V: Variant>(
+    prob: &Problem<V>,
+    builder: &mut GraphBuilder<VertexData, EdgeData>,
+    indexer: &Indexer,
+) {
+    for (des, sorted_commodities) in &prob.des_sorted_commodities {
+        if let Some(des_sorted_transports) = prob.ori_des_sorted_transports.get(des) {
+            for (_des, sorted_transports) in des_sorted_transports {
+                let mut sorted_commodities_rev = sorted_commodities.iter().rev();
+                let mut sorted_transports_rev = sorted_transports.iter().rev();
+
+                loop {
+                    let more_commodities = sorted_commodities_rev.len() > 0;
+
+                    match (more_commodities, sorted_transports_rev.next()) {
+                        (false, _) => break,
+                        (true, None) => break,
+                        (true, Some(&t)) => {
+                            let departure = prob.transport_by_idx(t).origin().time();
+
+                            loop {
+                                match sorted_commodities_rev.next() {
+                                    None => break,
+                                    Some(&c) => {
+                                        let ready = prob.commodity_by_idx(c).origin().time();
+                                        if ready <= departure {
+                                            let data = EdgeData::SourceToTransport(c, t);
+                                            let tail = indexer.source_idx(c).into_inner();
+                                            let head = indexer.transport_idx(t).into_inner();
+                                            builder.edge(data, tail, head);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
