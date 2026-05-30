@@ -27,8 +27,6 @@ pub struct Problem<V: Variant> {
     pub transports: Transports<V>,
     pub costs: Costs<V>,
     pub time_bounds: TimeBounds,
-    pub ori_spaces: Set<Space>,
-    pub des_spaces: Set<Space>,
     pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
 }
