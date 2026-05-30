@@ -6,9 +6,9 @@ use crate::graph_builders::AonGraph;
 use crate::graph_builders::build_aon_graph;
 use crate::problem::variant::Variant;
 use crate::spaces::Space;
+use crate::spaces::SpaceOd;
 use crate::spaces::Spaces;
 use crate::std_utils::Map;
-use crate::std_utils::Set;
 use crate::time_bounds::TimeBounds;
 use crate::transports::Transport;
 use crate::transports::TransportData;
@@ -29,6 +29,7 @@ pub struct Problem<V: Variant> {
     pub time_bounds: TimeBounds,
     pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
+    pub ori_des_sorted_transports: Map<SpaceOd, Vec<Transport>>,
 }
 
 impl<V: Variant> Problem<V> {

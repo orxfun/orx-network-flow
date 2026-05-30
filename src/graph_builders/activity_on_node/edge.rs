@@ -1,9 +1,9 @@
-use crate::commodities::Commodity;
+use crate::{commodities::Commodity, transports::Transport};
 
 pub enum EdgeData {
     SourceToSourceWait(Commodity, Commodity),
     SinkToSinkWait(Commodity, Commodity),
-    TransportToTransportWait,
+    TransportToTransportWait(Transport, Transport),
     SourceToSink,
     SourceToTransport,
     TransportToTransport,

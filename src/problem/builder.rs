@@ -3,6 +3,7 @@ use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
+use crate::spaces::SpaceOd;
 use crate::time::Time;
 use crate::time_bounds::{ConnTimeBounds, LatenessEarlinessBounds};
 
@@ -20,6 +21,7 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             time_bounds: Default::default(),
             ori_sorted_commodities: Default::default(),
             des_sorted_commodities: Default::default(),
+            ori_des_sorted_transports: Default::default(),
         })
     }
 }
@@ -111,10 +113,20 @@ impl<V: Variant> ProblemBuilder<V> {
         let des_space = self.0.spaces.push(destination);
         let des = SpaceTime::new(des_space, arrival_time.into());
 
-        _ = self
+        let transport = self
             .0
             .transports
             .push(transport_key, vehicle, ori, des, capacity);
+
+        let space_od = SpaceOd {
+            ori: ori_space,
+            des: des_space,
+        };
+        self.0
+            .ori_des_sorted_transports
+            .entry(space_od)
+            .or_default()
+            .push(transport);
     }
 
     // costs
