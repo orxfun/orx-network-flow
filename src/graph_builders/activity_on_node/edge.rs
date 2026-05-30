@@ -5,7 +5,7 @@ pub enum EdgeData {
     SinkToSinkWait(Commodity, Commodity),
     TransportToTransportWait(Transport, Transport),
     SourceToSink,
-    SourceToTransport,
+    SourceToTransport(Commodity, Transport),
     TransportToTransport,
     TransportToSink,
 }

@@ -26,6 +26,7 @@ pub fn build_aon_graph<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeD
     edges_source_source_waiting(prob, &mut builder, &indexer);
     edges_sink_sink_waiting(prob, &mut builder, &indexer);
     edges_transport_transport_waiting(prob, &mut builder, &indexer);
+    edges_source_to_transport(prob, &mut builder, &indexer);
 
     builder.finish()
 }
@@ -82,13 +83,34 @@ fn edges_source_to_transport<V: Variant>(
     builder: &mut GraphBuilder<VertexData, EdgeData>,
     indexer: &Indexer,
 ) {
-    todo!()
-    // for (_ori, sorted_commodities) in &prob.ori_sorted_commodities {
-    //     for pair in sorted_commodities.windows(2) {
-    //         let s0 = indexer.source_idx(pair[0]);
-    //         let s1 = indexer.source_idx(pair[1]);
-    //         let data = EdgeData::SourceToSourceWait(pair[0], pair[1]);
-    //         builder.edge(data, s0.into_inner(), s1.into_inner());
-    //     }
-    // }
+    for (ori, sorted_commodities) in &prob.ori_sorted_commodities {
+        if let Some(des_sorted_transports) = prob.ori_des_sorted_transports.get(ori) {
+            for (_des, sorted_transports) in des_sorted_transports {
+                let mut sorted_commodities_rev = sorted_commodities.iter().rev();
+                let mut sorted_transports_rev = sorted_transports.iter().rev();
+
+                loop {
+                    match sorted_transports_rev.next() {
+                        None => break,
+                        Some(&t) => {
+                            let departure = prob.transport_by_idx(t).origin().time();
+
+                            match sorted_commodities_rev.next() {
+                                None => break,
+                                Some(&c) => {
+                                    let ready = prob.commodity_by_idx(c).origin().time();
+                                    if ready <= departure {
+                                        let data = EdgeData::SourceToTransport(c, t);
+                                        let tail = indexer.source_idx(c).into_inner();
+                                        let head = indexer.transport_idx(t).into_inner();
+                                        builder.edge(data, tail, head);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
