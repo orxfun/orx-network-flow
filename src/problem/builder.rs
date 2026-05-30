@@ -31,7 +31,14 @@ impl<V: Variant> ProblemBuilder<V> {
         Default::default()
     }
 
-    pub fn finish(self) -> Problem<V> {
+    pub fn finish(mut self) -> Problem<V> {
+        for x in self.0.ori_sorted_commodities.values_mut() {
+            x.sort();
+        }
+        for x in self.0.des_sorted_commodities.values_mut() {
+            x.sort();
+        }
+
         self.0
     }
 
