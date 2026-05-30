@@ -19,6 +19,8 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             time_bounds: Default::default(),
             ori_spaces: Default::default(),
             des_spaces: Default::default(),
+            ori_commodities: Default::default(),
+            des_commodities: Default::default(),
         })
     }
 }

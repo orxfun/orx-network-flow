@@ -30,5 +30,7 @@ fn add_source_waiting_edges<V: Variant>(
     prob: &Problem<V>,
     builder: &mut GraphBuilder<VertexData, EdgeData>,
 ) {
-    //
+    for &ori in &prob.ori_spaces {
+        //
+    }
 }

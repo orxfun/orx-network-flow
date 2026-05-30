@@ -1,20 +1,14 @@
-use crate::Graph;
 use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
 use crate::costs::Costs;
-use crate::costs::EarlinessCost;
-use crate::costs::LatenessCost;
-use crate::costs::LostRevenue;
-use crate::costs::TransportCost;
 use crate::graph_builders::AonGraph;
 use crate::graph_builders::build_aon_graph;
 use crate::problem::variant::Variant;
 use crate::spaces::Space;
 use crate::spaces::Spaces;
+use crate::std_utils::Map;
 use crate::std_utils::Set;
-use crate::time_bounds::ConnTimeBounds;
-use crate::time_bounds::LatenessEarlinessBounds;
 use crate::time_bounds::TimeBounds;
 use crate::transports::Transport;
 use crate::transports::TransportData;
@@ -25,15 +19,17 @@ use crate::vehicles::VehicleData;
 use crate::vehicles::Vehicles;
 
 pub struct Problem<V: Variant> {
-    pub(super) spaces: Spaces<V::S>,
-    pub(super) vehicle_types: VehicleTypes<V>,
-    pub(super) vehicles: Vehicles<V>,
-    pub(super) commodities: Commodities<V>,
-    pub(super) transports: Transports<V>,
-    pub(super) costs: Costs<V>,
-    pub(super) time_bounds: TimeBounds,
-    pub(super) ori_spaces: Set<Space>,
-    pub(super) des_spaces: Set<Space>,
+    pub spaces: Spaces<V::S>,
+    pub vehicle_types: VehicleTypes<V>,
+    pub vehicles: Vehicles<V>,
+    pub commodities: Commodities<V>,
+    pub transports: Transports<V>,
+    pub costs: Costs<V>,
+    pub time_bounds: TimeBounds,
+    pub ori_spaces: Set<Space>,
+    pub des_spaces: Set<Space>,
+    pub ori_commodities: Map<Space, Commodity>,
+    pub des_commodities: Map<Space, Commodity>,
 }
 
 impl<V: Variant> Problem<V> {
@@ -80,46 +76,6 @@ impl<V: Variant> Problem<V> {
 
     pub(crate) fn vehicle_by_idx(&self, idx: Vehicle) -> &VehicleData {
         self.vehicles.get_by_idx(idx).expect("validated problem")
-    }
-
-    // costs
-
-    pub fn earliness_cost(&self) -> &EarlinessCost<V> {
-        &self.costs.earliness
-    }
-
-    pub fn lateness_cost(&self) -> &LatenessCost<V> {
-        &self.costs.lateness
-    }
-
-    pub fn lost_revenue_cost(&self) -> &LostRevenue<V> {
-        &self.costs.lost_revenue
-    }
-
-    pub fn transport_cost(&self) -> &TransportCost<V> {
-        &self.costs.transport
-    }
-
-    // time bounds
-
-    pub fn min_conn_time(&self) -> &ConnTimeBounds {
-        &self.time_bounds.min_conn_time
-    }
-
-    pub fn max_conn_time(&self) -> &ConnTimeBounds {
-        &self.time_bounds.max_conn_time
-    }
-
-    pub fn max_lateness(&self) -> &LatenessEarlinessBounds {
-        &self.time_bounds.max_lateness
-    }
-
-    pub fn max_earliness(&self) -> &LatenessEarlinessBounds {
-        &self.time_bounds.max_earliness
-    }
-
-    pub fn max_waiting(&self) -> &LatenessEarlinessBounds {
-        &self.time_bounds.max_waiting
     }
 
     // graphs
