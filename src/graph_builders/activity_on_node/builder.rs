@@ -74,3 +74,19 @@ fn edges_transport_transport_waiting<V: Variant>(
         }
     }
 }
+
+fn edges_source_to_transport<V: Variant>(
+    prob: &Problem<V>,
+    builder: &mut GraphBuilder<VertexData, EdgeData>,
+    indexer: &Indexer,
+) {
+    todo!()
+    // for (_ori, sorted_commodities) in &prob.ori_sorted_commodities {
+    //     for pair in sorted_commodities.windows(2) {
+    //         let s0 = indexer.source_idx(pair[0]);
+    //         let s1 = indexer.source_idx(pair[1]);
+    //         let data = EdgeData::SourceToSourceWait(pair[0], pair[1]);
+    //         builder.edge(data, s0.into_inner(), s1.into_inner());
+    //     }
+    // }
+}
