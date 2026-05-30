@@ -27,6 +27,7 @@ pub fn build_aon_graph<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeD
     edges_sink_sink_waiting(prob, &mut builder, &indexer);
     edges_transport_transport_waiting(prob, &mut builder, &indexer);
     edges_source_to_transport(prob, &mut builder, &indexer);
+    edges_transport_to_sink(prob, &mut builder, &indexer);
 
     builder.finish()
 }
@@ -126,8 +127,8 @@ fn edges_transport_to_sink<V: Variant>(
     indexer: &Indexer,
 ) {
     for (des, sorted_commodities) in &prob.des_sorted_commodities {
-        if let Some(des_sorted_transports) = prob.ori_des_sorted_transports.get(des) {
-            for (_des, sorted_transports) in des_sorted_transports {
+        if let Some(ori_sorted_transports) = prob.des_ori_sorted_transports.get(des) {
+            for (_ori, sorted_transports) in ori_sorted_transports {
                 let mut sorted_commodities_rev = sorted_commodities.iter().rev();
                 let mut sorted_transports_rev = sorted_transports.iter().rev();
 
@@ -138,14 +139,14 @@ fn edges_transport_to_sink<V: Variant>(
                         (false, _) => break,
                         (true, None) => break,
                         (true, Some(&t)) => {
-                            let departure = prob.transport_by_idx(t).origin().time();
+                            let arrival = prob.transport_by_idx(t).destination().time();
 
                             loop {
                                 match sorted_commodities_rev.next() {
                                     None => break,
                                     Some(&c) => {
-                                        let ready = prob.commodity_by_idx(c).origin().time();
-                                        if ready <= departure {
+                                        let due = prob.commodity_by_idx(c).destination().time();
+                                        if arrival <= due {
                                             let data = EdgeData::SourceToTransport(c, t);
                                             let tail = indexer.source_idx(c).into_inner();
                                             let head = indexer.transport_idx(t).into_inner();
