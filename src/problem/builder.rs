@@ -19,8 +19,8 @@ impl<V: Variant> Default for ProblemBuilder<V> {
             time_bounds: Default::default(),
             ori_spaces: Default::default(),
             des_spaces: Default::default(),
-            ori_commodities: Default::default(),
-            des_commodities: Default::default(),
+            ori_sorted_commodities: Default::default(),
+            des_sorted_commodities: Default::default(),
         })
     }
 }
@@ -48,13 +48,25 @@ impl<V: Variant> ProblemBuilder<V> {
     ) {
         let ori_space = self.0.spaces.push(origin);
         self.0.ori_spaces.insert(ori_space);
+
         let ori = SpaceTime::new(ori_space, ready_time.into());
 
         let des_space = self.0.spaces.push(destination);
         self.0.des_spaces.insert(des_space);
         let des = SpaceTime::new(des_space, due_time.into());
 
-        _ = self.0.commodities.push(commodity_key, ori, des, amount);
+        let commodity = self.0.commodities.push(commodity_key, ori, des, amount);
+
+        self.0
+            .ori_sorted_commodities
+            .entry(ori_space)
+            .or_default()
+            .push(commodity);
+        self.0
+            .des_sorted_commodities
+            .entry(des_space)
+            .or_default()
+            .push(commodity);
     }
 
     pub fn push_transport(

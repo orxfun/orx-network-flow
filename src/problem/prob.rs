@@ -17,6 +17,7 @@ use crate::vehicle_types::VehicleTypes;
 use crate::vehicles::Vehicle;
 use crate::vehicles::VehicleData;
 use crate::vehicles::Vehicles;
+use alloc::vec::Vec;
 
 pub struct Problem<V: Variant> {
     pub spaces: Spaces<V::S>,
@@ -28,8 +29,8 @@ pub struct Problem<V: Variant> {
     pub time_bounds: TimeBounds,
     pub ori_spaces: Set<Space>,
     pub des_spaces: Set<Space>,
-    pub ori_commodities: Map<Space, Commodity>,
-    pub des_commodities: Map<Space, Commodity>,
+    pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,
+    pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
 }
 
 impl<V: Variant> Problem<V> {
