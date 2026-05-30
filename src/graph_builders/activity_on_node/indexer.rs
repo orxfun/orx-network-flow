@@ -25,6 +25,13 @@ impl Indexer {
         self.sinks_range.end
     }
 
+    pub fn transport_idx(&self, transport: Transport) -> VIdx {
+        let transport = transport.into_inner();
+        let idx = self.transports_range.start + transport;
+        debug_assert!(self.transports_range.contains(&idx));
+        VIdx::from(idx)
+    }
+
     pub fn source_idx(&self, commodity: Commodity) -> VIdx {
         let commodity = commodity.into_inner();
         let idx = self.sources_range.start + commodity;
