@@ -3,7 +3,6 @@ use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
-use crate::spaces::SpaceOd;
 use crate::time::Time;
 use crate::time_bounds::{ConnTimeBounds, LatenessEarlinessBounds};
 use crate::transports::Transport;
@@ -67,8 +66,10 @@ impl<V: Variant> ProblemBuilder<V> {
             &mut self.0.ori_des_sorted_transports,
         );
         let sort_key = |t: &Transport| self.0.transport_by_idx(*t).origin().time();
-        for x in ori_des_sorted_transports.values_mut() {
-            x.sort_by_key(&sort_key);
+        for des_sorted_transports in ori_des_sorted_transports.values_mut() {
+            for x in des_sorted_transports.values_mut() {
+                x.sort_by_key(&sort_key);
+            }
         }
         self.0.ori_des_sorted_transports = ori_des_sorted_transports;
 
@@ -131,13 +132,11 @@ impl<V: Variant> ProblemBuilder<V> {
             .transports
             .push(transport_key, vehicle, ori, des, capacity);
 
-        let space_od = SpaceOd {
-            ori: ori_space,
-            des: des_space,
-        };
         self.0
             .ori_des_sorted_transports
-            .entry(space_od)
+            .entry(ori_space)
+            .or_default()
+            .entry(des_space)
             .or_default()
             .push(transport);
     }
