@@ -90,20 +90,25 @@ fn edges_source_to_transport<V: Variant>(
                 let mut sorted_transports_rev = sorted_transports.iter().rev();
 
                 loop {
-                    match sorted_transports_rev.next() {
-                        None => break,
-                        Some(&t) => {
+                    let more_commodities = sorted_commodities_rev.len() > 0;
+
+                    match (more_commodities, sorted_transports_rev.next()) {
+                        (false, _) => break,
+                        (true, None) => break,
+                        (true, Some(&t)) => {
                             let departure = prob.transport_by_idx(t).origin().time();
 
-                            match sorted_commodities_rev.next() {
-                                None => break,
-                                Some(&c) => {
-                                    let ready = prob.commodity_by_idx(c).origin().time();
-                                    if ready <= departure {
-                                        let data = EdgeData::SourceToTransport(c, t);
-                                        let tail = indexer.source_idx(c).into_inner();
-                                        let head = indexer.transport_idx(t).into_inner();
-                                        builder.edge(data, tail, head);
+                            loop {
+                                match sorted_commodities_rev.next() {
+                                    None => break,
+                                    Some(&c) => {
+                                        let ready = prob.commodity_by_idx(c).origin().time();
+                                        if ready <= departure {
+                                            let data = EdgeData::SourceToTransport(c, t);
+                                            let tail = indexer.source_idx(c).into_inner();
+                                            let head = indexer.transport_idx(t).into_inner();
+                                            builder.edge(data, tail, head);
+                                        }
                                     }
                                 }
                             }

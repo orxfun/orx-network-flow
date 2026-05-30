@@ -71,7 +71,7 @@ fn main() {
         12,
         String::from("77X"),
         String::from("AMS"),
-        6i64,
+        8i64,
         String::from("BRU"),
         17i64,
         1000,
