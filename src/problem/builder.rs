@@ -159,6 +159,13 @@ impl<V: Variant> ProblemBuilder<V> {
             .entry(des_space)
             .or_default()
             .push(transport);
+        self.0
+            .des_ori_sorted_transports
+            .entry(des_space)
+            .or_default()
+            .entry(ori_space)
+            .or_default()
+            .push(transport);
     }
 
     // costs

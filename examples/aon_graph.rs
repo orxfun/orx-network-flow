@@ -50,7 +50,7 @@ impl Variant for MyVariant {
 
 fn main() {
     let commodities = vec![
-        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 10, 150),
+        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 19, 150),
         MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12, 290),
     ];
 

@@ -147,9 +147,9 @@ fn edges_transport_to_sink<V: Variant>(
                                     Some(&c) => {
                                         let due = prob.commodity_by_idx(c).destination().time();
                                         if arrival <= due {
-                                            let data = EdgeData::SourceToTransport(c, t);
-                                            let tail = indexer.source_idx(c).into_inner();
-                                            let head = indexer.transport_idx(t).into_inner();
+                                            let data = EdgeData::TransportToSink(t, c);
+                                            let tail = indexer.transport_idx(t).into_inner();
+                                            let head = indexer.sink_idx(c).into_inner();
                                             builder.edge(data, tail, head);
                                         }
                                     }
