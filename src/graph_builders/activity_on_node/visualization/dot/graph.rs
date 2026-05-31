@@ -64,7 +64,7 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
                 let des = prob.space_key(transport.destination().space());
                 let dt = transport.origin().time();
                 let at = transport.destination().time();
-                format!("{}\n{}-{}\t{}-{}", v, ori, des, dt, at)
+                format!("{}\n{}-{}\n{}-{}", v, ori, des, dt, at)
             }
         }
     }

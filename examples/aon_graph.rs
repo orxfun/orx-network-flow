@@ -1,33 +1,6 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
 use orx_network_flow::graph_builders::activity_on_node::visualization::dot::AonDotGraph;
-use orx_network_flow::graph_builders::activity_on_node::{AonGraph, build_aon_graph};
 use orx_network_flow::{ProblemBuilder, Variant};
-
-struct MyCommodity {
-    origin: String,
-    destination: String,
-    ready_time: i64,
-    due_time: i64,
-    amount: u64,
-}
-
-impl MyCommodity {
-    fn new(
-        origin: String,
-        destination: String,
-        ready_time: i64,
-        due_time: i64,
-        amount: u64,
-    ) -> Self {
-        Self {
-            origin,
-            destination,
-            ready_time,
-            due_time,
-            amount,
-        }
-    }
-}
 
 struct MyVariant;
 
@@ -40,7 +13,7 @@ impl Variant for MyVariant {
 
     type V = usize;
 
-    type T = String;
+    type T = usize;
 
     type F = u64;
 
@@ -52,53 +25,42 @@ impl Variant for MyVariant {
 }
 
 fn main() {
-    let commodities = vec![
-        MyCommodity::new(String::from("AMS"), String::from("BRU"), 7, 19, 150),
-        MyCommodity::new(String::from("AMS"), String::from("LEJ"), 9, 12, 290),
-    ];
-
     let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
 
-    for (k, commodity) in commodities.iter().enumerate() {
-        builder.push_commodity(
-            k,
-            commodity.origin.clone(),
-            commodity.ready_time,
-            commodity.destination.clone(),
-            commodity.due_time,
-            commodity.amount,
+    // commodities
+    let mut c_idx = 0;
+    let c = &mut c_idx;
+    let mut commodity = |ori: &str, des: &str, rt: i64, due: i64| {
+        builder.push_commodity(*c, ori.to_string(), rt, des.to_string(), due, 100);
+        *c += 1;
+    };
+
+    commodity("AMS", "BRU", 5, 16);
+    commodity("AMS", "SIN", 9, 64);
+
+    // transports
+    let mut t_idx = 0;
+    let t = &mut t_idx;
+    let mut transport = |ori: &str, des: &str, dt: i64, at: i64| {
+        builder.push_transport(
+            *t,
+            12,
+            String::from("77X"),
+            ori.to_string(),
+            dt,
+            des.to_string(),
+            at,
+            1000,
         );
-    }
-    builder.push_transport(
-        String::from("AMS-BRU-12"),
-        12,
-        String::from("77X"),
-        String::from("AMS"),
-        8i64,
-        String::from("BRU"),
-        17i64,
-        1000,
-    );
-    builder.push_transport(
-        String::from("BRU-LEJ-26"),
-        11,
-        String::from("77X"),
-        String::from("BRU"),
-        19i64,
-        String::from("EMA"),
-        22i64,
-        800,
-    );
-    builder.push_transport(
-        String::from("BRU-LEJ-33"),
-        11,
-        String::from("77X"),
-        String::from("BRU"),
-        18i64,
-        String::from("EMA"),
-        20i64,
-        800,
-    );
+        *t += 1;
+    };
+
+    transport("AMS", "BRU", 4, 6);
+    transport("AMS", "BRU", 8, 10);
+    transport("AMS", "BRU", 14, 16);
+    transport("AMS", "BRU", 15, 17);
+    transport("AMS", "BRU", 18, 20);
+
     let problem = builder.finish();
 
     let graph = problem.build_aon_graph();
