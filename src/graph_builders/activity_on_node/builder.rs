@@ -2,6 +2,7 @@ use super::edges_source_to_transport::edges_source_to_transport;
 use super::edges_transport_to_transport::edges_transport_to_transport;
 use crate::commodities::Commodity;
 use crate::graph::GraphBuilder;
+use crate::graph_builders::activity_on_node::edges_transport_to_sink::edges_transport_to_sink;
 use crate::graph_builders::activity_on_node::indexer::Indexer;
 use crate::graph_builders::activity_on_node::{edge::EdgeData, vertex::VertexData};
 use crate::indices::IdxCore;
@@ -82,7 +83,7 @@ fn edges_transport_transport_waiting<V: Variant>(
     }
 }
 
-fn edges_transport_to_sink<V: Variant>(
+fn edges_transport_to_sink_zzz<V: Variant>(
     prob: &Problem<V>,
     builder: &mut GraphBuilder<VertexData, EdgeData>,
     indexer: &Indexer,

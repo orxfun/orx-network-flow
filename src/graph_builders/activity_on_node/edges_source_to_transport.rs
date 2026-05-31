@@ -39,7 +39,7 @@ fn connect_transports_of_od<V: Variant>(
         // no edges once we complete traversing commodities
         let c = commodities_rev.next()?;
 
-        match find_transport_for_commodity(prob, &mut transports_rev, curr_t, c) {
+        match find_head_for_tail(prob, &mut transports_rev, curr_t, c) {
             Some(t) => {
                 let data = EdgeData::SourceToTransport(c, t);
                 let tail = indexer.source_idx(c).into_inner();
@@ -55,34 +55,34 @@ fn connect_transports_of_od<V: Variant>(
     }
 }
 
-fn find_transport_for_commodity<V: Variant>(
+fn find_head_for_tail<V: Variant>(
     prob: &Problem<V>,
-    transports_rev: &mut Peekable<impl Iterator<Item = Transport>>,
-    curr_t: Transport,
-    c: Commodity,
+    heads_rev: &mut Peekable<impl Iterator<Item = Transport>>,
+    curr_head: Transport,
+    tail: Commodity,
 ) -> Option<Transport> {
-    let ready = prob.commodity_by_idx(c).origin().time();
-    let departure = prob.transport_by_idx(curr_t).origin().time();
+    let ready = prob.commodity_by_idx(tail).origin().time();
+    let departure = prob.transport_by_idx(curr_head).origin().time();
 
     if ready > departure {
         // no transport can be connected to c
         return None;
     }
 
-    let mut curr_t = curr_t;
+    let mut curr_head = curr_head;
     loop {
-        match transports_rev.peek() {
-            Some(&next_t) => {
-                let departure = prob.transport_by_idx(next_t).origin().time();
+        match heads_rev.peek() {
+            Some(&next_head) => {
+                let departure = prob.transport_by_idx(next_head).origin().time();
                 match ready <= departure {
                     // next_t can also connect to c, so it must be preferred
-                    true => curr_t = transports_rev.next().expect("is-some"),
+                    true => curr_head = heads_rev.next().expect("is-some"),
                     // curr_t can connect to c
-                    false => return Some(curr_t),
+                    false => return Some(curr_head),
                 }
             }
             // curr_t is the earliest transport and can connect to c
-            None => return Some(curr_t),
+            None => return Some(curr_head),
         }
     }
 }
