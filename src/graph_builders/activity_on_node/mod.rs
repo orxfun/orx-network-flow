@@ -1,12 +1,10 @@
 mod builder;
-mod dot_graph;
-mod dot_settings;
 mod edge;
 mod indexer;
 mod vertex;
+pub mod visualization;
 
 pub use builder::build_aon_graph;
-pub use dot_graph::AonDotGraph;
 pub use edge::EdgeData;
 pub use vertex::VertexData;
 
