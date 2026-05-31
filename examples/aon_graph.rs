@@ -1,6 +1,8 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
 use orx_network_flow::graph_builders::activity_on_node::visualization::dot::AonDotGraph;
 use orx_network_flow::{ProblemBuilder, Variant};
+use std::fs;
+use std::process::Command;
 
 struct MyVariant;
 
@@ -71,5 +73,24 @@ fn main() {
 
     let dot = AonDotGraph::new(&problem, &graph);
 
-    println!("{}", dot.to_dot_string());
+    let dot_text = dot.to_dot_string();
+    println!("{dot_text}");
+
+    let dot_path = "target/aon_graph.dot";
+    let svg_path = "target/aon_graph.svg";
+
+    if let Err(err) = fs::create_dir_all("target") {
+        eprintln!("failed to create target directory: {err}");
+        return;
+    }
+
+    if let Err(err) = fs::write(dot_path, &dot_text) {
+        eprintln!("failed to write DOT file to {dot_path}: {err}");
+        return;
+    }
+
+    Command::new("dot")
+        .args(["-Tsvg", dot_path, "-o", svg_path])
+        .status()
+        .expect("failed to create svg");
 }
