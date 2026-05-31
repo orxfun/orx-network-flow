@@ -1,4 +1,5 @@
-use orx_network_flow::{ProblemBuilder, Variant};
+use orx_network_flow::graph_builders::activity_on_node::{AonDotGraph, AonGraph, build_aon_graph};
+use orx_network_flow::{DotGraph, ProblemBuilder, Variant};
 
 struct MyCommodity {
     origin: String,
@@ -100,5 +101,7 @@ fn main() {
 
     let graph = problem.build_aon_graph();
 
-    println!("{}", graph.to_dot_string());
+    let dot = AonDotGraph::new(&problem, &graph)
+
+    println!("{}", dot.to_dot_string());
 }

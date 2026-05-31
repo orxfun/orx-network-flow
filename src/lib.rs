@@ -23,7 +23,7 @@ mod cost;
 mod costs;
 mod flow_units;
 mod graph;
-mod graph_builders;
+pub mod graph_builders;
 mod indices;
 mod problem;
 mod space_time;
@@ -35,5 +35,5 @@ mod transports;
 mod vehicle_types;
 mod vehicles;
 
-pub use graph::Graph;
+pub use graph::{DotGraph, Graph};
 pub use problem::{Problem, ProblemBuilder, Variant};

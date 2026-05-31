@@ -1,4 +1,4 @@
-use crate::graph::Graph;
+use crate::graph::{DotGraph, Graph};
 
 #[test]
 fn graph_validity() {

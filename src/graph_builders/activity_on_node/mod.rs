@@ -5,6 +5,7 @@ mod indexer;
 mod vertex;
 
 pub use builder::build_aon_graph;
+pub use dot::AonDotGraph;
 pub use edge::EdgeData;
 pub use vertex::VertexData;
 
