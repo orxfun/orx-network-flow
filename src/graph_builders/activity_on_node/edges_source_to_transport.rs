@@ -38,7 +38,6 @@ fn connect_transports_of_od<V: Variant>(
         // no edges once we complete traversing commodities
         let c = commodities_rev.next()?;
 
-        // if we cannot match t to any commodity, no other transports can match
         let (t, next_t) = find_transport_for_commodity(prob, &mut transports_rev, curr_t, c);
 
         if let Some(t) = t {

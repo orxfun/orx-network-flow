@@ -66,6 +66,8 @@ fn main() {
     transport("BRU", "SIN", 15, 20);
     transport("BRU", "SIN", 20, 25);
     transport("BRU", "SIN", 25, 30);
+    transport("AMS", "EMA", 5, 9);
+    transport("AMS", "EMA", 12, 16);
 
     let problem = builder.finish();
 
