@@ -45,13 +45,13 @@ fn connect_transports_of_od<V: Variant>(
 
         match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
             Some(head) => {
+                let data = EdgeData::TransportToTransport(tail, head);
+                let i = indexer.transport_idx(tail).into_inner();
+                let j = indexer.transport_idx(head).into_inner();
+                builder.edge(data, i, j);
+
                 // same head can be assigned to prior tails
                 curr_head = head;
-
-                let data = EdgeData::TransportToTransport(tail, head);
-                let tail = indexer.transport_idx(tail).into_inner();
-                let head = indexer.transport_idx(head).into_inner();
-                builder.edge(data, tail, head);
             }
             // no head for this tail, moving on to the next tail
             None => {}

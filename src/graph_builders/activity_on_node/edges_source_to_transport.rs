@@ -28,26 +28,26 @@ fn connect_transports_of_od<V: Variant>(
     prob: &Problem<V>,
     builder: &mut GraphBuilder<VertexData, EdgeData>,
     indexer: &Indexer,
-    mut commodities_rev: impl Iterator<Item = Commodity>,
-    mut transports_rev: Peekable<impl Iterator<Item = Transport>>,
+    mut tails_rev: impl Iterator<Item = Commodity>,
+    mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
 ) -> Option<()> {
     // no edges once we complete traversing transports
-    let mut curr_t = transports_rev.next()?;
+    let mut curr_head = heads_rev.next()?;
 
     // connect one commodity per iteration
     loop {
         // no edges once we complete traversing commodities
-        let c = commodities_rev.next()?;
+        let tail = tails_rev.next()?;
 
-        match find_head_for_tail(prob, &mut transports_rev, curr_t, c) {
-            Some(t) => {
-                let data = EdgeData::SourceToTransport(c, t);
-                let tail = indexer.source_idx(c).into_inner();
-                let head = indexer.transport_idx(t).into_inner();
-                builder.edge(data, tail, head);
+        match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
+            Some(head) => {
+                let data = EdgeData::SourceToTransport(tail, head);
+                let i = indexer.source_idx(tail).into_inner();
+                let j = indexer.transport_idx(head).into_inner();
+                builder.edge(data, i, j);
 
                 // no point in assigning same transport to prior tails, progressing
-                curr_t = transports_rev.next()?;
+                curr_head = heads_rev.next()?;
             }
             // no transport for this commodity, moving on to the next commodity
             None => {}
