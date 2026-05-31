@@ -12,6 +12,8 @@ pub trait DotGraph {
 
     fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String;
 
+    fn vertex_settings(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String;
+
     fn to_dot_string(&self) -> String {
         let gr = self.graph();
 
@@ -43,5 +45,9 @@ impl DotGraph for Graph<(), ()> {
 
     fn vertex_label(&self, v: VIdx, _: &Vertex<Self::V>) -> String {
         v.to_string()
+    }
+
+    fn vertex_settings(&self, _: VIdx, _: &Vertex<Self::V>) -> String {
+        Default::default()
     }
 }

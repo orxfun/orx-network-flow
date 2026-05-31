@@ -1,3 +1,5 @@
+use std::string::ToString;
+
 use crate::graph::visualization::dot::DotGraph;
 use crate::graph::{VIdx, Vertex};
 use crate::graph_builders::activity_on_node::visualization::dot::AonDotGraphSettings;
@@ -64,6 +66,14 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
                 let at = transport.destination().time();
                 format!("{}\n{}-{}\t{}-{}", v, ori, des, dt, at)
             }
+        }
+    }
+
+    fn vertex_settings(&self, _: VIdx, vertex: &Vertex<Self::V>) -> String {
+        match vertex.data() {
+            VertexData::Source(_) => self.settings.source.to_string(),
+            VertexData::Sink(_) => self.settings.sink.to_string(),
+            VertexData::Transport(_) => self.settings.transport.to_string(),
         }
     }
 }

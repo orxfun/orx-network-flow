@@ -2,9 +2,9 @@ use crate::graph::visualization::dot::{NodeSettings, NodeShape, NodeStyle};
 use alloc::string::ToString;
 
 pub struct AonDotGraphSettings {
-    source: NodeSettings,
-    sink: NodeSettings,
-    transport: NodeSettings,
+    pub source: NodeSettings,
+    pub sink: NodeSettings,
+    pub transport: NodeSettings,
 }
 
 impl Default for AonDotGraphSettings {
