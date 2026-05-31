@@ -11,12 +11,12 @@ impl Default for AonDotGraphSettings {
     fn default() -> Self {
         Self {
             source: NodeSettings {
-                shape: Some(NodeShape::Square),
+                shape: Some(NodeShape::House),
                 style: Some(NodeStyle::Filled),
                 fill_color: Some("chartreuse".to_string()),
             },
             sink: NodeSettings {
-                shape: Some(NodeShape::Square),
+                shape: Some(NodeShape::InvHouse),
                 style: Some(NodeStyle::Filled),
                 fill_color: Some("tomato".to_string()),
             },

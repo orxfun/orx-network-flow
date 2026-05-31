@@ -49,14 +49,14 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
                 let ori = prob.space_key(commodity.origin().space());
                 let des = prob.space_key(commodity.destination().space());
                 let rt = commodity.origin().time();
-                format!("{} : s{}\n{}-{}\tready: {}", v, c, ori, des, rt)
+                format!("{} : s{}\n{}-{}\nready: {}", v, c, ori, des, rt)
             }
             VertexData::Sink(c) => {
                 let commodity = prob.commodity_by_idx(*c);
                 let ori = prob.space_key(commodity.origin().space());
                 let des = prob.space_key(commodity.destination().space());
                 let due = commodity.destination().time();
-                format!("{} : t{}\n{}-{}\tdue: {}", v, c, ori, des, due)
+                format!("{} : t{}\n{}-{}\ndue: {}", v, c, ori, des, due)
             }
             VertexData::Transport(t) => {
                 let transport = prob.transport_by_idx(*t);
