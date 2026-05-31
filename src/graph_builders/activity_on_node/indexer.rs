@@ -1,9 +1,7 @@
 use crate::commodities::Commodity;
 use crate::graph::VIdx;
 use crate::indices::IdxCore;
-use crate::{Problem, Variant};
-use crate::{graph_builders::activity_on_node::vertex::VertexData, transports::Transport};
-use core::iter;
+use crate::transports::Transport;
 use core::ops::Range;
 
 pub struct Indexer {
