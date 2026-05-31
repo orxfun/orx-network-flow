@@ -43,12 +43,30 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
     }
 
     fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String {
+        let prob = self.problem;
         match vertex.data() {
             VertexData::Source(c) => {
-                //
-                todo!()
+                let commodity = prob.commodity_by_idx(*c);
+                let ori = prob.space_key(commodity.origin().space());
+                let des = prob.space_key(commodity.destination().space());
+                let rt = commodity.origin().time();
+                format!("{} : s{}\n{}-{}\tready: {}", v, c, ori, des, rt)
             }
-            _ => "abc".to_string(),
+            VertexData::Sink(c) => {
+                let commodity = prob.commodity_by_idx(*c);
+                let ori = prob.space_key(commodity.origin().space());
+                let des = prob.space_key(commodity.destination().space());
+                let due = commodity.destination().time();
+                format!("{} : t{}\n{}-{}\tdue: {}", v, c, ori, des, due)
+            }
+            VertexData::Transport(t) => {
+                let transport = prob.transport_by_idx(*t);
+                let ori = prob.space_key(transport.origin().space());
+                let des = prob.space_key(transport.destination().space());
+                let dt = transport.origin().time();
+                let at = transport.destination().time();
+                format!("{}\n{}-{}\t{}-{}", v, ori, des, dt, at)
+            }
         }
     }
 }

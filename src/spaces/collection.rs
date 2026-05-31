@@ -28,4 +28,8 @@ impl<K: MapKey> Spaces<K> {
             .into_iter()
             .map(|(space, key, _)| (space, key))
     }
+
+    pub fn key(&self, idx: Space) -> Option<&K> {
+        self.map.idx_to_key(idx)
+    }
 }

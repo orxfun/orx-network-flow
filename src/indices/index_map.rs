@@ -54,6 +54,14 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
         self.index_and_data.get(idx).map(|x| &x.1)
     }
 
+    pub fn idx_to_key(&self, idx: I) -> Option<&K>
+    where
+        I: IdxCore,
+    {
+        let idx = idx.into_inner();
+        self.index_and_data.get(idx).map(|x| &x.0)
+    }
+
     pub fn entries(&self) -> impl Iterator<Item = (I, &K, &V)> {
         self.index_and_data
             .iter()

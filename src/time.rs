@@ -1,4 +1,7 @@
-use core::ops::{Add, Sub};
+use core::{
+    fmt::Display,
+    ops::{Add, Sub},
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Time(i64);
@@ -14,6 +17,12 @@ impl Time {
 
     pub(super) fn inner(self) -> i64 {
         self.0
+    }
+}
+
+impl Display for Time {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

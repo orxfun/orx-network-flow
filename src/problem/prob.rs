@@ -2,7 +2,7 @@ use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
 use crate::costs::Costs;
-use crate::graph_builders::activity_on_node::{AonDotGraph, AonGraph, build_aon_graph};
+use crate::graph_builders::activity_on_node::{AonGraph, build_aon_graph};
 use crate::problem::variant::Variant;
 use crate::spaces::Space;
 use crate::spaces::Spaces;
@@ -61,6 +61,12 @@ impl<V: Variant> Problem<V> {
 
     pub fn transport(&self, key: &V::T) -> Option<&TransportData<V>> {
         self.transports.get_by_key(key)
+    }
+
+    // get key
+
+    pub(crate) fn space_key(&self, idx: Space) -> &V::S {
+        self.spaces.key(idx).expect("validated problem")
     }
 
     // get by idx

@@ -1,4 +1,6 @@
 use core::fmt::Debug;
+#[cfg(feature = "std")]
+use core::fmt::Display;
 
 // set
 
@@ -19,14 +21,14 @@ pub type Map<K, V> = alloc::collections::btree_map::BTreeMap<K, V>;
 // map - key
 
 #[cfg(feature = "std")]
-pub trait MapKey: Debug + Clone + Eq + core::hash::Hash {}
+pub trait MapKey: Debug + Display + Clone + Eq + core::hash::Hash {}
 #[cfg(feature = "std")]
-impl<K: Debug + Clone + Eq + core::hash::Hash> MapKey for K {}
+impl<K: Debug + Display + Clone + Eq + core::hash::Hash> MapKey for K {}
 
 #[cfg(not(feature = "std"))]
-pub trait MapKey: Debug + Clone + PartialOrd + Ord {}
+pub trait MapKey: Debug + Display + Clone + PartialOrd + Ord {}
 #[cfg(not(feature = "std"))]
-impl<K: Debug + Clone + PartialOrd + Ord> MapKey for K {}
+impl<K: Debug + Display + Clone + PartialOrd + Ord> MapKey for K {}
 
 // index
 
