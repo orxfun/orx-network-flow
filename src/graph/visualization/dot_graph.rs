@@ -10,12 +10,7 @@ pub trait DotGraph {
 
     fn graph(&self) -> &Graph<Self::V, Self::E>;
 
-    fn vertex_label(
-        &self,
-        graph: &Graph<Self::V, Self::E>,
-        v: VIdx,
-        vertex: &Vertex<Self::V>,
-    ) -> String;
+    fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String;
 
     fn to_dot_string(&self) -> String {
         let gr = self.graph();
@@ -24,7 +19,7 @@ pub trait DotGraph {
 
         for v in gr.vertices.indices() {
             let vertex = &gr.vertices[v];
-            let label = self.vertex_label(gr, v, vertex);
+            let label = self.vertex_label(v, vertex);
             dot.push_str(&format!("    {v} [label=\"{label}\"];\n"));
         }
 
@@ -46,7 +41,7 @@ impl DotGraph for Graph<(), ()> {
         self
     }
 
-    fn vertex_label(&self, _: &Graph<Self::V, Self::E>, v: VIdx, _: &Vertex<Self::V>) -> String {
+    fn vertex_label(&self, v: VIdx, _: &Vertex<Self::V>) -> String {
         v.to_string()
     }
 }

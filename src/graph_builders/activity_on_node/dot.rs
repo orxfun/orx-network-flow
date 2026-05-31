@@ -2,7 +2,7 @@ use crate::graph::{DotGraph, VIdx, Vertex};
 use crate::graph_builders::activity_on_node::{EdgeData, VertexData};
 use crate::{Graph, Problem, Variant};
 use alloc::format;
-use alloc::string::String;
+use alloc::string::{String, ToString};
 
 // impl DotData for (VertexData, EdgeData) {
 //     type V = VertexData;
@@ -42,13 +42,13 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
         self.graph
     }
 
-    fn vertex_label(
-        &self,
-        graph: &Graph<Self::V, Self::E>,
-        v: VIdx,
-        vertex: &Vertex<Self::V>,
-    ) -> String {
-        // self.graph.todo
-        td
+    fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String {
+        match vertex.data() {
+            VertexData::Source(c) => {
+                //
+                todo!()
+            }
+            _ => "abc".to_string(),
+        }
     }
 }

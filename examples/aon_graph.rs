@@ -101,7 +101,7 @@ fn main() {
 
     let graph = problem.build_aon_graph();
 
-    let dot = AonDotGraph::new(&problem, &graph)
+    let dot = AonDotGraph::new(&problem, &graph);
 
     println!("{}", dot.to_dot_string());
 }
