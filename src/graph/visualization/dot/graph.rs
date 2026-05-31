@@ -22,7 +22,8 @@ pub trait DotGraph {
         for v in gr.vertices.indices() {
             let vertex = &gr.vertices[v];
             let label = self.vertex_label(v, vertex);
-            dot.push_str(&format!("    {v} [label=\"{label}\"];\n"));
+            let settings = self.vertex_settings(v, vertex);
+            dot.push_str(&format!("    {v} [label=\"{label}\"{settings}];\n"));
         }
 
         for edge in gr.edges.iter() {
