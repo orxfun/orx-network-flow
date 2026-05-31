@@ -21,26 +21,26 @@ pub fn edges_transport_to_transport<V: Variant>(
                     let tails_rev = tail_sorted_transports.iter().copied().rev();
                     let heads_rev = head_sorted_transports.iter().copied().rev().peekable();
 
-                    connect_transports_of_od(prob, builder, indexer, tails_rev, heads_rev);
+                    connect_edges_for_od(prob, builder, indexer, tails_rev, heads_rev);
                 }
             }
         }
     }
 }
 
-fn connect_transports_of_od<V: Variant>(
+fn connect_edges_for_od<V: Variant>(
     prob: &Problem<V>,
     builder: &mut GraphBuilder<VertexData, EdgeData>,
     indexer: &Indexer,
     mut tails_rev: impl Iterator<Item = Transport>,
     mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
 ) -> Option<()> {
-    // no edges once we complete traversing transports
+    // no edges once we complete traversing heads
     let mut curr_head = heads_rev.next()?;
 
-    // connect one commodity per iteration
+    // connect one tail per iteration
     loop {
-        // no edges once we complete traversing commodities
+        // no edges once we complete traversing tails
         let tail = tails_rev.next()?;
 
         match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
