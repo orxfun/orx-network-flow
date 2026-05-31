@@ -1,5 +1,6 @@
 use crate::graph::visualization::dot::DotGraph;
 use crate::graph::{VIdx, Vertex};
+use crate::graph_builders::activity_on_node::visualization::dot::AonDotGraphSettings;
 use crate::graph_builders::activity_on_node::{EdgeData, VertexData};
 use crate::{Graph, Problem, Variant};
 use alloc::format;
@@ -8,11 +9,24 @@ use alloc::string::String;
 pub struct AonDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
     graph: &'a Graph<VertexData, EdgeData>,
+    settings: AonDotGraphSettings,
 }
 
 impl<'a, V: Variant> AonDotGraph<'a, V> {
     pub fn new(problem: &'a Problem<V>, graph: &'a Graph<VertexData, EdgeData>) -> Self {
-        Self { problem, graph }
+        Self::with_settings(problem, graph, Default::default())
+    }
+
+    pub fn with_settings(
+        problem: &'a Problem<V>,
+        graph: &'a Graph<VertexData, EdgeData>,
+        settings: AonDotGraphSettings,
+    ) -> Self {
+        Self {
+            problem,
+            graph,
+            settings,
+        }
     }
 }
 
