@@ -1,4 +1,4 @@
-use orx_network_flow::{DotGraph, Graph};
+use orx_network_flow::{Graph, graph::visualization::dot::DotGraph};
 
 fn main() {
     let vertices = (0..4).map(|_| ());

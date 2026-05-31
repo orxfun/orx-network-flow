@@ -1,5 +1,6 @@
+use orx_network_flow::graph::visualization::dot::DotGraph;
 use orx_network_flow::graph_builders::activity_on_node::{AonDotGraph, AonGraph, build_aon_graph};
-use orx_network_flow::{DotGraph, ProblemBuilder, Variant};
+use orx_network_flow::{ProblemBuilder, Variant};
 
 struct MyCommodity {
     origin: String,

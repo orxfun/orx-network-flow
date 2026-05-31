@@ -1,4 +1,5 @@
-use crate::graph::{DotGraph, VIdx, Vertex};
+use crate::graph::visualization::dot::DotGraph;
+use crate::graph::{VIdx, Vertex};
 use crate::graph_builders::activity_on_node::{EdgeData, VertexData};
 use crate::{Graph, Problem, Variant};
 use alloc::format;
