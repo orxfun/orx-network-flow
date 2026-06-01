@@ -10,3 +10,15 @@ keywords = ["placeholder"]
 categories = ["placeholder"]
 
 [dependencies]
+num = { version = "0.4.3", default-features = false }
+serde = { version = "1", default-features = false, features = [
+    "derive",
+], optional = true }
+serde_json = { version = "1", default-features = false, features = [
+    "alloc",
+], optional = true }
+
+[features]
+default = ["std"]
+std = []
+serde-export = ["dep:serde", "dep:serde_json"]

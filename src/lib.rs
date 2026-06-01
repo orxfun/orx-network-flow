@@ -1,6 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![warn(
-    missing_docs,
+    // missing_docs,
     clippy::unwrap_in_result,
     clippy::unwrap_used,
     clippy::panic,
@@ -12,4 +12,28 @@
 )]
 #![no_std]
 
+#[cfg(any(test, feature = "std"))]
+extern crate std;
+
 extern crate alloc;
+
+mod commodities;
+mod connection_time;
+mod cost;
+mod costs;
+mod flow_units;
+pub mod graph;
+pub mod graph_builders;
+mod indices;
+mod problem;
+mod space_time;
+mod spaces;
+mod std_utils;
+mod time;
+mod time_bounds;
+mod transports;
+mod vehicle_types;
+mod vehicles;
+
+pub use graph::Graph;
+pub use problem::{Problem, ProblemBuilder, Variant};
