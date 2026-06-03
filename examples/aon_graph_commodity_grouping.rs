@@ -38,8 +38,8 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 5, 16);
-    commodity("AMS", "BRU", 5, 16);
-    // commodity("AMS", "SIN", 9, 26);
+    commodity("AMS", "BRU", 3, 16);
+    commodity("AMS", "BRU", 5, 15);
 
     // transports
     let mut t_idx = 0;
@@ -58,17 +58,10 @@ fn main() {
         *t += 1;
     };
 
-    transport("AMS", "BRU", 4, 6);
-    transport("AMS", "BRU", 8, 10);
+    transport("AMS", "BRU", 4, 10);
     transport("AMS", "BRU", 14, 16);
-    transport("AMS", "BRU", 15, 17);
-    transport("AMS", "BRU", 18, 20);
-    // transport("BRU", "SIN", 10, 15);
-    // transport("BRU", "SIN", 15, 20);
-    // transport("BRU", "SIN", 20, 25);
-    // transport("BRU", "SIN", 25, 30);
-    // transport("AMS", "EMA", 5, 9);
-    // transport("AMS", "EMA", 12, 16);
+    transport("AMS", "EMA", 12, 13);
+    transport("EMA", "BRU", 14, 15);
 
     let problem = builder.finish();
 
@@ -79,8 +72,8 @@ fn main() {
     let dot_text = dot.to_dot_string();
     println!("{dot_text}");
 
-    let dot_path = "target/aon_graph.dot";
-    let svg_path = "target/aon_graph.svg";
+    let dot_path = "target/aon_graph_commodity_grouping.dot";
+    let svg_path = "target/aon_graph_commodity_grouping.svg";
 
     if let Err(err) = fs::create_dir_all("target") {
         eprintln!("failed to create target directory: {err}");
