@@ -34,7 +34,7 @@ impl<V: Variant> ProblemBuilder<V> {
     }
 
     pub fn finish(mut self) -> Problem<V> {
-        // sort ori and des commodities by ready time
+        // sort ori and des commodities by ready time and due time
 
         let mut ori_sorted_commodities = Default::default();
         core::mem::swap(
@@ -53,6 +53,7 @@ impl<V: Variant> ProblemBuilder<V> {
             x.sort_by_key(&sort_key);
         }
 
+        let sort_key = |c: &Commodity| self.0.commodity_by_idx(*c).destination().time();
         for x in des_sorted_commodities.values_mut() {
             x.sort_by_key(&sort_key);
         }
