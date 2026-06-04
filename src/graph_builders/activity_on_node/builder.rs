@@ -1,5 +1,4 @@
 use super::edges_sink_sink_waiting::edges_sink_sink_waiting;
-use super::edges_source_source_waiting::edges_source_source_waiting;
 use super::edges_source_to_sink::edges_source_to_sink;
 use super::edges_source_to_transport::edges_source_to_transport;
 use super::edges_transport_to_sink::edges_transport_to_sink;
@@ -28,7 +27,6 @@ pub fn build_aon_graph<V: Variant>(prob: &Problem<V>) -> Graph<VertexData, EdgeD
 
     let mut builder = Graph::builder(vertices);
 
-    edges_source_source_waiting(prob, &mut builder, &indexer);
     edges_sink_sink_waiting(prob, &mut builder, &indexer);
     edges_source_to_transport(prob, &mut builder, &indexer);
     edges_transport_to_sink(prob, &mut builder, &indexer);

@@ -38,7 +38,7 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 5, 16);
-    commodity("AMS", "BRU", 5, 16);
+    commodity("AMS", "BRU", 6, 17);
     // commodity("AMS", "SIN", 9, 26);
 
     // transports
@@ -60,9 +60,9 @@ fn main() {
 
     transport("AMS", "BRU", 4, 6);
     transport("AMS", "BRU", 8, 10);
-    transport("AMS", "BRU", 14, 16);
-    transport("AMS", "BRU", 15, 17);
-    transport("AMS", "BRU", 18, 20);
+    // transport("AMS", "BRU", 14, 16);
+    // transport("AMS", "BRU", 15, 17);
+    // transport("AMS", "BRU", 18, 20);
     // transport("BRU", "SIN", 10, 15);
     // transport("BRU", "SIN", 15, 20);
     // transport("BRU", "SIN", 20, 25);
