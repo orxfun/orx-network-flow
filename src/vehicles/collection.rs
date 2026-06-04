@@ -32,6 +32,10 @@ impl<V: Variant> Vehicles<V> {
         self.map.get_val_by_key(key)
     }
 
+    pub fn get_ind_by_key(&self, key: &V::V) -> Option<Vehicle> {
+        self.map.get_ind_by_key(key)
+    }
+
     pub fn get_by_idx(&self, idx: Vehicle) -> Option<&VehicleData> {
         self.map.get_by_idx(idx)
     }

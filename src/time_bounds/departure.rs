@@ -45,7 +45,7 @@ impl<'a, V: Variant> DepartureTimeBoundsBuilder<'a, V> {
         self
     }
 
-    pub fn space_specific(mut self, space: &V::S, lateness_bound: impl Into<Time>) -> Self {
+    pub fn by_space(mut self, space: &V::S, lateness_bound: impl Into<Time>) -> Self {
         let space = self
             .0
             .space_ind(space)
@@ -54,7 +54,7 @@ impl<'a, V: Variant> DepartureTimeBoundsBuilder<'a, V> {
         self
     }
 
-    pub fn commodity_specific(mut self, commodity: &V::K, lateness_bound: impl Into<Time>) -> Self {
+    pub fn by_commodity(mut self, commodity: &V::K, lateness_bound: impl Into<Time>) -> Self {
         let commodity = self
             .0
             .commodity_ind(commodity)

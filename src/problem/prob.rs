@@ -11,6 +11,7 @@ use crate::time_bounds::TimeBounds;
 use crate::transports::Transport;
 use crate::transports::TransportData;
 use crate::transports::Transports;
+use crate::vehicle_types::VehicleType;
 use crate::vehicle_types::VehicleTypes;
 use crate::vehicles::Vehicle;
 use crate::vehicles::VehicleData;
@@ -61,6 +62,18 @@ impl<V: Variant> Problem<V> {
 
     pub fn commodity_ind(&self, key: &V::K) -> Option<Commodity> {
         self.commodities.get_ind_by_key(key)
+    }
+
+    pub fn transport_ind(&self, key: &V::T) -> Option<Transport> {
+        self.transports.get_ind_by_key(key)
+    }
+
+    pub fn vehicle_type_ind(&self, key: &V::W) -> Option<VehicleType> {
+        self.vehicle_types.get_ind_by_key(key)
+    }
+
+    pub fn vehicle_ind(&self, key: &V::V) -> Option<Vehicle> {
+        self.vehicles.get_ind_by_key(key)
     }
 
     // get by key

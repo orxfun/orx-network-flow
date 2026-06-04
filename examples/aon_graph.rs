@@ -73,8 +73,8 @@ fn main() {
     builder
         .max_waiting()
         .global(10i64)
-        .space_specific(&"AMS".to_string(), 4i64)
-        .commodity_specific(&0, 3i64);
+        .by_space(&"AMS".to_string(), 4i64)
+        .by_commodity(&0, 3i64);
 
     let problem = builder.finish();
 
