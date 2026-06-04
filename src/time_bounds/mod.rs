@@ -1,8 +1,8 @@
 mod all;
+mod arrival;
 mod conn_time;
-mod lateness_earliness;
-mod waiting_at_source;
+mod departure;
 
 pub use all::TimeBounds;
+pub use arrival::ArrivalBounds;
 pub use conn_time::ConnTimeBounds;
-pub use lateness_earliness::LatenessEarlinessBounds;
