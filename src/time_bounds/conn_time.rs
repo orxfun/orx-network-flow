@@ -126,3 +126,15 @@ impl ConnTimeBounds {
         self.global.conn_time(same_vehicle)
     }
 }
+
+pub struct ConnectionTimeBuilder<'a, V: Variant>(&'a mut Problem<V>);
+
+impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
+    pub(crate) fn new(prob: &'a mut Problem<V>) -> Self {
+        Self(prob)
+    }
+
+    fn bounds(&mut self) -> &mut ConnTimeBounds {
+        &mut self.0.time_bounds.min_conn_time
+    }
+}
