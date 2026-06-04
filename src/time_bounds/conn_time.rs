@@ -32,7 +32,6 @@ impl CT {
     }
 }
 
-#[derive(Default)]
 pub struct ConnTimeBounds {
     global: CT,
     by_space: Map<Space, CT>,
@@ -45,14 +44,20 @@ impl ConnTimeBounds {
     pub fn new_min_conn_time() -> Self {
         Self {
             global: CT::new(Time::zero(), Time::zero()),
-            ..Default::default()
+            by_space: Default::default(),
+            by_vehicle_type: Default::default(),
+            by_space_vehicle_type: Default::default(),
+            by_transport: Default::default(),
         }
     }
 
     pub fn new_max_conn_time() -> Self {
         Self {
             global: CT::new(Time::inf(), Time::inf()),
-            ..Default::default()
+            by_space: Default::default(),
+            by_vehicle_type: Default::default(),
+            by_space_vehicle_type: Default::default(),
+            by_transport: Default::default(),
         }
     }
 

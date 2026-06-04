@@ -13,8 +13,8 @@ pub struct TimeBounds {
 impl Default for TimeBounds {
     fn default() -> Self {
         Self {
-            min_conn_time: Default::default(),
-            max_conn_time: Default::default(),
+            min_conn_time: ConnTimeBounds::new_min_conn_time(),
+            max_conn_time: ConnTimeBounds::new_max_conn_time(),
             max_lateness: ArrivalBounds::new(Time::inf()),
             max_earliness: ArrivalBounds::new(Time::inf()),
             max_waiting: DepartureBounds::new(Time::inf()),
