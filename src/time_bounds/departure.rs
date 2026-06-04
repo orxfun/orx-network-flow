@@ -40,19 +40,21 @@ impl<'a, V: Variant> DepartureTimeBoundsBuilder<'a, V> {
         &mut self.0.time_bounds.max_waiting
     }
 
-    pub fn global(&mut self, global_bound: impl Into<Time>) {
-        self.bounds().global = global_bound.into()
+    pub fn global(mut self, global_bound: impl Into<Time>) -> Self {
+        self.bounds().global = global_bound.into();
+        self
     }
 
-    pub fn space_specific(&mut self, space: &V::S, lateness_bound: impl Into<Time>) {
+    pub fn space_specific(mut self, space: &V::S, lateness_bound: impl Into<Time>) -> Self {
         let space = self
             .0
             .space_ind(space)
             .expect("Space '{space}' does not belong to the problem");
         self.bounds().by_space.insert(space, lateness_bound.into());
+        self
     }
 
-    pub fn commodity_specific(&mut self, commodity: &V::K, lateness_bound: impl Into<Time>) {
+    pub fn commodity_specific(mut self, commodity: &V::K, lateness_bound: impl Into<Time>) -> Self {
         let commodity = self
             .0
             .commodity_ind(commodity)
@@ -60,5 +62,6 @@ impl<'a, V: Variant> DepartureTimeBoundsBuilder<'a, V> {
         self.bounds()
             .by_commodity
             .insert(commodity, lateness_bound.into());
+        self
     }
 }
