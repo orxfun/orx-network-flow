@@ -76,6 +76,11 @@ fn main() {
         .by_space(&"AMS".to_string(), 4i64)
         .by_commodity(&0, 3i64);
 
+    builder
+        .min_conn_time()
+        .by_space(&String::from("BRU"), 2i64, 3i64);
+    builder.max_conn_time().global(4i64, 100i64);
+
     let problem = builder.finish();
 
     let graph = problem.build_aon_graph();

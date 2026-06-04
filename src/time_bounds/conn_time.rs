@@ -128,7 +128,12 @@ impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
         self
     }
 
-    pub fn by_space(mut self, space: &V::S, same_vehicle: Time, changed_vehicle: Time) -> Self {
+    pub fn by_space(
+        mut self,
+        space: &V::S,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
+    ) -> Self {
         let space = self
             .p
             .space_ind(space)
@@ -142,8 +147,8 @@ impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
         mut self,
         first_vehicle_type: &V::W,
         second_vehicle_type: &V::W,
-        same_vehicle: Time,
-        changed_vehicle: Time,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
     ) -> Self {
         let v1 = self
             .p
@@ -163,8 +168,8 @@ impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
         space: &V::S,
         first_vehicle_type: &V::W,
         second_vehicle_type: &V::W,
-        same_vehicle: Time,
-        changed_vehicle: Time,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
     ) -> Self {
         let space = self
             .p
@@ -189,8 +194,8 @@ impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
         mut self,
         first_transport: &V::T,
         second_transport: &V::T,
-        same_vehicle: Time,
-        changed_vehicle: Time,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
     ) -> Self {
         let t1 = self
             .p
