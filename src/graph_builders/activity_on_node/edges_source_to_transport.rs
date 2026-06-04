@@ -15,10 +15,10 @@ pub fn edges_source_to_transport<V: Variant>(
     for (ori, sorted_commodities) in &prob.ori_sorted_commodities {
         if let Some(des_sorted_transports) = prob.ori_des_sorted_transports.get(ori) {
             for (_des, sorted_transports) in des_sorted_transports {
-                let commodities_rev = sorted_commodities.iter().rev().copied();
-                let transports_rev = sorted_transports.iter().rev().copied().peekable();
+                let commodities = sorted_commodities.iter().copied();
+                let transports = sorted_transports.iter().copied();
 
-                connect_edges_for_od(prob, builder, indexer, commodities_rev, transports_rev);
+                connect_edges_for_od(prob, builder, indexer, commodities, transports);
             }
         }
     }
@@ -28,30 +28,31 @@ fn connect_edges_for_od<V: Variant>(
     prob: &Problem<V>,
     builder: &mut GraphBuilder<VertexData, EdgeData>,
     indexer: &Indexer,
-    mut tails_rev: impl Iterator<Item = Commodity>,
-    mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
+    mut tails: impl Iterator<Item = Commodity>,
+    mut heads: impl Iterator<Item = Transport>,
 ) -> Option<()> {
     // no edges once we complete traversing heads
-    let mut curr_head = heads_rev.next()?;
+    let mut curr_head = heads.next()?;
 
     // connect one tail per iteration
     loop {
         // no edges once we complete traversing tails
-        let tail = tails_rev.next()?;
+        let tail = tails.next()?;
 
-        match find_head_for_tail_deprecated(prob, &mut heads_rev, curr_head, tail) {
-            Some(head) => {
-                let data = EdgeData::SourceToTransport(tail, head);
-                let i = indexer.source_idx(tail).into_inner();
-                let j = indexer.transport_idx(head).into_inner();
-                builder.edge(data, i, j);
+        // match find_head_for_tail_deprecated(prob, &mut heads, curr_head, tail) {
+        //     Some(head) => {
+        //         let data = EdgeData::SourceToTransport(tail, head);
+        //         let i = indexer.source_idx(tail).into_inner();
+        //         let j = indexer.transport_idx(head).into_inner();
+        //         builder.edge(data, i, j);
 
-                // no point in assigning same transport to prior tails, progressing
-                curr_head = heads_rev.next()?;
-            }
-            // no transport for this commodity, moving on to the next commodity
-            None => {}
-        }
+        //         // no point in assigning same transport to prior tails, progressing
+        //         curr_head = heads.next()?;
+        //     }
+        //     // no transport for this commodity, moving on to the next commodity
+        //     None => {}
+        // }
+        todo!()
     }
 }
 
