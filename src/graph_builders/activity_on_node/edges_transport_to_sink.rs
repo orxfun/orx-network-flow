@@ -6,6 +6,7 @@ use crate::indices::IdxCore;
 use crate::transports::Transport;
 use crate::{Problem, Variant};
 use core::iter::Peekable;
+use orx_iterable::{IntoCloningIterable, Iterable};
 
 pub fn edges_transport_to_sink<V: Variant>(
     prob: &Problem<V>,
@@ -15,16 +16,28 @@ pub fn edges_transport_to_sink<V: Variant>(
     for (des, sorted_commodities) in &prob.des_sorted_commodities {
         if let Some(ori_sorted_transports) = prob.des_ori_sorted_transports.get(des) {
             for (_ori, sorted_transports) in ori_sorted_transports {
-                let tails_rev = sorted_transports.iter().copied().rev();
-                let heads_rev = sorted_commodities.iter().copied().rev().peekable();
+                let tails = sorted_transports.iter().copied().into_iterable();
+                let heads = sorted_commodities.iter().copied();
 
-                connect_edges_for_od(prob, builder, indexer, tails_rev, heads_rev);
+                connect_edges_for_od(prob, builder, indexer, tails, heads);
             }
         }
     }
 }
 
 fn connect_edges_for_od<V: Variant>(
+    prob: &Problem<V>,
+    builder: &mut GraphBuilder<VertexData, EdgeData>,
+    indexer: &Indexer,
+    tails: impl Iterable<Item = Transport>,
+    heads: impl Iterator<Item = Commodity>,
+) {
+    for head in heads {
+        //
+    }
+}
+
+fn connect_edges_for_od_deprecated<V: Variant>(
     prob: &Problem<V>,
     builder: &mut GraphBuilder<VertexData, EdgeData>,
     indexer: &Indexer,
@@ -39,7 +52,7 @@ fn connect_edges_for_od<V: Variant>(
         // no edges once we complete traversing tails
         let tail = tails_rev.next()?;
 
-        match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
+        match find_head_for_tail_deprecated(prob, &mut heads_rev, curr_head, tail) {
             Some(head) => {
                 let data = EdgeData::TransportToSink(tail, head);
                 let i = indexer.transport_idx(tail).into_inner();
@@ -55,7 +68,7 @@ fn connect_edges_for_od<V: Variant>(
     }
 }
 
-fn find_head_for_tail<V: Variant>(
+fn find_head_for_tail_deprecated<V: Variant>(
     prob: &Problem<V>,
     heads_rev: &mut Peekable<impl Iterator<Item = Commodity>>,
     curr_head: Commodity,
