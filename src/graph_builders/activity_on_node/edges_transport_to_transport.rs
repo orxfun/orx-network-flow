@@ -41,7 +41,7 @@ fn connect_edges_for_od<V: Variant>(
         let feasible = |head: &Transport| {
             let min_ct = prob.time_bounds.min_conn_time.bound(prob, tail, *head);
             let max_ct = prob.time_bounds.max_conn_time.bound(prob, tail, *head);
-            let dt = prob.transport_by_idx(tail).origin().time();
+            let dt = prob.transport_by_idx(*head).origin().time();
 
             dt >= at + min_ct && dt <= at + max_ct
         };
