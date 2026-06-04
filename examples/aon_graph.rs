@@ -38,7 +38,7 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 5, 16);
-    commodity("AMS", "BRU", 6, 17);
+    // commodity("AMS", "BRU", 6, 17);
     // commodity("AMS", "SIN", 9, 26);
 
     // transports

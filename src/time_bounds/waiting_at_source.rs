@@ -1,12 +1,12 @@
 use crate::{Problem, Variant, commodities::Commodity, spaces::Space, std_utils::Map, time::Time};
 
-pub struct LatenessEarlinessBounds {
+pub struct WaitingAtSourceBounds {
     global: Time,
     by_space: Map<Space, Time>,
     by_commodity: Map<Commodity, Time>,
 }
 
-impl LatenessEarlinessBounds {
+impl WaitingAtSourceBounds {
     pub fn new(global: Time) -> Self {
         Self {
             global,
@@ -31,8 +31,11 @@ impl LatenessEarlinessBounds {
         match self.by_commodity.get(&commodity) {
             Some(bound) => *bound,
             None => {
-                // abc
-                self.global
+                let space = prob.commodity_by_idx(commodity).origin().space();
+                match self.by_space.get(&space) {
+                    Some(bound) => *bound,
+                    None => self.global,
+                }
             }
         }
     }

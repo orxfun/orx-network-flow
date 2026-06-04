@@ -39,7 +39,7 @@ fn connect_edges_for_od<V: Variant>(
         // no edges once we complete traversing tails
         let tail = tails_rev.next()?;
 
-        match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
+        match find_head_for_tail_deprecated(prob, &mut heads_rev, curr_head, tail) {
             Some(head) => {
                 let data = EdgeData::SourceToTransport(tail, head);
                 let i = indexer.source_idx(tail).into_inner();
@@ -55,7 +55,38 @@ fn connect_edges_for_od<V: Variant>(
     }
 }
 
-fn find_head_for_tail<V: Variant>(
+fn connect_edges_for_od_deprecated<V: Variant>(
+    prob: &Problem<V>,
+    builder: &mut GraphBuilder<VertexData, EdgeData>,
+    indexer: &Indexer,
+    mut tails_rev: impl Iterator<Item = Commodity>,
+    mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
+) -> Option<()> {
+    // no edges once we complete traversing heads
+    let mut curr_head = heads_rev.next()?;
+
+    // connect one tail per iteration
+    loop {
+        // no edges once we complete traversing tails
+        let tail = tails_rev.next()?;
+
+        match find_head_for_tail_deprecated(prob, &mut heads_rev, curr_head, tail) {
+            Some(head) => {
+                let data = EdgeData::SourceToTransport(tail, head);
+                let i = indexer.source_idx(tail).into_inner();
+                let j = indexer.transport_idx(head).into_inner();
+                builder.edge(data, i, j);
+
+                // no point in assigning same transport to prior tails, progressing
+                curr_head = heads_rev.next()?;
+            }
+            // no transport for this commodity, moving on to the next commodity
+            None => {}
+        }
+    }
+}
+
+fn find_head_for_tail_deprecated<V: Variant>(
     prob: &Problem<V>,
     heads_rev: &mut Peekable<impl Iterator<Item = Transport>>,
     curr_head: Transport,
