@@ -1,11 +1,12 @@
+use crate::Variant;
+use crate::indices::IdxMap;
 use crate::spaces::Space;
-use crate::{indices::IdxMap, std_utils::MapKey};
 
-pub struct Spaces<K: MapKey> {
-    map: IdxMap<K, (), Space>,
+pub struct Spaces<V: Variant> {
+    map: IdxMap<V::S, (), Space>,
 }
 
-impl<K: MapKey> Default for Spaces<K> {
+impl<V: Variant> Default for Spaces<V> {
     fn default() -> Self {
         Self {
             map: Default::default(),
@@ -13,8 +14,8 @@ impl<K: MapKey> Default for Spaces<K> {
     }
 }
 
-impl<K: MapKey> Spaces<K> {
-    pub fn push(&mut self, key: K) -> Space {
+impl<V: Variant> Spaces<V> {
+    pub fn push(&mut self, key: V::S) -> Space {
         self.map.push_or_update(key, ())
     }
 
@@ -22,14 +23,18 @@ impl<K: MapKey> Spaces<K> {
         self.map.len()
     }
 
-    pub fn entries(&self) -> impl Iterator<Item = (Space, &K)> {
+    pub fn entries(&self) -> impl Iterator<Item = (Space, &V::S)> {
         self.map
             .entries()
             .into_iter()
             .map(|(space, key, _)| (space, key))
     }
 
-    pub fn key(&self, idx: Space) -> Option<&K> {
+    pub fn key(&self, idx: Space) -> Option<&V::S> {
         self.map.idx_to_key(idx)
+    }
+
+    pub fn get_ind_by_key(&self, key: &V::S) -> Option<Space> {
+        self.map.get_ind_by_key(key)
     }
 }

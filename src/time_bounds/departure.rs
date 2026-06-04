@@ -15,18 +15,6 @@ impl DepartureBounds {
         }
     }
 
-    pub fn global(&mut self, global_bound: Time) {
-        self.global = global_bound
-    }
-
-    pub fn space_specific(&mut self, space: Space, lateness_bound: Time) {
-        self.by_space.insert(space, lateness_bound);
-    }
-
-    pub fn commodity_specific(&mut self, commodity: Commodity, lateness_bound: Time) {
-        self.by_commodity.insert(commodity, lateness_bound);
-    }
-
     pub fn bound<V: Variant>(&self, prob: &Problem<V>, commodity: Commodity) -> Time {
         match self.by_commodity.get(&commodity) {
             Some(bound) => *bound,
@@ -38,5 +26,39 @@ impl DepartureBounds {
                 }
             }
         }
+    }
+}
+
+pub struct DepartureTimeBoundsBuilder<'a, V: Variant>(&'a mut Problem<V>);
+
+impl<'a, V: Variant> DepartureTimeBoundsBuilder<'a, V> {
+    pub(crate) fn new(prob: &'a mut Problem<V>) -> Self {
+        Self(prob)
+    }
+
+    fn bounds(&mut self) -> &mut DepartureBounds {
+        &mut self.0.time_bounds.max_waiting
+    }
+
+    pub fn global(&mut self, global_bound: impl Into<Time>) {
+        self.bounds().global = global_bound.into()
+    }
+
+    pub fn space_specific(&mut self, space: &V::S, lateness_bound: impl Into<Time>) {
+        let space = self
+            .0
+            .space_ind(space)
+            .expect("Space '{space}' does not belong to the problem");
+        self.bounds().by_space.insert(space, lateness_bound.into());
+    }
+
+    pub fn commodity_specific(&mut self, commodity: &V::K, lateness_bound: impl Into<Time>) {
+        let commodity = self
+            .0
+            .commodity_ind(commodity)
+            .expect("Commodity '{commodity}' does not belong to the problem");
+        self.bounds()
+            .by_commodity
+            .insert(commodity, lateness_bound.into());
     }
 }

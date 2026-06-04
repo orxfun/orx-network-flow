@@ -4,7 +4,7 @@ use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::time::Time;
-use crate::time_bounds::{ArrivalBounds, ConnTimeBounds, DepartureBounds};
+use crate::time_bounds::{ArrivalBounds, ConnTimeBounds, DepartureTimeBoundsBuilder};
 use crate::transports::Transport;
 
 pub struct ProblemBuilder<V: Variant>(Problem<V>);
@@ -205,7 +205,7 @@ impl<V: Variant> ProblemBuilder<V> {
         &mut self.0.time_bounds.max_earliness
     }
 
-    pub fn max_waiting(&mut self) -> &mut DepartureBounds {
-        &mut self.0.time_bounds.max_waiting
+    pub fn max_waiting(&mut self) -> DepartureTimeBoundsBuilder<'_, V> {
+        DepartureTimeBoundsBuilder::new(&mut self.0)
     }
 }

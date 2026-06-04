@@ -18,7 +18,7 @@ use crate::vehicles::Vehicles;
 use alloc::vec::Vec;
 
 pub struct Problem<V: Variant> {
-    pub spaces: Spaces<V::S>,
+    pub spaces: Spaces<V>,
     pub vehicle_types: VehicleTypes<V>,
     pub vehicles: Vehicles<V>,
     pub commodities: Commodities<V>,
@@ -51,6 +51,16 @@ impl<V: Variant> Problem<V> {
 
     pub fn len_transports(&self) -> usize {
         self.transports.len()
+    }
+
+    // get index
+
+    pub fn space_ind(&self, key: &V::S) -> Option<Space> {
+        self.spaces.get_ind_by_key(key)
+    }
+
+    pub fn commodity_ind(&self, key: &V::K) -> Option<Commodity> {
+        self.commodities.get_ind_by_key(key)
     }
 
     // get by key

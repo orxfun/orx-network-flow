@@ -37,7 +37,7 @@ fn main() {
         *c += 1;
     };
 
-    commodity("AMS", "BRU", 5, 16);
+    commodity("AMS", "BRU", 3, 16);
     // commodity("AMS", "BRU", 6, 17);
     // commodity("AMS", "SIN", 9, 26);
 
@@ -69,6 +69,10 @@ fn main() {
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);
     // transport("AMS", "EMA", 12, 16);
+
+    builder.max_waiting().global(5i64);
+
+    // builder.max_waiting().space_specific(space, lateness_bound);
 
     let problem = builder.finish();
 

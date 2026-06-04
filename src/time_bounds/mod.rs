@@ -6,4 +6,4 @@ mod departure;
 pub use all::TimeBounds;
 pub use arrival::ArrivalBounds;
 pub use conn_time::ConnTimeBounds;
-pub use departure::DepartureBounds;
+pub use departure::{DepartureBounds, DepartureTimeBoundsBuilder};
