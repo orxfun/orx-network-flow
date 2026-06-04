@@ -70,9 +70,11 @@ fn main() {
     // transport("AMS", "EMA", 5, 9);
     // transport("AMS", "EMA", 12, 16);
 
-    builder.max_waiting().global(5i64);
-
-    // builder.max_waiting().space_specific(space, lateness_bound);
+    builder.max_waiting().global(10i64);
+    builder
+        .max_waiting()
+        .space_specific(&"AMS".to_string(), 4i64);
+    builder.max_waiting().commodity_specific(&0, 0i64);
 
     let problem = builder.finish();
 
