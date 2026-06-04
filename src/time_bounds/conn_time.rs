@@ -85,20 +85,25 @@ impl ConnTimeBounds {
     }
 }
 
+pub enum ConnTimeBoundType {
+    Min,
+    Max,
+}
+
 pub struct ConnectionTimeBuilder<'a, V: Variant> {
     p: &'a mut Problem<V>,
-    is_min_con_time: bool,
+    bound_type: ConnTimeBoundType,
 }
 
 impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
-    pub(crate) fn new(p: &'a mut Problem<V>, is_min_con_time: bool) -> Self {
-        Self { p, is_min_con_time }
+    pub(crate) fn new(p: &'a mut Problem<V>, bound_type: ConnTimeBoundType) -> Self {
+        Self { p, bound_type }
     }
 
     fn bounds(&mut self) -> &mut ConnTimeBounds {
-        match self.is_min_con_time {
-            true => &mut self.p.time_bounds.min_conn_time,
-            false => &mut self.p.time_bounds.max_conn_time,
+        match self.bound_type {
+            ConnTimeBoundType::Min => &mut self.p.time_bounds.min_conn_time,
+            ConnTimeBoundType::Max => &mut self.p.time_bounds.max_conn_time,
         }
     }
 

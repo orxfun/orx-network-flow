@@ -4,7 +4,9 @@ use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::time::Time;
-use crate::time_bounds::{ArrivalBounds, ConnTimeBounds, DepartureTimeBoundsBuilder};
+use crate::time_bounds::{
+    ArrivalBounds, ConnTimeBoundType, ConnectionTimeBuilder, DepartureTimeBoundsBuilder,
+};
 use crate::transports::Transport;
 
 pub struct ProblemBuilder<V: Variant>(Problem<V>);
@@ -189,12 +191,12 @@ impl<V: Variant> ProblemBuilder<V> {
 
     // time bounds
 
-    pub fn min_conn_time(&mut self) -> &mut ConnTimeBounds {
-        &mut self.0.time_bounds.min_conn_time
+    pub fn min_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
+        ConnectionTimeBuilder::new(&mut self.0, ConnTimeBoundType::Min)
     }
 
-    pub fn max_conn_time(&mut self) -> &mut ConnTimeBounds {
-        &mut self.0.time_bounds.max_conn_time
+    pub fn max_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
+        ConnectionTimeBuilder::new(&mut self.0, ConnTimeBoundType::Max)
     }
 
     pub fn max_lateness(&mut self) -> &mut ArrivalBounds {
