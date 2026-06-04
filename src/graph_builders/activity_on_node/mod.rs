@@ -1,6 +1,5 @@
 mod builder;
 mod edge;
-mod edges_sink_sink_waiting;
 mod edges_source_to_sink;
 mod edges_source_to_transport;
 mod edges_transport_to_sink;
