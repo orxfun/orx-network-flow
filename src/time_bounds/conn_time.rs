@@ -108,8 +108,16 @@ pub struct ConnectionTimeBuilder<'a, V: Variant> {
 }
 
 impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
-    pub(crate) fn new(p: &'a mut Problem<V>, bound_type: ConnTimeBoundType) -> Self {
+    fn new(p: &'a mut Problem<V>, bound_type: ConnTimeBoundType) -> Self {
         Self { p, bound_type }
+    }
+
+    pub(crate) fn min(p: &'a mut Problem<V>) -> Self {
+        Self::new(p, ConnTimeBoundType::Min)
+    }
+
+    pub(crate) fn max(p: &'a mut Problem<V>) -> Self {
+        Self::new(p, ConnTimeBoundType::Max)
     }
 
     fn bounds(&mut self) -> &mut ConnTimeBounds {

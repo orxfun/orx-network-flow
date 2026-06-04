@@ -4,6 +4,6 @@ mod conn_time;
 mod departure;
 
 pub use all::TimeBounds;
-pub use arrival::ArrivalBounds;
-pub use conn_time::{ConnTimeBoundType, ConnectionTimeBuilder};
+pub use arrival::ArrivalTimeBoundsBuilder;
+pub use conn_time::ConnectionTimeBuilder;
 pub use departure::DepartureTimeBoundsBuilder;

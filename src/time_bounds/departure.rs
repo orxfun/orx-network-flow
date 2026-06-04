@@ -7,9 +7,9 @@ pub struct DepartureBounds {
 }
 
 impl DepartureBounds {
-    pub fn new(global: Time) -> Self {
+    pub fn new() -> Self {
         Self {
-            global,
+            global: Time::inf(),
             by_space: Default::default(),
             by_commodity: Default::default(),
         }
@@ -40,28 +40,26 @@ impl<'a, V: Variant> DepartureTimeBoundsBuilder<'a, V> {
         &mut self.0.time_bounds.max_waiting
     }
 
-    pub fn global(mut self, global_bound: impl Into<Time>) -> Self {
-        self.bounds().global = global_bound.into();
+    pub fn global(mut self, bound: impl Into<Time>) -> Self {
+        self.bounds().global = bound.into();
         self
     }
 
-    pub fn by_space(mut self, space: &V::S, lateness_bound: impl Into<Time>) -> Self {
+    pub fn by_space(mut self, space: &V::S, bound: impl Into<Time>) -> Self {
         let space = self
             .0
             .space_ind(space)
             .expect("Space '{space}' does not belong to the problem");
-        self.bounds().by_space.insert(space, lateness_bound.into());
+        self.bounds().by_space.insert(space, bound.into());
         self
     }
 
-    pub fn by_commodity(mut self, commodity: &V::K, lateness_bound: impl Into<Time>) -> Self {
+    pub fn by_commodity(mut self, commodity: &V::K, bound: impl Into<Time>) -> Self {
         let commodity = self
             .0
             .commodity_ind(commodity)
             .expect("Commodity '{commodity}' does not belong to the problem");
-        self.bounds()
-            .by_commodity
-            .insert(commodity, lateness_bound.into());
+        self.bounds().by_commodity.insert(commodity, bound.into());
         self
     }
 }

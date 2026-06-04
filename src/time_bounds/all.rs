@@ -1,4 +1,3 @@
-use crate::time::Time;
 use crate::time_bounds::departure::DepartureBounds;
 use crate::time_bounds::{arrival::ArrivalBounds, conn_time::ConnTimeBounds};
 
@@ -15,9 +14,9 @@ impl Default for TimeBounds {
         Self {
             min_conn_time: ConnTimeBounds::new_min_conn_time(),
             max_conn_time: ConnTimeBounds::new_max_conn_time(),
-            max_lateness: ArrivalBounds::new(Time::inf()),
-            max_earliness: ArrivalBounds::new(Time::inf()),
-            max_waiting: DepartureBounds::new(Time::inf()),
+            max_lateness: ArrivalBounds::new_lateness(),
+            max_earliness: ArrivalBounds::new_earliness(),
+            max_waiting: DepartureBounds::new(),
         }
     }
 }
