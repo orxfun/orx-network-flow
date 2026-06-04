@@ -42,9 +42,16 @@ pub struct ConnTimeBounds {
 }
 
 impl ConnTimeBounds {
-    pub fn new(global_same_vehicle: Time, global_changed_vehicle: Time) -> Self {
+    pub fn new_min_conn_time() -> Self {
         Self {
-            global: CT::new(global_same_vehicle, global_changed_vehicle),
+            global: CT::new(Time::zero(), Time::zero()),
+            ..Default::default()
+        }
+    }
+
+    pub fn new_max_conn_time() -> Self {
+        Self {
+            global: CT::new(Time::inf(), Time::inf()),
             ..Default::default()
         }
     }
