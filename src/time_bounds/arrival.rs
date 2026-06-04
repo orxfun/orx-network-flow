@@ -31,8 +31,11 @@ impl ArrivalBounds {
         match self.by_commodity.get(&commodity) {
             Some(bound) => *bound,
             None => {
-                // abc
-                self.global
+                let space = prob.commodity_by_idx(commodity).destination().space();
+                match self.by_space.get(&space) {
+                    Some(bound) => *bound,
+                    None => self.global,
+                }
             }
         }
     }
