@@ -30,4 +30,8 @@ impl Sources {
 
         Self { idx_map }
     }
+
+    pub fn len(&self) -> usize {
+        self.idx_map.len()
+    }
 }

@@ -2,15 +2,38 @@ use crate::commodities::Commodity;
 use crate::graph::VIdx;
 use crate::indices::IdxCore;
 use crate::networks::aon::sinks::Sinks;
+use crate::networks::aon::sources::Sources;
 use crate::transports::Transport;
 
 pub struct Indexer {
+    len_transports: usize,
+    sources: Sources,
     sinks: Sinks,
 }
 
 impl Indexer {
-    pub fn new(sinks: Sinks) -> Self {
-        Self { sinks }
+    pub fn new(len_transports: usize, sources: Sources, sinks: Sinks) -> Self {
+        Self {
+            len_transports,
+            sources,
+            sinks,
+        }
+    }
+
+    pub fn len_sources(&self) -> usize {
+        self.sources.len()
+    }
+
+    pub fn len_sinks(&self) -> usize {
+        self.sinks.len()
+    }
+
+    pub fn len_transports(&self) -> usize {
+        self.len_transports
+    }
+
+    pub fn num_vertices(&self) -> usize {
+        self.len_sources() + self.len_sinks() + self.len_transports()
     }
 
     // pub fn num_vertices(&self) -> usize {
