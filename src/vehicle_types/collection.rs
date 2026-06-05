@@ -26,4 +26,8 @@ impl<V: Variant> VehicleTypes<V> {
     pub fn entries(&self) -> impl Iterator<Item = (VehicleType, &V::W)> {
         self.map.entries().map(|(space, key, _)| (space, key))
     }
+
+    pub fn get_ind_by_key(&self, key: &V::W) -> Option<VehicleType> {
+        self.map.get_ind_by_key(key)
+    }
 }

@@ -9,10 +9,10 @@ struct CT {
 }
 
 impl CT {
-    pub fn new(same_vehicle: Time, changed_vehicle: Time) -> Self {
+    pub fn new(same_vehicle: impl Into<Time>, changed_vehicle: impl Into<Time>) -> Self {
         Self {
-            same_vehicle,
-            changed_vehicle,
+            same_vehicle: same_vehicle.into(),
+            changed_vehicle: changed_vehicle.into(),
         }
     }
 }
@@ -32,7 +32,6 @@ impl CT {
     }
 }
 
-#[derive(Default)]
 pub struct ConnTimeBounds {
     global: CT,
     by_space: Map<Space, CT>,
@@ -42,53 +41,24 @@ pub struct ConnTimeBounds {
 }
 
 impl ConnTimeBounds {
-    pub fn new(global_same_vehicle: Time, global_changed_vehicle: Time) -> Self {
+    pub fn new_min_conn_time() -> Self {
         Self {
-            global: CT::new(global_same_vehicle, global_changed_vehicle),
-            ..Default::default()
+            global: CT::new(Time::zero(), Time::zero()),
+            by_space: Default::default(),
+            by_vehicle_type: Default::default(),
+            by_space_vehicle_type: Default::default(),
+            by_transport: Default::default(),
         }
     }
 
-    pub fn space_specific(&mut self, space: Space, same_vehicle: Time, changed_vehicle: Time) {
-        let ct = CT::new(same_vehicle, changed_vehicle);
-        self.by_space.insert(space, ct);
-    }
-
-    pub fn vehicle_type_specific(
-        &mut self,
-        first_vehicle_type: VehicleType,
-        second_vehicle_type: VehicleType,
-        same_vehicle: Time,
-        changed_vehicle: Time,
-    ) {
-        let ct = CT::new(same_vehicle, changed_vehicle);
-        self.by_vehicle_type
-            .insert((first_vehicle_type, second_vehicle_type), ct);
-    }
-
-    pub fn space_and_vehicle_type_specific(
-        &mut self,
-        space: Space,
-        first_vehicle_type: VehicleType,
-        second_vehicle_type: VehicleType,
-        same_vehicle: Time,
-        changed_vehicle: Time,
-    ) {
-        let ct = CT::new(same_vehicle, changed_vehicle);
-        self.by_space_vehicle_type
-            .insert((space, first_vehicle_type, second_vehicle_type), ct);
-    }
-
-    pub fn transport_specific(
-        &mut self,
-        first_transport: Transport,
-        second_transport: Transport,
-        same_vehicle: Time,
-        changed_vehicle: Time,
-    ) {
-        let ct = CT::new(same_vehicle, changed_vehicle);
-        self.by_transport
-            .insert((first_transport, second_transport), ct);
+    pub fn new_max_conn_time() -> Self {
+        Self {
+            global: CT::new(Time::inf(), Time::inf()),
+            by_space: Default::default(),
+            by_vehicle_type: Default::default(),
+            by_space_vehicle_type: Default::default(),
+            by_transport: Default::default(),
+        }
     }
 
     pub fn bound<V: Variant>(&self, prob: &Problem<V>, f: Transport, g: Transport) -> Time {
@@ -124,5 +94,127 @@ impl ConnTimeBounds {
         }
 
         self.global.conn_time(same_vehicle)
+    }
+}
+
+pub enum ConnTimeBoundType {
+    Min,
+    Max,
+}
+
+pub struct ConnectionTimeBuilder<'a, V: Variant> {
+    p: &'a mut Problem<V>,
+    bound_type: ConnTimeBoundType,
+}
+
+impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
+    fn new(p: &'a mut Problem<V>, bound_type: ConnTimeBoundType) -> Self {
+        Self { p, bound_type }
+    }
+
+    pub(crate) fn min(p: &'a mut Problem<V>) -> Self {
+        Self::new(p, ConnTimeBoundType::Min)
+    }
+
+    pub(crate) fn max(p: &'a mut Problem<V>) -> Self {
+        Self::new(p, ConnTimeBoundType::Max)
+    }
+
+    fn bounds(&mut self) -> &mut ConnTimeBounds {
+        match self.bound_type {
+            ConnTimeBoundType::Min => &mut self.p.time_bounds.min_conn_time,
+            ConnTimeBoundType::Max => &mut self.p.time_bounds.max_conn_time,
+        }
+    }
+
+    pub fn global(
+        mut self,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
+    ) -> Self {
+        self.bounds().global = CT::new(same_vehicle, changed_vehicle);
+        self
+    }
+
+    pub fn by_space(
+        mut self,
+        space: &V::S,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
+    ) -> Self {
+        let space = self
+            .p
+            .space_ind(space)
+            .expect("Space '{space}' does not belong to the problem");
+        let ct = CT::new(same_vehicle, changed_vehicle);
+        self.bounds().by_space.insert(space, ct);
+        self
+    }
+
+    pub fn by_vehicle(
+        mut self,
+        first_vehicle_type: &V::W,
+        second_vehicle_type: &V::W,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
+    ) -> Self {
+        let v1 = self
+            .p
+            .vehicle_type_ind(first_vehicle_type)
+            .expect("Vehicle type '{first_vehicle_type}' does not belong to the problem");
+        let v2 = self
+            .p
+            .vehicle_type_ind(second_vehicle_type)
+            .expect("Vehicle type '{second_vehicle_type}' does not belong to the problem");
+        let ct = CT::new(same_vehicle, changed_vehicle);
+        self.bounds().by_vehicle_type.insert((v1, v2), ct);
+        self
+    }
+
+    pub fn by_space_vehicle(
+        mut self,
+        space: &V::S,
+        first_vehicle_type: &V::W,
+        second_vehicle_type: &V::W,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
+    ) -> Self {
+        let space = self
+            .p
+            .space_ind(space)
+            .expect("Space '{space}' does not belong to the problem");
+        let v1 = self
+            .p
+            .vehicle_type_ind(first_vehicle_type)
+            .expect("Vehicle type '{first_vehicle_type}' does not belong to the problem");
+        let v2 = self
+            .p
+            .vehicle_type_ind(second_vehicle_type)
+            .expect("Vehicle type '{second_vehicle_type}' does not belong to the problem");
+        let ct = CT::new(same_vehicle, changed_vehicle);
+        self.bounds()
+            .by_space_vehicle_type
+            .insert((space, v1, v2), ct);
+        self
+    }
+
+    pub fn by_transport(
+        mut self,
+        first_transport: &V::T,
+        second_transport: &V::T,
+        same_vehicle: impl Into<Time>,
+        changed_vehicle: impl Into<Time>,
+    ) -> Self {
+        let t1 = self
+            .p
+            .transport_ind(first_transport)
+            .expect("Transport '{first_transport}' does not belong to the problem");
+        let t2 = self
+            .p
+            .transport_ind(second_transport)
+            .expect("Transport '{second_transport}' does not belong to the problem");
+        let ct = CT::new(same_vehicle, changed_vehicle);
+        self.bounds().by_transport.insert((t1, t2), ct);
+        self
     }
 }

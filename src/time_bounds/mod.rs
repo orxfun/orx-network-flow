@@ -1,7 +1,9 @@
 mod all;
+mod arrival;
 mod conn_time;
-mod lateness_earliness;
+mod departure;
 
 pub use all::TimeBounds;
-pub use conn_time::ConnTimeBounds;
-pub use lateness_earliness::LatenessEarlinessBounds;
+pub use arrival::ArrivalTimeBoundsBuilder;
+pub use conn_time::ConnectionTimeBuilder;
+pub use departure::DepartureTimeBoundsBuilder;

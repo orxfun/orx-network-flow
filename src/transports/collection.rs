@@ -34,11 +34,15 @@ impl<V: Variant> Transports<V> {
     }
 
     pub fn get_by_key(&self, key: &V::T) -> Option<&TransportData<V>> {
-        self.map.get_by_key(key)
+        self.map.get_val_by_key(key)
     }
 
     pub fn get_by_idx(&self, idx: Transport) -> Option<&TransportData<V>> {
         self.map.get_by_idx(idx)
+    }
+
+    pub fn get_ind_by_key(&self, key: &V::T) -> Option<Transport> {
+        self.map.get_ind_by_key(key)
     }
 
     pub fn entries(&self) -> impl Iterator<Item = (Transport, &V::T, &TransportData<V>)> {

@@ -47,7 +47,7 @@ impl Add for Time {
     type Output = Time;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Time(self.0 + rhs.0)
+        Time(self.0.saturating_add(rhs.0))
     }
 }
 

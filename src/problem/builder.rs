@@ -4,7 +4,9 @@ use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::time::Time;
-use crate::time_bounds::{ConnTimeBounds, LatenessEarlinessBounds};
+use crate::time_bounds::{
+    ArrivalTimeBoundsBuilder, ConnectionTimeBuilder, DepartureTimeBoundsBuilder,
+};
 use crate::transports::Transport;
 
 pub struct ProblemBuilder<V: Variant>(Problem<V>);
@@ -189,23 +191,23 @@ impl<V: Variant> ProblemBuilder<V> {
 
     // time bounds
 
-    pub fn min_conn_time(&mut self) -> &mut ConnTimeBounds {
-        &mut self.0.time_bounds.min_conn_time
+    pub fn min_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
+        ConnectionTimeBuilder::min(&mut self.0)
     }
 
-    pub fn max_conn_time(&mut self) -> &mut ConnTimeBounds {
-        &mut self.0.time_bounds.max_conn_time
+    pub fn max_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
+        ConnectionTimeBuilder::max(&mut self.0)
     }
 
-    pub fn max_lateness(&mut self) -> &mut LatenessEarlinessBounds {
-        &mut self.0.time_bounds.max_lateness
+    pub fn max_lateness(&mut self) -> ArrivalTimeBoundsBuilder<'_, V> {
+        ArrivalTimeBoundsBuilder::lateness(&mut self.0)
     }
 
-    pub fn max_earliness(&mut self) -> &mut LatenessEarlinessBounds {
-        &mut self.0.time_bounds.max_earliness
+    pub fn max_earliness(&mut self) -> ArrivalTimeBoundsBuilder<'_, V> {
+        ArrivalTimeBoundsBuilder::earliness(&mut self.0)
     }
 
-    pub fn max_waiting(&mut self) -> &mut LatenessEarlinessBounds {
-        &mut self.0.time_bounds.max_waiting
+    pub fn max_waiting(&mut self) -> DepartureTimeBoundsBuilder<'_, V> {
+        DepartureTimeBoundsBuilder::new(&mut self.0)
     }
 }

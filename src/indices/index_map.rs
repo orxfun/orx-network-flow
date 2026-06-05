@@ -41,9 +41,14 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
         self.index_and_data.len()
     }
 
-    pub fn get_by_key(&self, key: &K) -> Option<&V> {
+    pub fn get_val_by_key(&self, key: &K) -> Option<&V> {
         let pos = *self.key_to_index.get(key)?;
         Some(&self.index_and_data[pos].1)
+    }
+
+    pub fn get_ind_by_key(&self, key: &K) -> Option<I> {
+        let pos = *self.key_to_index.get(key)?;
+        Some(I::from(pos))
     }
 
     pub fn get_by_idx(&self, idx: I) -> Option<&V>

@@ -26,7 +26,11 @@ impl<V: Variant> Commodities<V> {
     }
 
     pub fn get_by_key(&self, key: &V::K) -> Option<&CommodityData<V>> {
-        self.map.get_by_key(key)
+        self.map.get_val_by_key(key)
+    }
+
+    pub fn get_ind_by_key(&self, key: &V::K) -> Option<Commodity> {
+        self.map.get_ind_by_key(key)
     }
 
     pub fn get_by_idx(&self, idx: Commodity) -> Option<&CommodityData<V>> {
