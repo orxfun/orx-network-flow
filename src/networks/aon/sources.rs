@@ -52,16 +52,14 @@ impl_idx!(SourceIdx);
 // }
 
 pub struct Sources {
-    len: usize,
-    map_by_ori: Map<Space, IdxMap<Time, Source, SourceIdx>>,
+    idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
     no_source_commodities: Vec<Commodity>,
 }
 
 impl Sources {
     pub fn create<V: Variant>(p: &Problem<V>) -> Self {
         let mut no_source_commodities = Vec::new();
-        let mut map_by_ori = Map::default();
-        let mut len = 0;
+        let mut idx_map = IdxMap::default();
 
         for (ori, sorted_commodities) in &p.ori_sorted_commodities {
             let mut departures = Set::default();
@@ -87,20 +85,18 @@ impl Sources {
                 }
             }
 
-            len += sources.len();
-            let idx_map = sources.into_iter().map(|s| (s.dt, s)).collect();
-            map_by_ori.insert(*ori, idx_map);
+            let ori_sources = sources.into_iter().map(|s| (SpaceTime::new(*ori, s.dt), s));
+            idx_map.extend(ori_sources);
         }
 
         Self {
-            len,
-            map_by_ori,
+            idx_map,
             no_source_commodities,
         }
     }
 
     pub fn len(&self) -> usize {
-        self.len
+        self.idx_map.len()
     }
 }
 

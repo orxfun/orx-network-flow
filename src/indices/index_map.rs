@@ -33,10 +33,16 @@ impl<K: MapKey, V, I: Idx> Default for IdxMap<K, V, I> {
 impl<K: MapKey, V, I: Idx> FromIterator<(K, V)> for IdxMap<K, V, I> {
     fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> Self {
         let mut idx_map = Self::default();
-        for (key, data) in iter {
-            idx_map.push_or_update(key, data);
-        }
+        idx_map.extend(iter);
         idx_map
+    }
+}
+
+impl<K: MapKey, V, I: Idx> Extend<(K, V)> for IdxMap<K, V, I> {
+    fn extend<T: IntoIterator<Item = (K, V)>>(&mut self, iter: T) {
+        for (key, data) in iter {
+            self.push_or_update(key, data);
+        }
     }
 }
 
