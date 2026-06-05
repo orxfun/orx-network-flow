@@ -1,6 +1,6 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
 use orx_network_flow::graph_builders::activity_on_node::visualization::dot::AonDotGraph;
-use orx_network_flow::{ProblemBuilder, Variant};
+use orx_network_flow::{AonNetwork, ProblemBuilder, Variant};
 use std::fs;
 use std::process::Command;
 
@@ -80,7 +80,9 @@ fn main() {
 
     let problem = builder.finish();
 
-    let graph = problem.build_aon_graph();
+    let graph = AonNetwork::create(&problem);
+
+    // let graph = problem.build_aon_graph();
 
     // let dot = AonDotGraph::new(&problem, &graph);
 

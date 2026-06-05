@@ -36,4 +36,5 @@ mod vehicle_types;
 mod vehicles;
 
 pub use graph::Graph;
+pub use networks::AonNetwork;
 pub use problem::{Problem, ProblemBuilder, Variant};
