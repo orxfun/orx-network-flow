@@ -82,7 +82,7 @@ fn main() {
 
     let nw = AonNetwork::create(&problem);
 
-    let dot = nw.dot();
+    let dot = nw.dot(None);
 
     // let graph = problem.build_aon_graph();
 
