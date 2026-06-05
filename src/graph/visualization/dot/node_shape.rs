@@ -1,5 +1,6 @@
 use core::fmt::Display;
 
+#[derive(Clone)]
 pub enum NodeShape {
     Box,
     Ellipse,

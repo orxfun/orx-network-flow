@@ -1,3 +1,4 @@
+use crate::commodities::Commodity;
 use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::sources::{SourceIdx, Sources};
 use crate::networks::aon::visualization::dot::{AonDotGraph, AonDotGraphSettings};
@@ -31,7 +32,14 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
         let sinks = Sinks::create(p);
         let sink_vertices = rng(sinks.len()).map(SinkIdx::from).map(AonVertex::Sink);
 
-        let vertices = transports.chain(source_vertices).chain(sink_vertices);
+        let teleports = rng(p.len_commodities())
+            .map(Commodity::from)
+            .map(AonVertex::Teleport);
+
+        let vertices = transports
+            .chain(teleports)
+            .chain(source_vertices)
+            .chain(sink_vertices);
 
         let mut builder = Graph::builder(vertices);
 
