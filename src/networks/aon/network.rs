@@ -66,4 +66,8 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
     }
 
     // visualization
+
+    pub fn dot(&'a self) -> AonDotGraph<'a, V> {
+        AonDotGraph::new(self.p, self)
+    }
 }

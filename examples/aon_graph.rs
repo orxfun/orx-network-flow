@@ -80,30 +80,32 @@ fn main() {
 
     let problem = builder.finish();
 
-    let graph = AonNetwork::create(&problem);
+    let nw = AonNetwork::create(&problem);
+
+    let dot = nw.dot();
 
     // let graph = problem.build_aon_graph();
 
     // let dot = AonDotGraph::new(&problem, &graph);
 
-    // let dot_text = dot.to_dot_string();
-    // println!("{dot_text}");
+    let dot_text = dot.to_dot_string();
+    println!("{dot_text}");
 
-    // let dot_path = "target/aon_graph.dot";
-    // let svg_path = "target/aon_graph.svg";
+    let dot_path = "target/aon_graph.dot";
+    let svg_path = "target/aon_graph.svg";
 
-    // if let Err(err) = fs::create_dir_all("target") {
-    //     eprintln!("failed to create target directory: {err}");
-    //     return;
-    // }
+    if let Err(err) = fs::create_dir_all("target") {
+        eprintln!("failed to create target directory: {err}");
+        return;
+    }
 
-    // if let Err(err) = fs::write(dot_path, &dot_text) {
-    //     eprintln!("failed to write DOT file to {dot_path}: {err}");
-    //     return;
-    // }
+    if let Err(err) = fs::write(dot_path, &dot_text) {
+        eprintln!("failed to write DOT file to {dot_path}: {err}");
+        return;
+    }
 
-    // Command::new("dot")
-    //     .args(["-Tsvg", dot_path, "-o", svg_path])
-    //     .status()
-    //     .expect("failed to create svg");
+    Command::new("dot")
+        .args(["-Tsvg", dot_path, "-o", svg_path])
+        .status()
+        .expect("failed to create svg");
 }
