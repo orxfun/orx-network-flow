@@ -1,3 +1,5 @@
+use core::cmp::Ordering;
+
 use crate::commodities::Commodity;
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
@@ -77,6 +79,7 @@ impl Sources2 {
                 let ready = p.commodity_by_idx(c).origin().time();
                 let max_waiting = p.time_bounds.max_waiting.bound(p, c);
                 let max_dt = ready + max_waiting;
+                // TODO: might use binary search here
                 match sources.iter().position(|s| s.dt >= ready && s.dt <= max_dt) {
                     Some(s) => sources[s].commodities.push(c),
                     None => no_source_commodities.push(c),
