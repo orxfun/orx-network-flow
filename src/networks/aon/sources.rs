@@ -12,18 +12,18 @@ pub struct Sources {
 
 impl Sources {
     pub fn create<V: Variant>(p: &Problem<V>) -> Self {
-        let mut arrivals = Set::default();
+        let mut departures = Set::default();
 
-        for des in p.des_sorted_commodities.keys() {
-            if let Some(ori_transports) = p.des_ori_sorted_transports.get(des) {
-                for &transport in ori_transports.values().flat_map(|x| x.iter()) {
-                    let at = p.transport_by_idx(transport).destination().time();
-                    let st = SpaceTime::new(*des, at);
-                    arrivals.insert(st);
+        for ori in p.ori_sorted_commodities.keys() {
+            if let Some(des_transports) = p.ori_des_sorted_transports.get(ori) {
+                for &transport in des_transports.values().flat_map(|x| x.iter()) {
+                    let dt = p.transport_by_idx(transport).origin().time();
+                    let st = SpaceTime::new(*ori, dt);
+                    departures.insert(st);
                 }
             }
         }
-        let mut arrivals: Vec<_> = arrivals.into_iter().collect();
+        let mut arrivals: Vec<_> = departures.into_iter().collect();
         arrivals.sort();
 
         let idx_map = arrivals.into_iter().map(|key| (key, ())).collect();
