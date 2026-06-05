@@ -1,1 +1,31 @@
+use crate::Variant;
+use crate::networks::aon::AonEdge;
+use crate::networks::aon::network_builder::AonNetworkBuilder;
+use crate::space_time::SpaceTime;
+use crate::{spaces::Space, time::Time};
 
+pub fn add_source_to_transport_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
+    todo!()
+    // let mut ori = Space::from(usize::MAX);
+    // let mut ready = Time::from(i64::MAX);
+
+    // let (builder, graph) = builder.split_graph();
+    // for st in builder.sources.iter_st_sorted() {
+    //     match st.space() == ori {
+    //         false => {
+    //             ori = st.space();
+    //             ready = st.time();
+    //         }
+    //         true => {
+    //             let ready2 = st.time();
+
+    //             let i = builder.source_vidx(SpaceTime::new(ori, ready));
+    //             let j = builder.source_vidx(SpaceTime::new(ori, ready2));
+    //             let data = AonEdge::SourceSource;
+    //             graph.edge(data, i, j);
+
+    //             ready = ready2;
+    //         }
+    //     }
+    // }
+}

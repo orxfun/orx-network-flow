@@ -5,6 +5,7 @@ use crate::networks::aon::sink_to_sink::add_sink_to_sink_edges;
 use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::source_to_source::add_source_to_source_edges;
 use crate::networks::aon::source_to_teleport::add_source_to_teleport_edges;
+use crate::networks::aon::source_to_transport::add_source_to_transport_edges;
 use crate::networks::aon::sources::{SourceIdx, Sources};
 use crate::networks::aon::teleport_to_sink::add_teleport_sink_edges;
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
@@ -114,6 +115,7 @@ impl<V: Variant> Problem<V> {
         add_sink_to_sink_edges(b);
         add_source_to_teleport_edges(b);
         add_teleport_sink_edges(b);
+        add_source_to_transport_edges(b);
 
         builder.finish()
     }
