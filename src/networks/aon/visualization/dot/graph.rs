@@ -6,3 +6,21 @@ pub struct AonDotGraph<'a, V: Variant> {
     network: &'a AonNetwork,
     settings: AonDotGraphSettings,
 }
+
+impl<'a, V: Variant> AonDotGraph<'a, V> {
+    pub fn new(problem: &'a Problem<V>, network: &'a AonNetwork) -> Self {
+        Self::with_settings(problem, network, Default::default())
+    }
+
+    pub fn with_settings(
+        problem: &'a Problem<V>,
+        network: &'a AonNetwork,
+        settings: AonDotGraphSettings,
+    ) -> Self {
+        Self {
+            problem,
+            network,
+            settings,
+        }
+    }
+}
