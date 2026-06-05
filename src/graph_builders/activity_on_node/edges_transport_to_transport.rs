@@ -50,8 +50,8 @@ fn connect_edges_for_od<V: Variant>(
 
         for head in heads {
             let data = EdgeData::TransportToTransport(tail, head);
-            let i = indexer.transport_idx(tail).into_inner();
-            let j = indexer.transport_idx(head).into_inner();
+            let i = indexer.transport_idx(tail);
+            let j = indexer.transport_idx(head);
             builder.edge(data, i, j);
         }
     }

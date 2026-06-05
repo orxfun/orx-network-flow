@@ -66,11 +66,6 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
         Some(&self.index_and_data[pos].1)
     }
 
-    pub fn get_ind_by_key(&self, key: &K) -> Option<I> {
-        let pos = *self.key_to_index.get(key)?;
-        Some(I::from(pos))
-    }
-
     pub fn get_by_idx(&self, idx: I) -> Option<&V>
     where
         I: IdxCore,
@@ -85,6 +80,11 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
     {
         let idx = idx.into_inner();
         self.index_and_data.get(idx).map(|x| &x.0)
+    }
+
+    pub fn key_to_idx(&self, key: &K) -> Option<I> {
+        let pos = *self.key_to_index.get(key)?;
+        Some(I::from(pos))
     }
 
     pub fn entries(&self) -> impl Iterator<Item = (I, &K, &V)> {

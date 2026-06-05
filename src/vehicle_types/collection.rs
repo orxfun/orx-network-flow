@@ -28,6 +28,6 @@ impl<V: Variant> VehicleTypes<V> {
     }
 
     pub fn get_ind_by_key(&self, key: &V::W) -> Option<VehicleType> {
-        self.map.get_ind_by_key(key)
+        self.map.key_to_idx(key)
     }
 }

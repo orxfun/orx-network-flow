@@ -39,6 +39,10 @@ impl Sinks {
         self.idx_map.idx_to_key(idx).copied()
     }
 
+    pub fn get_t_idx(&self, st: SpaceTime) -> Option<SinkIdx> {
+        self.idx_map.key_to_idx(&st)
+    }
+
     pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
         self.idx_map.keys().copied()
     }

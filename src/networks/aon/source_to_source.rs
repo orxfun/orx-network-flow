@@ -1,19 +1,19 @@
-use crate::graph::VIdx;
+use crate::graph::GraphBuilder;
+use crate::networks::aon::AonEdge;
+use crate::networks::aon::network_builder::AonNetworkBuilder;
 use crate::networks::aon::sources::Sources;
-use crate::networks::aon::{AonEdge, AonVertex};
+use crate::space_time::SpaceTime;
 use crate::spaces::Space;
 use crate::time::Time;
-use crate::{Problem, Variant, graph::GraphBuilder};
+use crate::{Problem, Variant};
 
-pub fn add_source_to_source_edges<V: Variant>(
-    builder: &mut GraphBuilder<AonVertex, AonEdge>,
-    p: &Problem<V>,
-    sources: &Sources,
-) {
+pub fn add_source_to_source_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
     let mut space = Space::from(usize::MAX);
     let mut tail = Time::from(i64::MAX);
 
-    for st in sources.iter_st_sorted() {
+    // TODO: avoid unsafe
+    let graph = unsafe { &mut *(&mut builder.builder as *mut GraphBuilder<_, _>) };
+    for st in builder.sources.iter_st_sorted() {
         match st.space() == space {
             false => {
                 space = st.space();
@@ -21,6 +21,11 @@ pub fn add_source_to_source_edges<V: Variant>(
             }
             true => {
                 let head = st.time();
+
+                let i = builder.source_vidx(SpaceTime::new(space, tail));
+                let j = builder.source_vidx(SpaceTime::new(space, head));
+                let data = AonEdge::SourceSource(space, tail, head);
+                graph.edge(data, i, j);
 
                 tail = head;
             }
