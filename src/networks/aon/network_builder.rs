@@ -6,16 +6,20 @@ use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::source_to_source::add_source_to_source_edges;
 use crate::networks::aon::source_to_teleport::add_source_to_teleport_edges;
 use crate::networks::aon::sources::{SourceIdx, Sources};
+use crate::networks::aon::teleport_to_sink::add_teleport_sink_edges;
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
 use crate::space_time::SpaceTime;
+use crate::std_utils::Set;
 use crate::transports::Transport;
 use crate::{AonNetwork, Graph, Problem, Variant};
+use alloc::vec::Vec;
 
 pub struct AonNetworkBuilder<'a, V: Variant> {
     pub(super) p: &'a Problem<V>,
     pub(super) builder: GraphBuilder<AonVertex, AonEdge>,
     pub(super) sources: Sources,
     pub(super) sinks: Sinks,
+    untransported_commodities: Set<Commodity>,
     offset_teleports: usize,
     offset_sources: usize,
     offset_sinks: usize,
@@ -36,8 +40,11 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             .map(SourceIdx::from)
             .map(AonVertex::Source);
 
-        let sinks = Sinks::create(p);
+        let (sinks, no_sink_commodities) = Sinks::create(p);
         let sink_vertices = rng(sinks.len()).map(SinkIdx::from).map(AonVertex::Sink);
+
+        let mut untransported_commodities = no_source_commodities;
+        untransported_commodities.extend(no_sink_commodities);
 
         let teleports = rng(p.len_commodities())
             .map(Commodity::from)
@@ -59,6 +66,7 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             builder,
             sources,
             sinks,
+            untransported_commodities,
             offset_teleports,
             offset_sources,
             offset_sinks,
@@ -103,8 +111,9 @@ impl<V: Variant> Problem<V> {
 
         let b = &mut builder;
         add_source_to_source_edges(b);
-        // add_sink_to_sink_edges(b);
+        add_sink_to_sink_edges(b);
         add_source_to_teleport_edges(b);
+        add_teleport_sink_edges(b);
 
         builder.finish()
     }

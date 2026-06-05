@@ -70,13 +70,13 @@ fn main() {
     // transport("AMS", "EMA", 5, 9);
     transport("AMS", "EMA", 12, 16);
 
-    builder.max_waiting().global(15i64);
+    builder.max_waiting().global(1000i64);
 
     builder.min_conn_time().global(2i64, 10i64);
     builder.max_conn_time().global(10i64, 100i64);
 
-    builder.max_earliness().global(6i64);
-    builder.max_lateness().global(1i64);
+    builder.max_earliness().global(1000i64);
+    builder.max_lateness().global(0i64);
 
     let problem = builder.finish();
 
