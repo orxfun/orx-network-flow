@@ -94,16 +94,16 @@ impl<V: Variant> Problem<V> {
 
     // get by idx
 
-    pub(crate) fn commodity_by_idx(&self, idx: Commodity) -> &CommodityData<V> {
-        self.commodities.get_by_idx(idx).expect("validated problem")
+    pub(crate) fn commodity_by_idx(&self, c: Commodity) -> &CommodityData<V> {
+        self.commodities.get_by_idx(c).expect("validated problem")
     }
 
-    pub(crate) fn transport_by_idx(&self, idx: Transport) -> &TransportData<V> {
-        self.transports.get_by_idx(idx).expect("validated problem")
+    pub(crate) fn transport_by_idx(&self, t: Transport) -> &TransportData<V> {
+        self.transports.get_by_idx(t).expect("validated problem")
     }
 
-    pub(crate) fn vehicle_by_idx(&self, idx: Vehicle) -> &VehicleData {
-        self.vehicles.get_by_idx(idx).expect("validated problem")
+    pub(crate) fn vehicle_by_idx(&self, t: Vehicle) -> &VehicleData {
+        self.vehicles.get_by_idx(t).expect("validated problem")
     }
 
     // graphs

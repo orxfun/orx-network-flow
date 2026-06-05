@@ -1,6 +1,9 @@
+use crate::commodities::Commodity;
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
-use crate::std_utils::Set;
+use crate::spaces::Space;
+use crate::std_utils::{Map, Set};
+use crate::time::Time;
 use crate::{Problem, Variant, impl_idx};
 use alloc::vec::Vec;
 
@@ -23,10 +26,10 @@ impl Sources {
                 }
             }
         }
-        let mut arrivals: Vec<_> = departures.into_iter().collect();
-        arrivals.sort();
+        let mut departures: Vec<_> = departures.into_iter().collect();
+        departures.sort();
 
-        let idx_map = arrivals.into_iter().map(|key| (key, ())).collect();
+        let idx_map = departures.into_iter().map(|key| (key, ())).collect();
 
         Self { idx_map }
     }
@@ -45,5 +48,62 @@ impl Sources {
 
     pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
         self.idx_map.keys().copied()
+    }
+}
+
+pub struct Sources2 {
+    map_by_ori: Map<Space, IdxMap<Time, Source, SourceIdx>>,
+    no_source_commodities: Vec<Commodity>,
+}
+
+impl Sources2 {
+    pub fn create<V: Variant>(p: &Problem<V>) -> Self {
+        let mut no_source_commodities = Vec::new();
+        let mut map_by_ori = Map::default();
+        for (ori, sorted_commodities) in &p.ori_sorted_commodities {
+            let mut departures = Set::default();
+
+            if let Some(des_transports) = p.ori_des_sorted_transports.get(ori) {
+                for &transport in des_transports.values().flat_map(|x| x.iter()) {
+                    let dt = p.transport_by_idx(transport).origin().time();
+                    departures.insert(dt);
+                }
+            }
+
+            let mut sources: Vec<_> = departures.into_iter().map(Source::new).collect();
+            sources.sort_by_key(|s| s.dt);
+
+            for &c in sorted_commodities {
+                let ready = p.commodity_by_idx(c).origin().time();
+                let max_waiting = p.time_bounds.max_waiting.bound(p, c);
+                let max_dt = ready + max_waiting;
+                match sources.iter().position(|s| s.dt >= ready && s.dt <= max_dt) {
+                    Some(s) => sources[s].commodities.push(c),
+                    None => no_source_commodities.push(c),
+                }
+            }
+
+            let idx_map = sources.into_iter().map(|s| (s.dt, s)).collect();
+            map_by_ori.insert(*ori, idx_map);
+        }
+
+        Self {
+            map_by_ori,
+            no_source_commodities,
+        }
+    }
+}
+
+pub struct Source {
+    dt: Time,
+    commodities: Vec<Commodity>,
+}
+
+impl Source {
+    fn new(dt: Time) -> Self {
+        Self {
+            dt,
+            commodities: Default::default(),
+        }
     }
 }
