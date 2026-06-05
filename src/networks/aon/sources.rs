@@ -1,7 +1,8 @@
 use crate::commodities::Commodity;
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
-use crate::std_utils::Set;
+use crate::spaces::Space;
+use crate::std_utils::{Map, Set};
 use crate::time::Time;
 use crate::{Problem, Variant, impl_idx};
 use alloc::vec::Vec;
@@ -10,12 +11,14 @@ impl_idx!(SourceIdx);
 
 pub struct Sources {
     idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
+    ori_to_position: Map<Space, usize>,
 }
 
 impl Sources {
     pub fn create<V: Variant>(p: &Problem<V>) -> (Self, Set<Commodity>) {
         let mut no_source_commodities = Set::default();
         let mut idx_map = IdxMap::default();
+        let mut ori_to_position = Map::default();
 
         for (ori, sorted_commodities) in &p.ori_sorted_commodities {
             let mut departures = Set::default();
@@ -42,10 +45,15 @@ impl Sources {
             }
 
             let ori_sources = sources.into_iter().map(|s| (SpaceTime::new(*ori, s.dt), s));
+            ori_to_position.insert(*ori, idx_map.len());
             idx_map.extend(ori_sources);
         }
 
-        (Self { idx_map }, no_source_commodities)
+        let sources = Self {
+            idx_map,
+            ori_to_position,
+        };
+        (sources, no_source_commodities)
     }
 
     pub fn len(&self) -> usize {
