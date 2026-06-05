@@ -40,4 +40,8 @@ impl<V: Variant> Commodities<V> {
     pub fn entries(&self) -> impl Iterator<Item = (Commodity, &V::K, &CommodityData<V>)> {
         self.map.entries()
     }
+
+    pub fn indices(&self) -> impl Iterator<Item = Commodity> {
+        self.map.indices()
+    }
 }

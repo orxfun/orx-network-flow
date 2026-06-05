@@ -5,25 +5,25 @@ use crate::space_time::SpaceTime;
 use crate::{spaces::Space, time::Time};
 
 pub fn add_source_to_source_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
-    let mut space = Space::from(usize::MAX);
-    let mut tail = Time::from(i64::MAX);
+    let mut ori = Space::from(usize::MAX);
+    let mut ready1 = Time::from(i64::MAX);
 
-    let (builder, graph) = builder.split_ref();
+    let (builder, graph) = builder.split_graph();
     for st in builder.sources.iter_st_sorted() {
-        match st.space() == space {
+        match st.space() == ori {
             false => {
-                space = st.space();
-                tail = st.time();
+                ori = st.space();
+                ready1 = st.time();
             }
             true => {
-                let head = st.time();
+                let ready2 = st.time();
 
-                let i = builder.source_vidx(SpaceTime::new(space, tail));
-                let j = builder.source_vidx(SpaceTime::new(space, head));
-                let data = AonEdge::SourceSource(space, tail, head);
+                let i = builder.source_vidx(SpaceTime::new(ori, ready1));
+                let j = builder.source_vidx(SpaceTime::new(ori, ready2));
+                let data = AonEdge::SourceSource;
                 graph.edge(data, i, j);
 
-                tail = head;
+                ready1 = ready2;
             }
         }
     }

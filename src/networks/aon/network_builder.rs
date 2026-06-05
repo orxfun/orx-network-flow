@@ -4,6 +4,7 @@ use crate::indices::IdxCore;
 use crate::networks::aon::sink_to_sink::add_sink_to_sink_edges;
 use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::source_to_source::add_source_to_source_edges;
+use crate::networks::aon::source_to_teleport::add_source_to_teleport_edges;
 use crate::networks::aon::sources::{SourceIdx, Sources};
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
 use crate::space_time::SpaceTime;
@@ -11,13 +12,13 @@ use crate::transports::Transport;
 use crate::{AonNetwork, Graph, Problem, Variant};
 
 pub struct AonNetworkBuilder<'a, V: Variant> {
-    p: &'a Problem<V>,
+    pub(super) p: &'a Problem<V>,
     pub(super) builder: GraphBuilder<AonVertex, AonEdge>,
     pub(super) sources: Sources,
     pub(super) sinks: Sinks,
+    offset_teleports: usize,
     offset_sources: usize,
     offset_sinks: usize,
-    offset_teleports: usize,
 }
 
 impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
@@ -58,9 +59,9 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             builder,
             sources,
             sinks,
+            offset_teleports,
             offset_sources,
             offset_sinks,
-            offset_teleports,
         }
     }
 
@@ -68,25 +69,21 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
         AonNetwork::new(self.p, self.builder.finish(), self.sources, self.sinks)
     }
 
-    fn s_to_vidx(&self, s: SourceIdx) -> VIdx {
-        VIdx::from(self.offset_sources + s.into_inner())
-    }
-
-    fn t_to_vidx(&self, t: SinkIdx) -> VIdx {
-        VIdx::from(self.offset_sinks + t.into_inner())
-    }
-
     pub fn source_vidx(&self, st: SpaceTime) -> VIdx {
         let s = self.sources.get_s_idx(st).expect("invalid source st");
-        self.s_to_vidx(s)
+        VIdx::from(self.offset_sources + s.into_inner())
     }
 
     pub fn sink_vidx(&self, st: SpaceTime) -> VIdx {
         let t = self.sinks.get_t_idx(st).expect("invalid sink st");
-        self.t_to_vidx(t)
+        VIdx::from(self.offset_sinks + t.into_inner())
     }
 
-    pub fn split_ref(&mut self) -> (&Self, &mut GraphBuilder<AonVertex, AonEdge>) {
+    pub fn teleport_vidx(&self, c: Commodity) -> VIdx {
+        VIdx::from(self.offset_teleports + c.into_inner())
+    }
+
+    pub fn split_graph(&mut self) -> (&Self, &mut GraphBuilder<AonVertex, AonEdge>) {
         let graph = unsafe { &mut *(&mut self.builder as *mut GraphBuilder<_, _>) };
         (self, graph)
     }
@@ -96,8 +93,10 @@ impl<V: Variant> Problem<V> {
     pub fn aon_network(&self) -> AonNetwork<'_, V> {
         let mut builder = AonNetworkBuilder::initiate(self);
 
-        add_source_to_source_edges(&mut builder);
-        add_sink_to_sink_edges(&mut builder);
+        let b = &mut builder;
+        add_source_to_source_edges(b);
+        add_sink_to_sink_edges(b);
+        // add_source_to_teleport_edges(b);
 
         builder.finish()
     }

@@ -5,25 +5,25 @@ use crate::space_time::SpaceTime;
 use crate::{spaces::Space, time::Time};
 
 pub fn add_sink_to_sink_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
-    let mut space = Space::from(usize::MAX);
-    let mut tail = Time::from(i64::MAX);
+    let mut des = Space::from(usize::MAX);
+    let mut due1 = Time::from(i64::MAX);
 
-    let (builder, graph) = builder.split_ref();
+    let (builder, graph) = builder.split_graph();
     for st in builder.sinks.iter_st_sorted() {
-        match st.space() == space {
+        match st.space() == des {
             false => {
-                space = st.space();
-                tail = st.time();
+                des = st.space();
+                due1 = st.time();
             }
             true => {
-                let head = st.time();
+                let due2 = st.time();
 
-                let i = builder.sink_vidx(SpaceTime::new(space, tail));
-                let j = builder.sink_vidx(SpaceTime::new(space, head));
-                let data = AonEdge::SinkSink(space, tail, head);
+                let i = builder.sink_vidx(SpaceTime::new(des, due1));
+                let j = builder.sink_vidx(SpaceTime::new(des, due2));
+                let data = AonEdge::SinkSink;
                 graph.edge(data, i, j);
 
-                tail = head;
+                due1 = due2;
             }
         }
     }
