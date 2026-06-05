@@ -38,6 +38,7 @@ pub struct ConnTimeBounds {
     by_vehicle_type: Map<(VehicleType, VehicleType), CT>,
     by_space_vehicle_type: Map<(Space, VehicleType, VehicleType), CT>,
     by_transport: Map<(Transport, Transport), CT>,
+    // TODO: commodity dependent
 }
 
 impl ConnTimeBounds {

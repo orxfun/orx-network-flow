@@ -2,12 +2,22 @@ use crate::indices::IdxCore;
 use crate::indices::index::Idx;
 use crate::std_utils::{Map, MapKey};
 use alloc::vec::Vec;
+use core::fmt::Debug;
 use core::marker::PhantomData;
 
 pub struct IdxMap<K: MapKey, V, I: Idx> {
     index_and_data: Vec<(K, V)>,
     key_to_index: Map<K, usize>,
     p: PhantomData<fn() -> I>,
+}
+
+impl<K: MapKey + Debug, V: Debug, I: Idx> Debug for IdxMap<K, V, I> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("IdxMap")
+            .field("index_and_data", &self.index_and_data)
+            .field("key_to_index", &self.key_to_index)
+            .finish()
+    }
 }
 
 impl<K: MapKey, V, I: Idx> Default for IdxMap<K, V, I> {
@@ -17,6 +27,16 @@ impl<K: MapKey, V, I: Idx> Default for IdxMap<K, V, I> {
             key_to_index: Default::default(),
             p: Default::default(),
         }
+    }
+}
+
+impl<K: MapKey, V, I: Idx> FromIterator<(K, V)> for IdxMap<K, V, I> {
+    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> Self {
+        let mut idx_map = Self::default();
+        for (key, data) in iter {
+            idx_map.push_or_update(key, data);
+        }
+        idx_map
     }
 }
 

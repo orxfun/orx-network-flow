@@ -14,7 +14,7 @@ pub fn build_aon_graph<V: Variant>(p: &Problem<V>) -> Graph<VertexData, EdgeData
 
     let indexer = Indexer::new(p.len_commodities(), p.len_transports());
 
-    create_sinks(p);
+    create_sinks(p, 0);
 
     let transports = rng(p.len_transports())
         .map(Transport::from)

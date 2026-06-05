@@ -1,6 +1,7 @@
 use crate::{spaces::Space, time::Time};
+use core::fmt::Display;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct SpaceTime(Space, Time);
 
 impl SpaceTime {
@@ -14,5 +15,11 @@ impl SpaceTime {
 
     pub fn time(&self) -> Time {
         self.1
+    }
+}
+
+impl Display for SpaceTime {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}-{}", self.0, self.1)
     }
 }
