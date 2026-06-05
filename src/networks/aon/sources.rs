@@ -102,6 +102,10 @@ impl Sources {
     pub fn get_st(&self, idx: SourceIdx) -> Option<SpaceTime> {
         self.idx_map.idx_to_key(idx).copied()
     }
+
+    pub fn get_s_idx(&self, st: SpaceTime) -> Option<SourceIdx> {
+        self.idx_map.key_to_idx(&st)
+    }
 }
 
 pub struct Source {
