@@ -63,6 +63,12 @@ impl Sources {
     pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
         self.idx_map.keys().copied()
     }
+
+    pub fn iter_sidx_and_commodities(&self) -> impl Iterator<Item = (SourceIdx, &[Commodity])> {
+        self.idx_map
+            .entries()
+            .map(|(sidx, _, source)| (sidx, source.commodities.as_slice()))
+    }
 }
 
 pub struct Source {

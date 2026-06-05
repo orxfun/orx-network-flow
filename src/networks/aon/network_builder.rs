@@ -96,7 +96,7 @@ impl<V: Variant> Problem<V> {
         let b = &mut builder;
         add_source_to_source_edges(b);
         // add_sink_to_sink_edges(b);
-        // add_source_to_teleport_edges(b);
+        add_source_to_teleport_edges(b);
 
         builder.finish()
     }
