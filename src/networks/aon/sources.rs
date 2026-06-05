@@ -106,6 +106,10 @@ impl Sources {
     pub fn get_s_idx(&self, st: SpaceTime) -> Option<SourceIdx> {
         self.idx_map.key_to_idx(&st)
     }
+
+    pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
+        self.idx_map.keys().copied()
+    }
 }
 
 pub struct Source {
