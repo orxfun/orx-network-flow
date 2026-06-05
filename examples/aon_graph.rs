@@ -39,7 +39,7 @@ fn main() {
 
     commodity("AMS", "BRU", 3, 16);
     // commodity("AMS", "BRU", 6, 17);
-    // commodity("AMS", "SIN", 9, 26);
+    commodity("AMS", "SIN", 9, 26);
 
     // transports
     let mut t_idx = 0;
@@ -66,9 +66,9 @@ fn main() {
     transport("BRU", "SIN", 10, 15);
     transport("BRU", "SIN", 15, 20);
     // transport("BRU", "SIN", 20, 25);
-    // transport("BRU", "SIN", 25, 30);
-    // transport("AMS", "EMA", 5, 9);
-    // transport("AMS", "EMA", 12, 16);
+    transport("BRU", "SIN", 25, 30);
+    transport("AMS", "EMA", 5, 9);
+    transport("AMS", "EMA", 12, 16);
 
     builder.max_waiting().global(15i64);
 
