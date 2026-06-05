@@ -1,6 +1,7 @@
 mod edge;
 mod network;
 mod network_builder;
+mod sink_to_sink;
 mod sinks;
 mod source_to_source;
 mod source_to_teleport;

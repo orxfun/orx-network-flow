@@ -38,7 +38,7 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 3, 16);
-    // commodity("AMS", "BRU", 6, 17);
+    commodity("BRU", "SIN", 6, 17);
     commodity("AMS", "SIN", 9, 26);
 
     // transports
@@ -63,12 +63,12 @@ fn main() {
     transport("AMS", "BRU", 14, 16);
     transport("AMS", "BRU", 15, 17);
     // transport("AMS", "BRU", 18, 20);
-    // transport("BRU", "SIN", 10, 15);
-    // transport("BRU", "SIN", 15, 20);
+    transport("BRU", "SIN", 10, 15);
+    transport("BRU", "SIN", 15, 20);
     // transport("BRU", "SIN", 20, 25);
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);
-    // transport("AMS", "EMA", 12, 16);
+    transport("AMS", "EMA", 12, 16);
 
     builder.max_waiting().global(15i64);
 

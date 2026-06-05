@@ -1,6 +1,7 @@
 use crate::commodities::Commodity;
 use crate::graph::{GraphBuilder, VIdx};
 use crate::indices::IdxCore;
+use crate::networks::aon::sink_to_sink::add_sink_to_sink_edges;
 use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::source_to_source::add_source_to_source_edges;
 use crate::networks::aon::sources::{SourceIdx, Sources};
@@ -84,6 +85,11 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
         let t = self.sinks.get_t_idx(st).expect("invalid sink st");
         self.t_to_vidx(t)
     }
+
+    pub fn split_ref(&mut self) -> (&Self, &mut GraphBuilder<AonVertex, AonEdge>) {
+        let graph = unsafe { &mut *(&mut self.builder as *mut GraphBuilder<_, _>) };
+        (self, graph)
+    }
 }
 
 impl<V: Variant> Problem<V> {
@@ -91,6 +97,7 @@ impl<V: Variant> Problem<V> {
         let mut builder = AonNetworkBuilder::initiate(self);
 
         add_source_to_source_edges(&mut builder);
+        add_sink_to_sink_edges(&mut builder);
 
         builder.finish()
     }

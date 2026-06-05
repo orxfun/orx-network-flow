@@ -4,12 +4,12 @@ use crate::networks::aon::network_builder::AonNetworkBuilder;
 use crate::space_time::SpaceTime;
 use crate::{spaces::Space, time::Time};
 
-pub fn add_source_to_source_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
+pub fn add_sink_to_sink_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
     let mut space = Space::from(usize::MAX);
     let mut tail = Time::from(i64::MAX);
 
     let (builder, graph) = builder.split_ref();
-    for st in builder.sources.iter_st_sorted() {
+    for st in builder.sinks.iter_st_sorted() {
         match st.space() == space {
             false => {
                 space = st.space();
@@ -18,9 +18,9 @@ pub fn add_source_to_source_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_
             true => {
                 let head = st.time();
 
-                let i = builder.source_vidx(SpaceTime::new(space, tail));
-                let j = builder.source_vidx(SpaceTime::new(space, head));
-                let data = AonEdge::SourceSource(space, tail, head);
+                let i = builder.sink_vidx(SpaceTime::new(space, tail));
+                let j = builder.sink_vidx(SpaceTime::new(space, head));
+                let data = AonEdge::SinkSink(space, tail, head);
                 graph.edge(data, i, j);
 
                 tail = head;
