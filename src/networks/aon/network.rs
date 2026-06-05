@@ -11,27 +11,24 @@ pub struct AonNetwork<'a, V: Variant> {
     graph: Graph<AonVertex, AonEdge>,
     sources: Sources,
     sinks: Sinks,
-    len_transports: usize,
 }
 
 impl<'a, V: Variant> AonNetwork<'a, V> {
     pub fn create(p: &'a Problem<V>) -> Self {
-        let sources = Sources::create(p);
-        let sinks = Sinks::create(p);
-        let len_transports = p.len_transports();
-
         // vertices
 
         let rng = |len: usize| 0..len;
 
-        let transports = rng(len_transports)
+        let transports = rng(p.len_transports())
             .map(Transport::from)
             .map(AonVertex::Transport);
 
+        let sources = Sources::create(p);
         let source_vertices = rng(sources.len())
             .map(SourceIdx::from)
             .map(AonVertex::Source);
 
+        let sinks = Sinks::create(p);
         let sink_vertices = rng(sinks.len()).map(SinkIdx::from).map(AonVertex::Sink);
 
         let vertices = transports.chain(source_vertices).chain(sink_vertices);
@@ -49,7 +46,6 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
             graph,
             sources,
             sinks,
-            len_transports,
         }
     }
 
