@@ -1,17 +1,16 @@
-use crate::graph::VIdx;
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
-use crate::spaces::Space;
-use crate::std_utils::{Map, Set};
-use crate::time::Time;
-use crate::{Problem, Variant};
+use crate::std_utils::Set;
+use crate::{Problem, Variant, impl_idx};
 use alloc::vec::Vec;
 
+impl_idx!(SinkIdx);
+
 pub struct Sinks {
-    idx_map: IdxMap<SpaceTime, (), VIdx>,
+    idx_map: IdxMap<SpaceTime, (), SinkIdx>,
 }
 
-pub fn create_sinks<V: Variant>(p: &Problem<V>, num_vertices_before: usize) -> Sinks {
+pub fn create_sinks<V: Variant>(p: &Problem<V>) -> Sinks {
     let mut arrivals = Set::default();
 
     for des in p.des_sorted_commodities.keys() {
@@ -27,8 +26,6 @@ pub fn create_sinks<V: Variant>(p: &Problem<V>, num_vertices_before: usize) -> S
     arrivals.sort();
 
     let idx_map = arrivals.into_iter().map(|key| (key, ())).collect();
-
-    std::dbg!(&idx_map);
 
     Sinks { idx_map }
 }
