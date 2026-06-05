@@ -8,18 +8,18 @@ use alloc::string::{String, ToString};
 
 pub struct AonDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
-    network: &'a AonNetwork,
+    network: &'a AonNetwork<'a, V>,
     settings: AonDotGraphSettings,
 }
 
 impl<'a, V: Variant> AonDotGraph<'a, V> {
-    pub fn new(problem: &'a Problem<V>, network: &'a AonNetwork) -> Self {
+    pub fn new(problem: &'a Problem<V>, network: &'a AonNetwork<'a, V>) -> Self {
         Self::with_settings(problem, network, Default::default())
     }
 
     pub fn with_settings(
         problem: &'a Problem<V>,
-        network: &'a AonNetwork,
+        network: &'a AonNetwork<'a, V>,
         settings: AonDotGraphSettings,
     ) -> Self {
         Self {

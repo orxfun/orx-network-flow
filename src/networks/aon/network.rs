@@ -1,19 +1,21 @@
 use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::sources::{SourceIdx, Sources};
+use crate::networks::aon::visualization::dot::AonDotGraph;
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
 use crate::space_time::SpaceTime;
 use crate::transports::Transport;
 use crate::{Graph, Problem, Variant};
 
-pub struct AonNetwork {
+pub struct AonNetwork<'a, V: Variant> {
+    p: &'a Problem<V>,
     graph: Graph<AonVertex, AonEdge>,
     sources: Sources,
     sinks: Sinks,
     len_transports: usize,
 }
 
-impl AonNetwork {
-    pub fn create<V: Variant>(p: &Problem<V>) -> Self {
+impl<'a, V: Variant> AonNetwork<'a, V> {
+    pub fn create(p: &'a Problem<V>) -> Self {
         let sources = Sources::create(p);
         let sinks = Sinks::create(p);
         let len_transports = p.len_transports();
@@ -43,6 +45,7 @@ impl AonNetwork {
         let graph = builder.finish();
 
         Self {
+            p,
             graph,
             sources,
             sinks,
@@ -61,4 +64,6 @@ impl AonNetwork {
     pub fn sink_st(&self, idx: SinkIdx) -> SpaceTime {
         self.sinks.get_st(idx).expect("invalid sink idx")
     }
+
+    // visualization
 }
