@@ -45,4 +45,8 @@ impl AonNetwork {
 
         Self { graph, indexer }
     }
+
+    pub fn graph(&self) -> &Graph<AonVertex, AonEdge> {
+        &self.graph
+    }
 }

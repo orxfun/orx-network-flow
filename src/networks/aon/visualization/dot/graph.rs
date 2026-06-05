@@ -1,5 +1,10 @@
-use crate::graph_builders::activity_on_node::visualization::dot::AonDotGraphSettings;
-use crate::{AonNetwork, Problem, Variant};
+use crate::graph::visualization::dot::DotGraph;
+use crate::graph::{VIdx, Vertex};
+use crate::networks::aon::edge::AonEdge;
+use crate::networks::aon::vertex::AonVertex;
+use crate::networks::aon::visualization::dot::settings::AonDotGraphSettings;
+use crate::{AonNetwork, Graph, Problem, Variant};
+use alloc::string::String;
 
 pub struct AonDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
@@ -22,5 +27,23 @@ impl<'a, V: Variant> AonDotGraph<'a, V> {
             network,
             settings,
         }
+    }
+}
+
+impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
+    type V = AonVertex;
+
+    type E = AonEdge;
+
+    fn graph(&self) -> &Graph<Self::V, Self::E> {
+        self.network.graph()
+    }
+
+    fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String {
+        todo!()
+    }
+
+    fn vertex_settings(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String {
+        todo!()
     }
 }
