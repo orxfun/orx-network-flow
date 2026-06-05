@@ -1,39 +1,38 @@
-use crate::networks::aon::indexer::Indexer;
 use crate::networks::aon::sinks::{SinkIdx, Sinks};
 use crate::networks::aon::sources::{SourceIdx, Sources};
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
+use crate::space_time::SpaceTime;
 use crate::transports::Transport;
 use crate::{Graph, Problem, Variant};
 
 pub struct AonNetwork {
     graph: Graph<AonVertex, AonEdge>,
-    indexer: Indexer,
+    sources: Sources,
+    sinks: Sinks,
+    len_transports: usize,
 }
 
 impl AonNetwork {
     pub fn create<V: Variant>(p: &Problem<V>) -> Self {
         let sources = Sources::create(p);
         let sinks = Sinks::create(p);
-        let num_transports = p.len_transports();
-        let indexer = Indexer::new(num_transports, sources, sinks);
+        let len_transports = p.len_transports();
 
         // vertices
 
         let rng = |len: usize| 0..len;
 
-        let transports = rng(p.len_transports())
+        let transports = rng(len_transports)
             .map(Transport::from)
             .map(AonVertex::Transport);
 
-        let sources = rng(indexer.len_sources())
+        let source_vertices = rng(sources.len())
             .map(SourceIdx::from)
             .map(AonVertex::Source);
 
-        let sinks = rng(indexer.len_sinks())
-            .map(SinkIdx::from)
-            .map(AonVertex::Sink);
+        let sink_vertices = rng(sinks.len()).map(SinkIdx::from).map(AonVertex::Sink);
 
-        let vertices = transports.chain(sources).chain(sinks);
+        let vertices = transports.chain(source_vertices).chain(sink_vertices);
 
         let mut builder = Graph::builder(vertices);
 
@@ -43,10 +42,23 @@ impl AonNetwork {
 
         let graph = builder.finish();
 
-        Self { graph, indexer }
+        Self {
+            graph,
+            sources,
+            sinks,
+            len_transports,
+        }
     }
 
     pub fn graph(&self) -> &Graph<AonVertex, AonEdge> {
         &self.graph
+    }
+
+    pub fn source_st(&self, idx: SourceIdx) -> SpaceTime {
+        self.sources.get_st(idx).expect("invalid source idx")
+    }
+
+    pub fn sink_st(&self, idx: SinkIdx) -> SpaceTime {
+        self.sinks.get_st(idx).expect("invalid sink idx")
     }
 }

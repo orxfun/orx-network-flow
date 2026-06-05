@@ -34,4 +34,8 @@ impl Sinks {
     pub fn len(&self) -> usize {
         self.idx_map.len()
     }
+
+    pub fn get_st(&self, idx: SinkIdx) -> Option<SpaceTime> {
+        self.idx_map.idx_to_key(idx).copied()
+    }
 }

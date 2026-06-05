@@ -1,9 +1,10 @@
 mod edge;
-mod indexer;
 mod network;
 mod sinks;
 mod sources;
 mod vertex;
 mod visualization;
 
+use edge::AonEdge;
 pub use network::AonNetwork;
+use vertex::AonVertex;
