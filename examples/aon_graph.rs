@@ -58,17 +58,17 @@ fn main() {
         *t += 1;
     };
 
-    transport("AMS", "BRU", 4, 6);
-    transport("AMS", "BRU", 8, 10);
+    // transport("AMS", "BRU", 4, 6);
+    // transport("AMS", "BRU", 8, 10);
     transport("AMS", "BRU", 14, 16);
     transport("AMS", "BRU", 15, 17);
     // transport("AMS", "BRU", 18, 20);
     transport("BRU", "SIN", 10, 15);
     transport("BRU", "SIN", 15, 20);
     // transport("BRU", "SIN", 20, 25);
-    transport("BRU", "SIN", 25, 30);
-    transport("AMS", "EMA", 5, 9);
-    transport("AMS", "EMA", 12, 16);
+    // transport("BRU", "SIN", 25, 30);
+    // transport("AMS", "EMA", 5, 9);
+    // transport("AMS", "EMA", 12, 16);
 
     builder.max_waiting().global(15i64);
 
@@ -80,7 +80,7 @@ fn main() {
 
     let problem = builder.finish();
 
-    let nw = AonNetwork::create(&problem);
+    let nw = problem.aon_network();
 
     let dot = nw.dot(None);
 

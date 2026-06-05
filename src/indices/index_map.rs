@@ -93,4 +93,8 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
             .enumerate()
             .map(|(pos, (key, data))| (I::from(pos), key, data))
     }
+
+    pub fn keys(&self) -> impl Iterator<Item = &K> {
+        self.index_and_data.iter().map(|x| &x.0)
+    }
 }

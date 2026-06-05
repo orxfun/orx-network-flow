@@ -38,4 +38,8 @@ impl Sinks {
     pub fn get_st(&self, idx: SinkIdx) -> Option<SpaceTime> {
         self.idx_map.idx_to_key(idx).copied()
     }
+
+    pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
+        self.idx_map.keys().copied()
+    }
 }
