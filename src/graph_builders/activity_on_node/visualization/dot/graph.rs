@@ -1,32 +1,39 @@
-use std::string::ToString;
-
 use crate::graph::visualization::dot::DotGraph;
 use crate::graph::{VIdx, Vertex};
+use crate::graph_builders::activity_on_node::indexer::Indexer;
 use crate::graph_builders::activity_on_node::visualization::dot::AonDotGraphSettings;
 use crate::graph_builders::activity_on_node::{EdgeData, VertexData};
 use crate::{Graph, Problem, Variant};
 use alloc::format;
 use alloc::string::String;
+use std::string::ToString;
 
 pub struct AonDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
     graph: &'a Graph<VertexData, EdgeData>,
+    indexer: &'a Indexer,
     settings: AonDotGraphSettings,
 }
 
 impl<'a, V: Variant> AonDotGraph<'a, V> {
-    pub fn new(problem: &'a Problem<V>, graph: &'a Graph<VertexData, EdgeData>) -> Self {
-        Self::with_settings(problem, graph, Default::default())
+    pub fn new(
+        problem: &'a Problem<V>,
+        graph: &'a Graph<VertexData, EdgeData>,
+        indexer: &'a Indexer,
+    ) -> Self {
+        Self::with_settings(problem, graph, indexer, Default::default())
     }
 
     pub fn with_settings(
         problem: &'a Problem<V>,
         graph: &'a Graph<VertexData, EdgeData>,
+        indexer: &'a Indexer,
         settings: AonDotGraphSettings,
     ) -> Self {
         Self {
             problem,
             graph,
+            indexer,
             settings,
         }
     }
@@ -51,12 +58,13 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
                 let rt = commodity.origin().time();
                 format!("{} : s{}\n{}-{}\nready: {}", v, c, ori, des, rt)
             }
-            VertexData::Sink(c) => {
-                let commodity = prob.commodity_by_idx(*c);
-                let ori = prob.space_key(commodity.origin().space());
-                let des = prob.space_key(commodity.destination().space());
-                let due = commodity.destination().time();
-                format!("{} : t{}\n{}-{}\ndue: {}", v, c, ori, des, due)
+            VertexData::Sink(t) => {
+                // let commodity = prob.commodity_by_idx(*t);
+                // let ori = prob.space_key(commodity.origin().space());
+                // let des = prob.space_key(commodity.destination().space());
+                // let due = commodity.destination().time();
+                // format!("{} : t{}\n{}-{}\ndue: {}", v, t, ori, des, due)
+                todo!()
             }
             VertexData::Transport(t) => {
                 let transport = prob.transport_by_idx(*t);

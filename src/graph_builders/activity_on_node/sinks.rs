@@ -10,22 +10,24 @@ pub struct Sinks {
     idx_map: IdxMap<SpaceTime, (), SinkIdx>,
 }
 
-pub fn create_sinks<V: Variant>(p: &Problem<V>) -> Sinks {
-    let mut arrivals = Set::default();
+impl Sinks {
+    pub fn create<V: Variant>(p: &Problem<V>) -> Self {
+        let mut arrivals = Set::default();
 
-    for des in p.des_sorted_commodities.keys() {
-        if let Some(ori_transports) = p.des_ori_sorted_transports.get(des) {
-            for &transport in ori_transports.values().flat_map(|x| x.iter()) {
-                let at = p.transport_by_idx(transport).destination().time();
-                let st = SpaceTime::new(*des, at);
-                arrivals.insert(st);
+        for des in p.des_sorted_commodities.keys() {
+            if let Some(ori_transports) = p.des_ori_sorted_transports.get(des) {
+                for &transport in ori_transports.values().flat_map(|x| x.iter()) {
+                    let at = p.transport_by_idx(transport).destination().time();
+                    let st = SpaceTime::new(*des, at);
+                    arrivals.insert(st);
+                }
             }
         }
+        let mut arrivals: Vec<_> = arrivals.into_iter().collect();
+        arrivals.sort();
+
+        let idx_map = arrivals.into_iter().map(|key| (key, ())).collect();
+
+        Self { idx_map }
     }
-    let mut arrivals: Vec<_> = arrivals.into_iter().collect();
-    arrivals.sort();
-
-    let idx_map = arrivals.into_iter().map(|key| (key, ())).collect();
-
-    Sinks { idx_map }
 }

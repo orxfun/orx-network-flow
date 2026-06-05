@@ -1,18 +1,21 @@
 use crate::commodities::Commodity;
 use crate::graph::VIdx;
+use crate::graph_builders::activity_on_node::sinks::Sinks;
 use crate::indices::IdxCore;
 use crate::transports::Transport;
 use core::ops::Range;
 
 pub struct Indexer {
+    sinks: Sinks,
     transports_range: Range<usize>,
     sources_range: Range<usize>,
     sinks_range: Range<usize>,
 }
 
 impl Indexer {
-    pub fn new(num_commodities: usize, num_transports: usize) -> Self {
+    pub fn new(sinks: Sinks, num_commodities: usize, num_transports: usize) -> Self {
         Self {
+            sinks,
             transports_range: 0..num_transports,
             sources_range: num_transports..(num_transports + num_commodities),
             sinks_range: (num_transports + num_commodities)..(num_transports + 2 * num_commodities),
