@@ -4,5 +4,6 @@ mod network;
 mod sinks;
 mod sources;
 mod vertex;
+mod visualization;
 
 pub use network::AonNetwork;
