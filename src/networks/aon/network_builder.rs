@@ -69,14 +69,22 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
         AonNetwork::new(self.p, self.builder.finish(), self.sources, self.sinks)
     }
 
+    pub fn sidx_to_vidx(&self, sidx: SourceIdx) -> VIdx {
+        VIdx::from(self.offset_sources + sidx.into_inner())
+    }
+
+    pub fn tidx_to_vidx(&self, tidx: SinkIdx) -> VIdx {
+        VIdx::from(self.offset_sinks + tidx.into_inner())
+    }
+
     pub fn source_vidx(&self, st: SpaceTime) -> VIdx {
         let s = self.sources.get_s_idx(st).expect("invalid source st");
-        VIdx::from(self.offset_sources + s.into_inner())
+        self.sidx_to_vidx(s)
     }
 
     pub fn sink_vidx(&self, st: SpaceTime) -> VIdx {
         let t = self.sinks.get_t_idx(st).expect("invalid sink st");
-        VIdx::from(self.offset_sinks + t.into_inner())
+        self.tidx_to_vidx(t)
     }
 
     pub fn teleport_vidx(&self, c: Commodity) -> VIdx {
