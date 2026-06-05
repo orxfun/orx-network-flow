@@ -31,7 +31,7 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             .map(Transport::from)
             .map(AonVertex::Transport);
 
-        let sources = Sources::create(p);
+        let (sources, no_source_commodities) = Sources::create(p);
         let source_vertices = rng(sources.len())
             .map(SourceIdx::from)
             .map(AonVertex::Source);

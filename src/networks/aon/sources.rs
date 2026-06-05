@@ -10,12 +10,11 @@ impl_idx!(SourceIdx);
 
 pub struct Sources {
     idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
-    no_source_commodities: Vec<Commodity>,
 }
 
 impl Sources {
-    pub fn create<V: Variant>(p: &Problem<V>) -> Self {
-        let mut no_source_commodities = Vec::new();
+    pub fn create<V: Variant>(p: &Problem<V>) -> (Self, Set<Commodity>) {
+        let mut no_source_commodities = Set::default();
         let mut idx_map = IdxMap::default();
 
         for (ori, sorted_commodities) in &p.ori_sorted_commodities {
@@ -38,7 +37,7 @@ impl Sources {
                 // TODO: might use binary search here
                 match sources.iter().position(|s| s.dt >= ready && s.dt <= max_dt) {
                     Some(s) => sources[s].commodities.push(c),
-                    None => no_source_commodities.push(c),
+                    None => _ = no_source_commodities.insert(c),
                 }
             }
 
@@ -46,10 +45,7 @@ impl Sources {
             idx_map.extend(ori_sources);
         }
 
-        Self {
-            idx_map,
-            no_source_commodities,
-        }
+        (Self { idx_map }, no_source_commodities)
     }
 
     pub fn len(&self) -> usize {
