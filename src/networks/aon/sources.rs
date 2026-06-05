@@ -1,5 +1,3 @@
-use core::cmp::Ordering;
-
 use crate::commodities::Commodity;
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
@@ -11,57 +9,60 @@ use alloc::vec::Vec;
 
 impl_idx!(SourceIdx);
 
+// pub struct Sources {
+//     idx_map: IdxMap<SpaceTime, (), SourceIdx>,
+// }
+
+// impl Sources {
+//     pub fn create<V: Variant>(p: &Problem<V>) -> Self {
+//         let mut departures = Set::default();
+
+//         for ori in p.ori_sorted_commodities.keys() {
+//             if let Some(des_transports) = p.ori_des_sorted_transports.get(ori) {
+//                 for &transport in des_transports.values().flat_map(|x| x.iter()) {
+//                     let dt = p.transport_by_idx(transport).origin().time();
+//                     let st = SpaceTime::new(*ori, dt);
+//                     departures.insert(st);
+//                 }
+//             }
+//         }
+//         let mut departures: Vec<_> = departures.into_iter().collect();
+//         departures.sort();
+
+//         let idx_map = departures.into_iter().map(|key| (key, ())).collect();
+
+//         Self { idx_map }
+//     }
+
+//     pub fn len(&self) -> usize {
+//         self.idx_map.len()
+//     }
+
+//     pub fn get_st(&self, idx: SourceIdx) -> Option<SpaceTime> {
+//         self.idx_map.idx_to_key(idx).copied()
+//     }
+
+//     pub fn get_s_idx(&self, st: SpaceTime) -> Option<SourceIdx> {
+//         self.idx_map.key_to_idx(&st)
+//     }
+
+//     pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
+//         self.idx_map.keys().copied()
+//     }
+// }
+
 pub struct Sources {
-    idx_map: IdxMap<SpaceTime, (), SourceIdx>,
-}
-
-impl Sources {
-    pub fn create<V: Variant>(p: &Problem<V>) -> Self {
-        let mut departures = Set::default();
-
-        for ori in p.ori_sorted_commodities.keys() {
-            if let Some(des_transports) = p.ori_des_sorted_transports.get(ori) {
-                for &transport in des_transports.values().flat_map(|x| x.iter()) {
-                    let dt = p.transport_by_idx(transport).origin().time();
-                    let st = SpaceTime::new(*ori, dt);
-                    departures.insert(st);
-                }
-            }
-        }
-        let mut departures: Vec<_> = departures.into_iter().collect();
-        departures.sort();
-
-        let idx_map = departures.into_iter().map(|key| (key, ())).collect();
-
-        Self { idx_map }
-    }
-
-    pub fn len(&self) -> usize {
-        self.idx_map.len()
-    }
-
-    pub fn get_st(&self, idx: SourceIdx) -> Option<SpaceTime> {
-        self.idx_map.idx_to_key(idx).copied()
-    }
-
-    pub fn get_s_idx(&self, st: SpaceTime) -> Option<SourceIdx> {
-        self.idx_map.key_to_idx(&st)
-    }
-
-    pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
-        self.idx_map.keys().copied()
-    }
-}
-
-pub struct Sources2 {
+    len: usize,
     map_by_ori: Map<Space, IdxMap<Time, Source, SourceIdx>>,
     no_source_commodities: Vec<Commodity>,
 }
 
-impl Sources2 {
+impl Sources {
     pub fn create<V: Variant>(p: &Problem<V>) -> Self {
         let mut no_source_commodities = Vec::new();
         let mut map_by_ori = Map::default();
+        let mut len = 0;
+
         for (ori, sorted_commodities) in &p.ori_sorted_commodities {
             let mut departures = Set::default();
 
@@ -86,14 +87,20 @@ impl Sources2 {
                 }
             }
 
+            len += sources.len();
             let idx_map = sources.into_iter().map(|s| (s.dt, s)).collect();
             map_by_ori.insert(*ori, idx_map);
         }
 
         Self {
+            len,
             map_by_ori,
             no_source_commodities,
         }
+    }
+
+    pub fn len(&self) -> usize {
+        self.len
     }
 }
 

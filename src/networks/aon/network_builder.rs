@@ -70,8 +70,9 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
     }
 
     pub fn source_vidx(&self, st: SpaceTime) -> VIdx {
-        let s = self.sources.get_s_idx(st).expect("invalid source st");
-        VIdx::from(self.offset_sources + s.into_inner())
+        // let s = self.sources.get_s_idx(st).expect("invalid source st");
+        // VIdx::from(self.offset_sources + s.into_inner())
+        todo!()
     }
 
     pub fn sink_vidx(&self, st: SpaceTime) -> VIdx {

@@ -23,7 +23,8 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
     }
 
     pub fn source_st(&self, idx: SourceIdx) -> SpaceTime {
-        self.sources.get_st(idx).expect("invalid source idx")
+        // self.sources.get_st(idx).expect("invalid source idx")
+        todo!()
     }
 
     pub fn sink_st(&self, idx: SinkIdx) -> SpaceTime {
