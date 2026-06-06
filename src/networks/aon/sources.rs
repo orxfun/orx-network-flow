@@ -80,9 +80,10 @@ impl Sources {
             .map(|(sidx, _, source)| (sidx, source.commodities.as_slice()))
     }
 
-    pub fn abc(&self, ori: Space) {
-        let x = self.idx_map.index_and_data();
-        //  let y =
+    pub fn slice_st_and_sources_by_ori(&self, ori: Space) -> &[(SpaceTime, Source)] {
+        let idx_data_vec = self.idx_map.index_and_data();
+        let slice_range = self.ori_to_position.get(&ori).expect("invalid ori");
+        &idx_data_vec[slice_range.clone()]
     }
 }
 
