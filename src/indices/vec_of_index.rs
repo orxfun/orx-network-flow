@@ -22,6 +22,13 @@ macro_rules! impl_vec_of_idx {
                 Self(Default::default())
             }
 
+            pub fn new_filled(n: usize, value: T) -> Self
+            where
+                T: Clone,
+            {
+                Self((0..n).map(|_| value.clone()).collect())
+            }
+
             pub fn len(&self) -> usize {
                 self.0.len()
             }

@@ -1,4 +1,4 @@
-use crate::commodities::Commodity;
+use crate::commodities::{Commodity, VecCommodity};
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
 use crate::spaces::Space;
@@ -13,7 +13,7 @@ impl_idx!(SourceIdx);
 pub struct Sources {
     idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
     ori_to_position: Map<Space, Range<usize>>,
-    commodity_to_source_idx: Map<Commodity, SourceIdx>,
+    commodity_to_source_idx: VecCommodity<Option<SourceIdx>>,
 }
 
 impl Sources {
@@ -21,6 +21,7 @@ impl Sources {
         let mut no_source_commodities = Set::default();
         let mut idx_map = IdxMap::default();
         let mut ori_to_position = Map::default();
+        let mut commodity_to_source_idx = VecCommodity::new_filled(p.len_commodities(), None);
 
         for (ori, sorted_commodities) in &p.ori_sorted_commodities {
             let mut departures = Set::default();
@@ -56,10 +57,9 @@ impl Sources {
             idx_map.extend(ori_sources);
         }
 
-        let mut commodity_to_source_idx = Map::default();
         for (s_idx, _, source) in idx_map.entries() {
             for &c in source.commodities() {
-                commodity_to_source_idx.insert(c, s_idx);
+                commodity_to_source_idx[c] = Some(s_idx);
             }
         }
 
