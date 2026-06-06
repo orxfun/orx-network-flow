@@ -33,6 +33,10 @@ impl<V: Variant> Commodities<V> {
         self.map.key_to_idx(key)
     }
 
+    pub fn key(&self, idx: Commodity) -> Option<&V::K> {
+        self.map.idx_to_key(idx)
+    }
+
     pub fn get_by_idx(&self, idx: Commodity) -> Option<&CommodityData<V>> {
         self.map.get_by_idx(idx)
     }

@@ -77,6 +77,10 @@ impl<'a, V: Variant> DotGraph for AonDotGraph<'a, V> {
         }
     }
 
+    fn vertex_tooltip(&self, v: VIdx, vertex: &Vertex<Self::V>) -> Option<String> {
+        None
+    }
+
     fn vertex_settings(&self, _: VIdx, vertex: &Vertex<Self::V>) -> String {
         match vertex.data() {
             VertexData::Source(_) => self.settings.source.to_string(),

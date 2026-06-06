@@ -62,6 +62,10 @@ impl Sources {
         self.idx_map.len()
     }
 
+    pub fn get_by_idx(&self, idx: SourceIdx) -> Option<&Source> {
+        self.idx_map.get_by_idx(idx)
+    }
+
     pub fn get_st(&self, idx: SourceIdx) -> Option<SpaceTime> {
         self.idx_map.idx_to_key(idx).copied()
     }
@@ -106,5 +110,9 @@ impl Source {
             dt,
             commodities: Default::default(),
         }
+    }
+
+    pub fn commodities(&self) -> &[Commodity] {
+        &self.commodities
     }
 }
