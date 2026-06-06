@@ -3,6 +3,39 @@ pub struct SpaceData {
 }
 
 #[derive(Clone, Copy)]
+pub enum Location {
+    None,
+    Euclidean(Coordinate),
+    Geographic(Geocode),
+}
+
+impl Location {
+    pub fn distance(self, other: Self) -> f64 {
+        match (self, other) {
+            (Self::None, Self::None) => 0.0,
+            (Self::Euclidean(x), Self::Euclidean(y)) => x.distance(y),
+            (Self::Geographic(x), Self::Geographic(y)) => x.distance_km(y),
+            _ => unreachable!("location kinds are consistent by problem construction"),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct Coordinate {
+    pub x: f64,
+    pub y: f64,
+}
+
+impl Coordinate {
+    pub fn distance(self, other: Self) -> f64 {
+        let x_diff = (other.x - self.x);
+        let y_diff = (other.y - self.y);
+        let sqr = x_diff * x_diff + y_diff * y_diff;
+        sqr.sqrt()
+    }
+}
+
+#[derive(Clone, Copy)]
 pub struct Geocode {
     pub lat: f64,
     pub lon: f64,
