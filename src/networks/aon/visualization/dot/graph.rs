@@ -98,16 +98,25 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
                 let keys: Vec<_> = commodities.iter().map(|x| x.0.to_string()).collect();
                 let keys = keys.join("\n");
                 format!(
-                    "total amount = {}\n# commodities = {}:\n{}",
+                    "total amount = {}\n{} commodities:\n{}",
                     total_amount, num_commodities, keys
                 )
             }
             AonVertex::Sink(t) => {
-                // let st = nw.sink_st(*t);
-                // let space = prob.space_key(st.space());
-                // let time = st.time();
-                // format!("{} : t{}\n{}-{}", v, t, space, time)
-                String::new()
+                let sink = nw.sink(*t);
+                let commodities = sink
+                    .commodities()
+                    .iter()
+                    .map(|&c| (prob.commodity_key(c), prob.commodity_by_idx(c)))
+                    .into_iterable();
+                let num_commodities = commodities.iter().len();
+                let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
+                let keys: Vec<_> = commodities.iter().map(|x| x.0.to_string()).collect();
+                let keys = keys.join("\n");
+                format!(
+                    "total amount = {}\n{} commodities:\n{}",
+                    total_amount, num_commodities, keys
+                )
             }
             AonVertex::Transport(t) => {
                 // let transport = prob.transport_by_idx(*t);

@@ -41,9 +41,10 @@ impl Sinks {
                 let min_at = due - max_earliness;
                 let max_at = due + max_lateness;
                 // TODO: might use binary search here
-                match sinks.iter().position(|t| t.at >= min_at && t.at <= max_at) {
-                    Some(t) => sinks[t].commodities.push(c),
-                    None => _ = no_sink_commodities.insert(c),
+                let commodity_can_exit = |t: &&mut Sink| t.at >= min_at && t.at <= max_at;
+                let fitting_sinks = sinks.iter_mut().filter(commodity_can_exit);
+                for sink in fitting_sinks {
+                    sink.commodities.push(c);
                 }
             }
 
@@ -62,6 +63,10 @@ impl Sinks {
 
     pub fn len(&self) -> usize {
         self.idx_map.len()
+    }
+
+    pub fn get_by_idx(&self, idx: SinkIdx) -> Option<&Sink> {
+        self.idx_map.get_by_idx(idx)
     }
 
     pub fn get_st(&self, idx: SinkIdx) -> Option<SpaceTime> {
@@ -94,5 +99,9 @@ impl Sink {
             at,
             commodities: Default::default(),
         }
+    }
+
+    pub fn commodities(&self) -> &[Commodity] {
+        &self.commodities
     }
 }

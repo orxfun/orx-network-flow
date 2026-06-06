@@ -1,4 +1,4 @@
-use crate::networks::aon::sinks::{SinkIdx, Sinks};
+use crate::networks::aon::sinks::{Sink, SinkIdx, Sinks};
 use crate::networks::aon::sources::{Source, SourceIdx, Sources};
 use crate::networks::aon::visualization::dot::{AonDotGraph, AonDotGraphSettings};
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
@@ -28,6 +28,10 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
 
     pub fn sink_st(&self, idx: SinkIdx) -> SpaceTime {
         self.sinks.get_st(idx).expect("invalid sink idx")
+    }
+
+    pub fn sink(&self, idx: SinkIdx) -> &Sink {
+        self.sinks.get_by_idx(idx).expect("invalid sink idx")
     }
 
     // visualization
