@@ -3,4 +3,5 @@ pub enum AonEdge {
     SinkSink,
     SourceTeleport,
     TeleportSink,
+    SourceTransport,
 }

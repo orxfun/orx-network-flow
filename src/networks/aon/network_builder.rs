@@ -13,7 +13,6 @@ use crate::space_time::SpaceTime;
 use crate::std_utils::Set;
 use crate::transports::Transport;
 use crate::{AonNetwork, Graph, Problem, Variant};
-use alloc::vec::Vec;
 
 pub struct AonNetworkBuilder<'a, V: Variant> {
     pub(super) p: &'a Problem<V>,
@@ -21,7 +20,7 @@ pub struct AonNetworkBuilder<'a, V: Variant> {
     pub(super) sources: Sources,
     pub(super) sinks: Sinks,
     untransported_commodities: Set<Commodity>,
-    offset_teleports: usize,
+    offset_commodity_sinks: usize,
     offset_sources: usize,
     offset_sinks: usize,
 }
@@ -58,8 +57,8 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
 
         let builder = Graph::builder(vertices);
 
-        let offset_teleports = p.len_transports();
-        let offset_sources = offset_teleports + p.len_commodities();
+        let offset_commodity_sinks = p.len_transports();
+        let offset_sources = offset_commodity_sinks + p.len_commodities();
         let offset_sinks = offset_sources + sources.len();
 
         Self {
@@ -68,7 +67,7 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             sources,
             sinks,
             untransported_commodities,
-            offset_teleports,
+            offset_commodity_sinks,
             offset_sources,
             offset_sinks,
         }
@@ -86,6 +85,10 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
         VIdx::from(self.offset_sinks + tidx.into_inner())
     }
 
+    pub fn transport_vidx(&self, t: Transport) -> VIdx {
+        VIdx::from(t.into_inner())
+    }
+
     pub fn source_vidx(&self, st: SpaceTime) -> VIdx {
         let s = self.sources.get_s_idx(st).expect("invalid source st");
         self.sidx_to_vidx(s)
@@ -97,7 +100,7 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
     }
 
     pub fn teleport_vidx(&self, c: Commodity) -> VIdx {
-        VIdx::from(self.offset_teleports + c.into_inner())
+        VIdx::from(self.offset_commodity_sinks + c.into_inner())
     }
 
     pub fn split_graph(&mut self) -> (&Self, &mut GraphBuilder<AonVertex, AonEdge>) {
@@ -115,7 +118,7 @@ impl<V: Variant> Problem<V> {
         add_sink_to_sink_edges(b);
         add_source_to_teleport_edges(b);
         add_teleport_sink_edges(b);
-        add_source_to_transport_edges(b);
+        // add_source_to_transport_edges(b);
 
         builder.finish()
     }

@@ -85,6 +85,14 @@ impl Sources {
         let slice_range = self.ori_to_position.get(&ori).expect("invalid ori");
         &idx_data_vec[slice_range.clone()]
     }
+
+    pub fn sources_by_origins(&self) -> impl Iterator<Item = (Space, &[(SpaceTime, Source)])> {
+        let idx_data_vec = self.idx_map.index_and_data();
+        self.ori_to_position.iter().map(|(ori, slice_range)| {
+            let sources = &idx_data_vec[slice_range.clone()];
+            (*ori, sources)
+        })
+    }
 }
 
 pub struct Source {
