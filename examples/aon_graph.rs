@@ -65,6 +65,7 @@ fn main() {
     // transport("AMS", "BRU", 18, 20);
     transport("BRU", "SIN", 10, 15);
     transport("BRU", "SIN", 15, 20);
+    transport("BRU", "EMA", 15, 17);
     // transport("BRU", "SIN", 20, 25);
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);

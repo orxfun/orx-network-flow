@@ -93,9 +93,9 @@ impl<V: Variant> Problem<V> {
         let mut builder = AonNetworkBuilder::initiate(self);
 
         let b = &mut builder;
-        add_source_to_source_edges(b);
-        add_sink_to_sink_edges(b);
-        // add_source_to_transport_edges(b);
+        // add_source_to_source_edges(b);
+        // add_sink_to_sink_edges(b);
+        add_source_to_transport_edges(b);
 
         builder.finish()
     }
