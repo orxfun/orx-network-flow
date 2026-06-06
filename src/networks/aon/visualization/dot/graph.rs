@@ -13,7 +13,6 @@ pub struct AonDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
     network: &'a AonNetwork<'a, V>,
     settings: AonDotGraphSettings,
-    teleport_settings: NodeSettings,
 }
 
 impl<'a, V: Variant> AonDotGraph<'a, V> {
@@ -26,14 +25,10 @@ impl<'a, V: Variant> AonDotGraph<'a, V> {
         network: &'a AonNetwork<'a, V>,
         settings: AonDotGraphSettings,
     ) -> Self {
-        let mut teleport_settings = settings.transport.clone();
-        teleport_settings.style = Some(NodeStyle::Dotted);
-
         Self {
             problem,
             network,
             settings,
-            teleport_settings,
         }
     }
 }
@@ -71,21 +66,13 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
                 let at = transport.destination().time();
                 format!("{}\n{}-{}\n{}-{}", v, ori, des, dt, at)
             }
-            AonVertex::Teleport(c) => {
-                let commodity = prob.commodity_by_idx(*c);
-                let ori = prob.space_key(commodity.origin().space());
-                let des = prob.space_key(commodity.destination().space());
-                let rt = commodity.origin().time();
-                let due = commodity.destination().time();
-                format!("{} : c{}\n{}-{}\n{}-{}", v, c, ori, des, rt, due)
-            }
         }
     }
 
     fn vertex_tooltip(&self, _: VIdx, vertex: &Vertex<Self::V>) -> Option<String> {
         let prob = self.problem;
         let nw = self.network;
-        let tooltip = match vertex.data() {
+        match vertex.data() {
             AonVertex::Source(s) => {
                 let source = nw.source(*s);
                 let commodities = source
@@ -97,10 +84,10 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
                 let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
                 let keys: Vec<_> = commodities.iter().map(|x| x.0.to_string()).collect();
                 let keys = keys.join("\n");
-                format!(
+                Some(format!(
                     "total amount = {}\n{} commodities:\n{}",
                     total_amount, num_commodities, keys
-                )
+                ))
             }
             AonVertex::Sink(t) => {
                 let sink = nw.sink(*t);
@@ -113,32 +100,13 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
                 let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
                 let keys: Vec<_> = commodities.iter().map(|x| x.0.to_string()).collect();
                 let keys = keys.join("\n");
-                format!(
+                Some(format!(
                     "total amount = {}\n{} commodities:\n{}",
                     total_amount, num_commodities, keys
-                )
+                ))
             }
-            AonVertex::Transport(t) => {
-                // let transport = prob.transport_by_idx(*t);
-                // let ori = prob.space_key(transport.origin().space());
-                // let des = prob.space_key(transport.destination().space());
-                // let dt = transport.origin().time();
-                // let at = transport.destination().time();
-                // format!("{}\n{}-{}\n{}-{}", v, ori, des, dt, at)
-                String::new()
-            }
-            AonVertex::Teleport(c) => {
-                // let commodity = prob.commodity_by_idx(*c);
-                // let ori = prob.space_key(commodity.origin().space());
-                // let des = prob.space_key(commodity.destination().space());
-                // let rt = commodity.origin().time();
-                // let due = commodity.destination().time();
-                // format!("{} : c{}\n{}-{}\n{}-{}", v, c, ori, des, rt, due)
-                String::new()
-            }
-        };
-
-        Some(tooltip)
+            AonVertex::Transport(t) => None,
+        }
     }
 
     fn vertex_settings(&self, _: VIdx, vertex: &Vertex<Self::V>) -> String {
@@ -146,7 +114,6 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
             AonVertex::Source(_) => self.settings.source.to_string(),
             AonVertex::Sink(_) => self.settings.sink.to_string(),
             AonVertex::Transport(_) => self.settings.transport.to_string(),
-            AonVertex::Teleport(_) => self.teleport_settings.to_string(),
         }
     }
 }
