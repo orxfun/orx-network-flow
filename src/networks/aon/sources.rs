@@ -13,6 +13,7 @@ impl_idx!(SourceIdx);
 pub struct Sources {
     idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
     ori_to_position: Map<Space, Range<usize>>,
+    commodity_to_source_idx: Map<Commodity, SourceIdx>,
 }
 
 impl Sources {
@@ -55,9 +56,17 @@ impl Sources {
             idx_map.extend(ori_sources);
         }
 
+        let mut commodity_to_source_idx = Map::default();
+        for (s_idx, _, source) in idx_map.entries() {
+            for &c in source.commodities() {
+                commodity_to_source_idx.insert(c, s_idx);
+            }
+        }
+
         let sources = Self {
             idx_map,
             ori_to_position,
+            commodity_to_source_idx,
         };
         (sources, no_source_commodities)
     }
