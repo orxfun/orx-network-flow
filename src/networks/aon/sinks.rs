@@ -37,11 +37,9 @@ impl Sinks {
             for &c in sorted_commodities {
                 let due = p.commodity_by_idx(c).destination().time();
                 let max_earliness = p.time_bounds.max_earliness.bound(p, c);
-                let max_lateness = p.time_bounds.max_lateness.bound(p, c);
                 let min_at = due - max_earliness;
-                let max_at = due + max_lateness;
                 // TODO: might use binary search here
-                let commodity_can_exit = |t: &&mut Sink| t.at >= min_at && t.at <= max_at;
+                let commodity_can_exit = |t: &&mut Sink| t.at >= min_at && t.at <= due;
                 let fitting_sinks = sinks.iter_mut().filter(commodity_can_exit);
                 let mut any_fitting_sink = false;
                 for sink in fitting_sinks {
