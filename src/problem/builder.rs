@@ -8,33 +8,45 @@ use crate::time_bounds::{
     ArrivalTimeBoundsBuilder, ConnectionTimeBuilder, DepartureTimeBoundsBuilder,
 };
 use crate::transports::Transport;
+use core::marker::PhantomData;
 
-pub struct ProblemBuilder<V: Variant>(Problem<V>);
+pub trait ProblemBuilderState {}
 
-impl<V: Variant> Default for ProblemBuilder<V> {
-    fn default() -> Self {
-        Self(Problem {
-            spaces: Default::default(),
-            vehicle_types: Default::default(),
-            vehicles: Default::default(),
-            commodities: Default::default(),
-            transports: Default::default(),
-            costs: Default::default(),
-            time_bounds: Default::default(),
-            ori_sorted_commodities: Default::default(),
-            des_sorted_commodities: Default::default(),
-            ori_des_sorted_transports: Default::default(),
-            des_ori_sorted_transports: Default::default(),
-        })
+pub struct DefiningSpaces;
+impl ProblemBuilderState for DefiningSpaces {}
+
+pub struct DefiningProblem;
+impl ProblemBuilderState for DefiningProblem {}
+
+pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState>(Problem<V>, PhantomData<S>);
+
+impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
+    // create and complete
+    pub fn new() -> Self {
+        Self(
+            Problem {
+                spaces: Default::default(),
+                vehicle_types: Default::default(),
+                vehicles: Default::default(),
+                commodities: Default::default(),
+                transports: Default::default(),
+                costs: Default::default(),
+                time_bounds: Default::default(),
+                ori_sorted_commodities: Default::default(),
+                des_sorted_commodities: Default::default(),
+                ori_des_sorted_transports: Default::default(),
+                des_ori_sorted_transports: Default::default(),
+            },
+            PhantomData,
+        )
+    }
+
+    pub fn spaces(self) -> ProblemBuilder<V, DefiningProblem> {
+        ProblemBuilder(self.0, PhantomData)
     }
 }
 
-impl<V: Variant> ProblemBuilder<V> {
-    // create and complete
-    pub fn new() -> Self {
-        Default::default()
-    }
-
+impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
     pub fn finish(mut self) -> Problem<V> {
         // sort ori and des commodities by ready time and due time
 

@@ -26,7 +26,9 @@ impl Variant for MyVariant {
 }
 
 fn main() {
-    let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
+    let mut builder: ProblemBuilder<MyVariant, _> = ProblemBuilder::new();
+
+    let mut builder = builder.spaces();
 
     // commodities
     let mut c_idx = 0;
