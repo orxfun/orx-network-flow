@@ -48,8 +48,12 @@ impl Sinks {
                 }
             }
 
-            let des_sinks = sinks.into_iter().map(|t| (SpaceTime::new(*des, t.at), t));
-            let slice_range = idx_map.len()..(idx_map.len() + des_sinks.len());
+            let num_sinks = sinks.iter().filter(|s| !s.commodities.is_empty()).count();
+            let des_sinks = sinks
+                .into_iter()
+                .filter(|s| !s.commodities.is_empty())
+                .map(|t| (SpaceTime::new(*des, t.at), t));
+            let slice_range = idx_map.len()..(idx_map.len() + num_sinks);
             des_to_position.insert(*des, slice_range);
             idx_map.extend(des_sinks);
         }
