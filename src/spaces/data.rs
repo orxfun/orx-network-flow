@@ -1,3 +1,7 @@
+pub struct SpaceData {
+    geocode: Option<Geocode>,
+}
+
 #[derive(Clone, Copy)]
 pub struct Geocode {
     pub lat: f64,
