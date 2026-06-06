@@ -1,20 +1,12 @@
-use crate::commodities::Commodities;
-use crate::commodities::Commodity;
-use crate::commodities::CommodityData;
+use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::costs::Costs;
 use crate::problem::variant::Variant;
-use crate::spaces::Space;
-use crate::spaces::Spaces;
+use crate::spaces::{Space, Spaces};
 use crate::std_utils::Map;
 use crate::time_bounds::TimeBounds;
-use crate::transports::Transport;
-use crate::transports::TransportData;
-use crate::transports::Transports;
-use crate::vehicle_types::VehicleType;
-use crate::vehicle_types::VehicleTypes;
-use crate::vehicles::Vehicle;
-use crate::vehicles::VehicleData;
-use crate::vehicles::Vehicles;
+use crate::transports::{Transport, TransportData, Transports};
+use crate::vehicle_types::{VehicleType, VehicleTypes};
+use crate::vehicles::{Vehicle, VehicleData, Vehicles};
 use alloc::vec::Vec;
 
 pub struct Problem<V: Variant> {
