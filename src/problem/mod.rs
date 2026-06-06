@@ -2,6 +2,7 @@
 mod tests;
 
 mod builder;
+mod connectivity;
 mod debug;
 mod prob;
 mod variant;
