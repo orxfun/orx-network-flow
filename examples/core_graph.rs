@@ -34,6 +34,7 @@ fn main() {
     //     "SIN".to_string(),
     //     "EMA".to_string(),
     // ]);
+
     let mut builder = builder.with_geographic_spaces([
         ("AMS".to_string(), 52.308_613, 4.763_889),
         ("BRU".to_string(), 50.901_389, 4.484_444),
