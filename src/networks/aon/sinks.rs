@@ -43,8 +43,14 @@ impl Sinks {
                 // TODO: might use binary search here
                 let commodity_can_exit = |t: &&mut Sink| t.at >= min_at && t.at <= max_at;
                 let fitting_sinks = sinks.iter_mut().filter(commodity_can_exit);
+                let mut any_fitting_sink = false;
                 for sink in fitting_sinks {
                     sink.commodities.push(c);
+                    any_fitting_sink = true;
+                }
+
+                if !any_fitting_sink {
+                    no_sink_commodities.insert(c);
                 }
             }
 
