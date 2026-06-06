@@ -6,12 +6,13 @@ use crate::std_utils::{Map, Set};
 use crate::time::Time;
 use crate::{Problem, Variant, impl_idx};
 use alloc::vec::Vec;
+use core::ops::Range;
 
 impl_idx!(SourceIdx);
 
 pub struct Sources {
     idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
-    ori_to_position: Map<Space, usize>,
+    ori_to_position: Map<Space, Range<usize>>,
 }
 
 impl Sources {
@@ -45,7 +46,8 @@ impl Sources {
             }
 
             let ori_sources = sources.into_iter().map(|s| (SpaceTime::new(*ori, s.dt), s));
-            ori_to_position.insert(*ori, idx_map.len());
+            let slice_range = idx_map.len()..(idx_map.len() + ori_sources.len());
+            ori_to_position.insert(*ori, slice_range);
             idx_map.extend(ori_sources);
         }
 
@@ -76,6 +78,11 @@ impl Sources {
         self.idx_map
             .entries()
             .map(|(sidx, _, source)| (sidx, source.commodities.as_slice()))
+    }
+
+    pub fn abc(&self, ori: Space) {
+        let x = self.idx_map.index_and_data();
+        //  let y =
     }
 }
 

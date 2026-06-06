@@ -6,12 +6,13 @@ use crate::std_utils::{Map, Set};
 use crate::time::Time;
 use crate::{Problem, Variant, impl_idx};
 use alloc::vec::Vec;
+use core::ops::Range;
 
 impl_idx!(SinkIdx);
 
 pub struct Sinks {
     idx_map: IdxMap<SpaceTime, Sink, SinkIdx>,
-    des_to_position: Map<Space, usize>,
+    des_to_position: Map<Space, Range<usize>>,
 }
 
 impl Sinks {
@@ -47,7 +48,8 @@ impl Sinks {
             }
 
             let des_sinks = sinks.into_iter().map(|t| (SpaceTime::new(*des, t.at), t));
-            des_to_position.insert(*des, idx_map.len());
+            let slice_range = idx_map.len()..(idx_map.len() + des_sinks.len());
+            des_to_position.insert(*des, slice_range);
             idx_map.extend(des_sinks);
         }
 

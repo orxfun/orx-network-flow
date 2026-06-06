@@ -107,4 +107,8 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
     pub fn indices(&self) -> impl Iterator<Item = I> {
         (0..self.len()).map(I::from)
     }
+
+    pub fn index_and_data(&self) -> &[(K, V)] {
+        &self.index_and_data
+    }
 }
