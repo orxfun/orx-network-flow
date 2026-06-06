@@ -1,25 +1,37 @@
 use crate::Variant;
 use crate::networks::aon::AonEdge;
 use crate::networks::aon::network_builder::AonNetworkBuilder;
-use orx_iterable::{IntoCloningIterable, Iterable};
+use core::cmp::Ordering;
 
 pub fn add_transport_to_sink_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
     let (builder, graph) = builder.split_graph();
     let p = &builder.p;
 
-    for (des, des_sinks) in builder.sinks.chunks_by_destinations() {
-        let sources_rev = des_sinks.iter().rev().into_iterable();
+    for (des, sinks) in builder.sinks.chunks_by_destinations() {
+        if let Some(des_transports) = p.des_ori_sorted_transports.get(&des) {
+            for (_ori, transports) in des_transports {
+                let mut sinks = sinks.iter();
+                let mut sink = sinks.next();
 
-        let ori_transports = p.ori_des_sorted_transports.get(&des);
-        let od_transports = ori_transports.iter().flat_map(|x| x.values());
-        let transports = od_transports.flat_map(|x| x.iter());
-        for &t in transports {
-            let dt = p.transport_by_idx(t).origin().time();
-            if let Some(s) = sources_rev.iter().find(|s| dt >= s.0.time()) {
-                let i = builder.source_vidx(s.0);
-                let j = builder.transport_vidx(t);
-                let data = AonEdge::SourceTransport;
-                // graph.edge(data, i, j);
+                for &t in transports {
+                    let due = p.transport_by_idx(t).destination().time();
+                    loop {
+                        match sink {
+                            Some(s) => match s.1.cmp(&due) {
+                                Ordering::Equal => {
+                                    let i = builder.transport_vidx(t);
+                                    let j = builder.sink_vidx(s.0);
+                                    let data = AonEdge::TransportSink;
+                                    graph.edge(data, i, j);
+                                    break;
+                                }
+                                Ordering::Less => sink = sinks.next(),
+                                Ordering::Greater => break,
+                            },
+                            None => break,
+                        }
+                    }
+                }
             }
         }
     }
