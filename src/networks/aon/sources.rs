@@ -45,8 +45,12 @@ impl Sources {
                 }
             }
 
-            let ori_sources = sources.into_iter().map(|s| (SpaceTime::new(*ori, s.dt), s));
-            let slice_range = idx_map.len()..(idx_map.len() + ori_sources.len());
+            let num_sources = sources.iter().filter(|s| !s.commodities.is_empty()).count();
+            let ori_sources = sources
+                .into_iter()
+                .filter(|s| !s.commodities.is_empty())
+                .map(|s| (SpaceTime::new(*ori, s.dt), s));
+            let slice_range = idx_map.len()..(idx_map.len() + num_sources);
             ori_to_position.insert(*ori, slice_range);
             idx_map.extend(ori_sources);
         }
