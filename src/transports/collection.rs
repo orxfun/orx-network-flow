@@ -34,11 +34,11 @@ impl<V: Variant> Transports<V> {
     }
 
     pub fn get_by_key(&self, key: &V::T) -> Option<&TransportData<V>> {
-        self.map.get_val_by_key(key)
+        self.map.value_by_key(key)
     }
 
     pub fn get_by_idx(&self, idx: Transport) -> Option<&TransportData<V>> {
-        self.map.get_by_idx(idx)
+        self.map.value(idx)
     }
 
     pub fn get_ind_by_key(&self, key: &V::T) -> Option<Transport> {
