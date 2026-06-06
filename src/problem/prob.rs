@@ -91,10 +91,6 @@ impl<V: Variant> Problem<V> {
         self.spaces.key(idx).expect("validated problem")
     }
 
-    pub(crate) fn commodity_key(&self, idx: Commodity) -> &V::K {
-        self.commodities.key(idx).expect("validated problem")
-    }
-
     // get by idx
 
     pub(crate) fn commodity_by_idx(&self, c: Commodity) -> &CommodityData<V> {

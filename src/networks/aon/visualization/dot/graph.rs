@@ -1,14 +1,10 @@
-use crate::commodities::CommodityData;
-use crate::flow_units::FlowUnit;
-use crate::graph::visualization::dot::{DotGraph, NodeSettings, NodeStyle};
+use crate::graph::visualization::dot::DotGraph;
 use crate::graph::{VIdx, Vertex};
 use crate::networks::aon::visualization::dot::settings::AonDotGraphSettings;
 use crate::networks::aon::{AonEdge, AonVertex};
 use crate::{AonNetwork, Graph, Problem, Variant};
 use alloc::format;
 use alloc::string::{String, ToString};
-use alloc::vec::Vec;
-use orx_iterable::{IntoCloningIterable, Iterable};
 
 pub struct AonDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
