@@ -3,7 +3,7 @@ use crate::networks::aon::network_builder::AonNetworkBuilder;
 use crate::networks::aon::{AonEdge, AonVertex};
 use crate::transports::Transport;
 use crate::{Problem, Variant};
-use orx_iterable::{IntoCloningIterable, Iterable};
+use core::iter::Peekable;
 
 pub fn add_transport_to_transport_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
     let (builder, graph) = builder.split_graph();
@@ -16,10 +16,10 @@ pub fn add_transport_to_transport_edges<V: Variant>(builder: &mut AonNetworkBuil
                 for (_y, head_sorted_transports) in map_head_sorted_transports {
                     // head: des => y
 
-                    let tails = tail_sorted_transports.iter().copied();
-                    let heads = head_sorted_transports.iter().copied().into_iterable();
+                    let tails_rev = tail_sorted_transports.iter().copied().rev();
+                    let heads_rev = head_sorted_transports.iter().copied().rev().peekable();
 
-                    connect_edges_for_od(p, builder, graph, tails, heads);
+                    connect_edges_for_od(p, builder, graph, tails_rev, heads_rev);
                 }
             }
         }
@@ -30,27 +30,62 @@ fn connect_edges_for_od<V: Variant>(
     prob: &Problem<V>,
     builder: &AonNetworkBuilder<'_, V>,
     graph: &mut GraphBuilder<AonVertex, AonEdge>,
-    tails: impl Iterator<Item = Transport>,
-    heads: impl Iterable<Item = Transport>,
-) {
-    for tail in tails {
-        let at = prob.transport_by_idx(tail).destination().time();
+    mut tails_rev: impl Iterator<Item = Transport>,
+    mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
+) -> Option<()> {
+    // no edges once we complete traversing heads
+    let mut curr_head = heads_rev.next()?;
 
-        let feasible = |head: &Transport| {
-            let min_ct = prob.time_bounds.min_conn_time.bound(prob, tail, *head);
-            let max_ct = prob.time_bounds.max_conn_time.bound(prob, tail, *head);
-            let dt = prob.transport_by_idx(*head).origin().time();
+    // connect one tail per iteration
+    loop {
+        // no edges once we complete traversing tails
+        let tail = tails_rev.next()?;
 
-            dt >= at + min_ct && dt <= at + max_ct
-        };
+        match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
+            Some(head) => {
+                let data = AonEdge::TransportTransport;
+                let i = builder.transport_vidx(tail);
+                let j = builder.transport_vidx(head);
+                graph.edge(data, i, j);
 
-        let heads = heads.iter().filter(feasible);
+                // same head can be assigned to prior tails
+                curr_head = head;
+            }
+            // no head for this tail, moving on to the next tail
+            None => {}
+        }
+    }
+}
 
-        for head in heads {
-            let data = AonEdge::TransportTransport;
-            let i = builder.transport_vidx(tail);
-            let j = builder.transport_vidx(head);
-            graph.edge(data, i, j);
+fn find_head_for_tail<V: Variant>(
+    prob: &Problem<V>,
+    heads_rev: &mut Peekable<impl Iterator<Item = Transport>>,
+    curr_head: Transport,
+    tail: Transport,
+) -> Option<Transport> {
+    // TODO: connection time must come here
+    let ready = prob.transport_by_idx(tail).destination().time();
+    let departure = prob.transport_by_idx(curr_head).origin().time();
+
+    if ready > departure {
+        // none of the further heads can be connected to tail
+        return None;
+    }
+
+    let mut curr_head = curr_head;
+    loop {
+        match heads_rev.peek() {
+            Some(&next_head) => {
+                let departure = prob.transport_by_idx(next_head).origin().time();
+                match ready <= departure {
+                    // next_head can also connect to tail, so it must be preferred
+                    true => curr_head = heads_rev.next().expect("is-some"),
+                    // curr_head can connect to tail
+                    false => return Some(curr_head),
+                }
+            }
+            // curr_head is the earliest transport and can connect to tail
+            None => return Some(curr_head),
         }
     }
 }
