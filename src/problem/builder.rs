@@ -3,6 +3,7 @@ use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
+use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
 use crate::time::Time;
 use crate::time_bounds::{
     ArrivalTimeBoundsBuilder, ConnectionTimeBuilder, DepartureTimeBoundsBuilder,
@@ -42,6 +43,41 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
     }
 
     pub fn spaces(self) -> ProblemBuilder<V, DefiningProblem> {
+        ProblemBuilder(self.0, PhantomData)
+    }
+
+    pub fn with_basic_spaces(
+        mut self,
+        spaces: impl IntoIterator<Item = V::S>,
+    ) -> ProblemBuilder<V, DefiningProblem> {
+        for s in spaces {
+            self.0.spaces.push(s, SpaceData::new(Location::Basic));
+        }
+        ProblemBuilder(self.0, PhantomData)
+    }
+
+    pub fn with_euclidean_spaces(
+        mut self,
+        spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
+    ) -> ProblemBuilder<V, DefiningProblem> {
+        for (s, x, y) in spaces {
+            self.0
+                .spaces
+                .push(s, SpaceData::new(Location::Euclidean(Coordinate { x, y })));
+        }
+        ProblemBuilder(self.0, PhantomData)
+    }
+
+    pub fn with_geographic_spaces(
+        mut self,
+        spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
+    ) -> ProblemBuilder<V, DefiningProblem> {
+        for (s, lat, lon) in spaces {
+            self.0.spaces.push(
+                s,
+                SpaceData::new(Location::Geographic(Geocode { lat, lon })),
+            );
+        }
         ProblemBuilder(self.0, PhantomData)
     }
 }
@@ -113,6 +149,13 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
 
     // build
 
+    fn space_unwrap(&self, key: &V::S) -> Space {
+        match self.0.spaces.get_ind_by_key(key) {
+            Some(s) => s,
+            None => panic!("Missing space '{key}'"),
+        }
+    }
+
     pub fn push_commodity(
         &mut self,
         commodity_key: V::K,
@@ -122,10 +165,10 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         due_time: impl Into<Time>,
         amount: V::F,
     ) {
-        let ori_space = self.0.spaces.push(origin);
+        let ori_space = self.space_unwrap(&origin);
         let ori = SpaceTime::new(ori_space, ready_time.into());
 
-        let des_space = self.0.spaces.push(destination);
+        let des_space = self.space_unwrap(&destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
         let commodity = self.0.commodities.push(commodity_key, ori, des, amount);
@@ -156,10 +199,10 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         let vehicle_type = self.0.vehicle_types.push(vehicle_type_key);
         let vehicle = self.0.vehicles.push(vehicle_key, vehicle_type);
 
-        let ori_space = self.0.spaces.push(origin);
+        let ori_space = self.space_unwrap(&origin);
         let ori = SpaceTime::new(ori_space, departure_time.into());
 
-        let des_space = self.0.spaces.push(destination);
+        let des_space = self.space_unwrap(&destination);
         let des = SpaceTime::new(des_space, arrival_time.into());
 
         let transport = self

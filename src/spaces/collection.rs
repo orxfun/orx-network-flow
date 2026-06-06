@@ -1,9 +1,9 @@
 use crate::Variant;
 use crate::indices::IdxMap;
-use crate::spaces::Space;
+use crate::spaces::{Space, SpaceData};
 
 pub struct Spaces<V: Variant> {
-    map: IdxMap<V::S, (), Space>,
+    map: IdxMap<V::S, SpaceData, Space>,
 }
 
 impl<V: Variant> Default for Spaces<V> {
@@ -15,8 +15,8 @@ impl<V: Variant> Default for Spaces<V> {
 }
 
 impl<V: Variant> Spaces<V> {
-    pub fn push(&mut self, key: V::S) -> Space {
-        self.map.push_or_update(key, ())
+    pub fn push(&mut self, key: V::S, data: SpaceData) -> Space {
+        self.map.push_or_update(key, data)
     }
 
     pub fn len(&self) -> usize {

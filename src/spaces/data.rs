@@ -1,10 +1,11 @@
+#[derive(derive_new::new)]
 pub struct SpaceData {
-    geocode: Option<Geocode>,
+    location: Location,
 }
 
 #[derive(Clone, Copy)]
 pub enum Location {
-    None,
+    Basic,
     Euclidean(Coordinate),
     Geographic(Geocode),
 }
@@ -12,7 +13,7 @@ pub enum Location {
 impl Location {
     pub fn distance(self, other: Self) -> f64 {
         match (self, other) {
-            (Self::None, Self::None) => 0.0,
+            (Self::Basic, Self::Basic) => 0.0,
             (Self::Euclidean(x), Self::Euclidean(y)) => x.distance(y),
             (Self::Geographic(x), Self::Geographic(y)) => x.distance_km(y),
             _ => unreachable!("location kinds are consistent by problem construction"),

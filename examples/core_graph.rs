@@ -26,9 +26,20 @@ impl Variant for MyVariant {
 }
 
 fn main() {
-    let mut builder: ProblemBuilder<MyVariant, _> = ProblemBuilder::new();
+    let builder: ProblemBuilder<MyVariant, _> = ProblemBuilder::new();
 
-    let mut builder = builder.spaces();
+    // let mut builder = builder.with_basic_spaces([
+    //     "AMS".to_string(),
+    //     "BRU".to_string(),
+    //     "SIN".to_string(),
+    //     "EMA".to_string(),
+    // ]);
+    let mut builder = builder.with_geographic_spaces([
+        ("AMS".to_string(), 52.308_613, 4.763_889),
+        ("BRU".to_string(), 50.901_389, 4.484_444),
+        ("SIN".to_string(), 1.350_189, 103.994_433),
+        ("EMA".to_string(), 52.831_111, -1.328_056),
+    ]);
 
     // commodities
     let mut c_idx = 0;
