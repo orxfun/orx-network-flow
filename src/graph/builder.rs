@@ -12,9 +12,7 @@ impl<V, E> GraphBuilder<V, E> {
         Self(graph)
     }
 
-    pub fn edge(&mut self, data: E, tail: usize, head: usize) {
-        let tail = VIdx::from(tail);
-        let head = VIdx::from(head);
+    pub fn edge(&mut self, data: E, tail: VIdx, head: VIdx) {
         let edges_idx = EIdx::from(self.0.edges.len());
         let tail_out_edge_idx = self.0.vertices[tail].out_edges().len();
         let head_in_edge_idx = self.0.vertices[head].in_edges().len();

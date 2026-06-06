@@ -2,7 +2,6 @@ use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
 use crate::costs::Costs;
-use crate::graph_builders::activity_on_node::{AonGraph, build_aon_graph};
 use crate::problem::variant::Variant;
 use crate::spaces::Space;
 use crate::spaces::Spaces;
@@ -92,23 +91,21 @@ impl<V: Variant> Problem<V> {
         self.spaces.key(idx).expect("validated problem")
     }
 
+    pub(crate) fn commodity_key(&self, idx: Commodity) -> &V::K {
+        self.commodities.key(idx).expect("validated problem")
+    }
+
     // get by idx
 
-    pub(crate) fn commodity_by_idx(&self, idx: Commodity) -> &CommodityData<V> {
-        self.commodities.get_by_idx(idx).expect("validated problem")
+    pub(crate) fn commodity_by_idx(&self, c: Commodity) -> &CommodityData<V> {
+        self.commodities.get_by_idx(c).expect("validated problem")
     }
 
-    pub(crate) fn transport_by_idx(&self, idx: Transport) -> &TransportData<V> {
-        self.transports.get_by_idx(idx).expect("validated problem")
+    pub(crate) fn transport_by_idx(&self, t: Transport) -> &TransportData<V> {
+        self.transports.get_by_idx(t).expect("validated problem")
     }
 
-    pub(crate) fn vehicle_by_idx(&self, idx: Vehicle) -> &VehicleData {
-        self.vehicles.get_by_idx(idx).expect("validated problem")
-    }
-
-    // graphs
-
-    pub fn build_aon_graph(&self) -> AonGraph {
-        build_aon_graph(self)
+    pub(crate) fn vehicle_by_idx(&self, t: Vehicle) -> &VehicleData {
+        self.vehicles.get_by_idx(t).expect("validated problem")
     }
 }

@@ -22,8 +22,8 @@ mod cost;
 mod costs;
 mod flow_units;
 pub mod graph;
-pub mod graph_builders;
 mod indices;
+mod networks;
 mod problem;
 mod space_time;
 mod spaces;
@@ -34,5 +34,6 @@ mod transports;
 mod vehicle_types;
 mod vehicles;
 
-pub use graph::Graph;
+pub use graph::{Graph, VIdx};
+pub use networks::AonNetwork;
 pub use problem::{Problem, ProblemBuilder, Variant};

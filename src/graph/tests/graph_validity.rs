@@ -1,15 +1,15 @@
-use crate::graph::{Graph, visualization::dot::DotGraph};
+use crate::graph::{Graph, VIdx, visualization::dot::DotGraph};
 
 #[test]
 fn graph_validity() {
     let vertices = (0..4).map(|_| ());
     let mut builder = Graph::<(), ()>::builder(vertices);
 
-    builder.edge((), 0, 1);
-    builder.edge((), 0, 2);
-    builder.edge((), 1, 2);
-    builder.edge((), 1, 3);
-    builder.edge((), 2, 3);
+    builder.edge((), VIdx::from(0), VIdx::from(1));
+    builder.edge((), VIdx::from(0), VIdx::from(2));
+    builder.edge((), VIdx::from(1), VIdx::from(2));
+    builder.edge((), VIdx::from(1), VIdx::from(3));
+    builder.edge((), VIdx::from(2), VIdx::from(3));
 
     builder.validate();
 }
@@ -18,8 +18,8 @@ fn graph_validity() {
 fn graph_dot_export() {
     let vertices = (0..3).map(|_| ());
     let mut builder = Graph::<(), ()>::builder(vertices);
-    builder.edge((), 0, 1);
-    builder.edge((), 1, 2);
+    builder.edge((), VIdx::from(0), VIdx::from(1));
+    builder.edge((), VIdx::from(1), VIdx::from(2));
 
     let graph = builder.finish();
     let dot = graph.to_dot_string();

@@ -2,7 +2,7 @@ use crate::graph::visualization::dot::{NodeShape, node_style::NodeStyle};
 use alloc::string::String;
 use core::fmt::Display;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct NodeSettings {
     pub shape: Option<NodeShape>,
     pub style: Option<NodeStyle>,

@@ -30,7 +30,11 @@ impl<V: Variant> Commodities<V> {
     }
 
     pub fn get_ind_by_key(&self, key: &V::K) -> Option<Commodity> {
-        self.map.get_ind_by_key(key)
+        self.map.key_to_idx(key)
+    }
+
+    pub fn key(&self, idx: Commodity) -> Option<&V::K> {
+        self.map.idx_to_key(idx)
     }
 
     pub fn get_by_idx(&self, idx: Commodity) -> Option<&CommodityData<V>> {
@@ -39,5 +43,9 @@ impl<V: Variant> Commodities<V> {
 
     pub fn entries(&self) -> impl Iterator<Item = (Commodity, &V::K, &CommodityData<V>)> {
         self.map.entries()
+    }
+
+    pub fn indices(&self) -> impl Iterator<Item = Commodity> {
+        self.map.indices()
     }
 }

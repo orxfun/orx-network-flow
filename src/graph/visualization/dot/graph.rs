@@ -14,6 +14,8 @@ pub trait DotGraph {
 
     fn vertex_settings(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String;
 
+    fn vertex_tooltip(&self, v: VIdx, vertex: &Vertex<Self::V>) -> Option<String>;
+
     fn to_dot_string(&self) -> String {
         let gr = self.graph();
 
@@ -23,7 +25,12 @@ pub trait DotGraph {
             let vertex = &gr.vertices[v];
             let label = self.vertex_label(v, vertex);
             let settings = self.vertex_settings(v, vertex);
-            dot.push_str(&format!("    {v} [label=\"{label}\"{settings}];\n"));
+            match self.vertex_tooltip(v, vertex) {
+                Some(tooltip) => dot.push_str(&format!(
+                    "    {v} [label=\"{label}\"{settings} tooltip=\"{tooltip}\"];\n"
+                )),
+                None => dot.push_str(&format!("    {v} [label=\"{label}\"{settings}];\n")),
+            }
         }
 
         for edge in gr.edges.iter() {
@@ -50,5 +57,9 @@ impl DotGraph for Graph<(), ()> {
 
     fn vertex_settings(&self, _: VIdx, _: &Vertex<Self::V>) -> String {
         Default::default()
+    }
+
+    fn vertex_tooltip(&self, _: VIdx, _: &Vertex<Self::V>) -> Option<String> {
+        None
     }
 }

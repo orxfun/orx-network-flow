@@ -1,5 +1,4 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
-use orx_network_flow::graph_builders::activity_on_node::visualization::dot::AonDotGraph;
 use orx_network_flow::{ProblemBuilder, Variant};
 use std::fs;
 use std::process::Command;
@@ -38,8 +37,8 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 3, 16);
-    // commodity("AMS", "BRU", 6, 17);
-    // commodity("AMS", "SIN", 9, 26);
+    commodity("BRU", "SIN", 6, 17);
+    commodity("AMS", "SIN", 9, 26);
 
     // transports
     let mut t_idx = 0;
@@ -59,30 +58,35 @@ fn main() {
     };
 
     transport("AMS", "BRU", 4, 6);
-    transport("AMS", "BRU", 8, 10);
-    transport("AMS", "BRU", 14, 16);
-    transport("AMS", "BRU", 15, 17);
-    // transport("AMS", "BRU", 18, 20);
+    // transport("AMS", "BRU", 8, 10);
+    // transport("AMS", "BRU", 14, 16);
+    // transport("AMS", "BRU", 15, 17);
+    transport("AMS", "BRU", 18, 20);
     transport("BRU", "SIN", 10, 15);
     transport("BRU", "SIN", 15, 20);
+    transport("BRU", "EMA", 15, 17);
     // transport("BRU", "SIN", 20, 25);
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);
-    // transport("AMS", "EMA", 12, 16);
+    transport("AMS", "EMA", 12, 16);
 
-    builder.max_waiting().global(15i64);
+    builder.max_waiting().global(1000i64);
 
-    builder.min_conn_time().global(2i64, 10i64);
-    builder.max_conn_time().global(10i64, 100i64);
+    builder.min_conn_time().global(0i64, 0i64);
+    builder.max_conn_time().global(1000i64, 1000i64);
 
-    builder.max_earliness().global(6i64);
-    builder.max_lateness().global(1i64);
+    builder.max_earliness().global(1000i64);
+    builder.max_lateness().global(0i64);
 
     let problem = builder.finish();
 
-    let graph = problem.build_aon_graph();
+    let nw = problem.aon_network();
 
-    let dot = AonDotGraph::new(&problem, &graph);
+    let dot = nw.dot(None);
+
+    // let graph = problem.build_aon_graph();
+
+    // let dot = AonDotGraph::new(&problem, &graph);
 
     let dot_text = dot.to_dot_string();
     println!("{dot_text}");

@@ -35,6 +35,6 @@ impl<V: Variant> Spaces<V> {
     }
 
     pub fn get_ind_by_key(&self, key: &V::S) -> Option<Space> {
-        self.map.get_ind_by_key(key)
+        self.map.key_to_idx(key)
     }
 }

@@ -1,9 +1,7 @@
-use core::{
-    fmt::Display,
-    ops::{Add, Sub},
-};
+use core::fmt::Display;
+use core::ops::{Add, Sub};
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Eq, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct Time(i64);
 
 impl Time {
