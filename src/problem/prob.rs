@@ -2,7 +2,6 @@ use crate::commodities::Commodities;
 use crate::commodities::Commodity;
 use crate::commodities::CommodityData;
 use crate::costs::Costs;
-use crate::graph_builders::activity_on_node::{AonGraph, build_aon_graph};
 use crate::problem::variant::Variant;
 use crate::spaces::Space;
 use crate::spaces::Spaces;
@@ -108,11 +107,5 @@ impl<V: Variant> Problem<V> {
 
     pub(crate) fn vehicle_by_idx(&self, t: Vehicle) -> &VehicleData {
         self.vehicles.get_by_idx(t).expect("validated problem")
-    }
-
-    // graphs
-
-    pub fn build_aon_graph(&self) -> AonGraph {
-        build_aon_graph(self)
     }
 }

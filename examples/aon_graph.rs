@@ -1,6 +1,5 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
-use orx_network_flow::graph_builders::activity_on_node::visualization::dot::AonDotGraph;
-use orx_network_flow::{AonNetwork, ProblemBuilder, Variant};
+use orx_network_flow::{ProblemBuilder, Variant};
 use std::fs;
 use std::process::Command;
 
