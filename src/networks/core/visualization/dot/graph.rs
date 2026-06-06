@@ -1,25 +1,25 @@
 use crate::graph::visualization::dot::DotGraph;
 use crate::graph::{VIdx, Vertex};
-use crate::networks::aon::visualization::dot::settings::AonDotGraphSettings;
-use crate::networks::aon::{AonEdge, AonVertex};
-use crate::{AonNetwork, Graph, Problem, Variant};
+use crate::networks::core::visualization::dot::settings::AonDotGraphSettings;
+use crate::networks::core::{AonEdge, AonVertex};
+use crate::{CoreNetwork, Graph, Problem, Variant};
 use alloc::format;
 use alloc::string::{String, ToString};
 
-pub struct AonDotGraph<'a, V: Variant> {
+pub struct CoreDotGraph<'a, V: Variant> {
     problem: &'a Problem<V>,
-    network: &'a AonNetwork<'a, V>,
+    network: &'a CoreNetwork<'a, V>,
     settings: AonDotGraphSettings,
 }
 
-impl<'a, V: Variant> AonDotGraph<'a, V> {
-    pub fn new(problem: &'a Problem<V>, network: &'a AonNetwork<'a, V>) -> Self {
+impl<'a, V: Variant> CoreDotGraph<'a, V> {
+    pub fn new(problem: &'a Problem<V>, network: &'a CoreNetwork<'a, V>) -> Self {
         Self::with_settings(problem, network, Default::default())
     }
 
     pub fn with_settings(
         problem: &'a Problem<V>,
-        network: &'a AonNetwork<'a, V>,
+        network: &'a CoreNetwork<'a, V>,
         settings: AonDotGraphSettings,
     ) -> Self {
         Self {
@@ -30,7 +30,7 @@ impl<'a, V: Variant> AonDotGraph<'a, V> {
     }
 }
 
-impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
+impl<V: Variant> DotGraph for CoreDotGraph<'_, V> {
     type V = AonVertex;
 
     type E = AonEdge;

@@ -1,6 +1,6 @@
 use crate::graph::GraphBuilder;
-use crate::networks::aon::network_builder::AonNetworkBuilder;
-use crate::networks::aon::{AonEdge, AonVertex};
+use crate::networks::core::network_builder::AonNetworkBuilder;
+use crate::networks::core::{AonEdge, AonVertex};
 use crate::transports::Transport;
 use crate::{Problem, Variant};
 use core::iter::Peekable;

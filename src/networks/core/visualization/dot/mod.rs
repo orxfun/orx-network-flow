@@ -1,5 +1,5 @@
 mod graph;
 mod settings;
 
-pub use graph::AonDotGraph;
+pub use graph::CoreDotGraph;
 pub use settings::AonDotGraphSettings;
