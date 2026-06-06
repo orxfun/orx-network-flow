@@ -5,7 +5,7 @@ use crate::transports::Transport;
 use crate::{Problem, Variant};
 use core::iter::Peekable;
 
-pub fn add_transport_to_transport_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
+pub fn add_connection_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) {
     let (builder, graph) = builder.split_graph();
     let p = &builder.p;
 
@@ -43,7 +43,7 @@ fn connect_edges_for_od<V: Variant>(
 
         match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
             Some(head) => {
-                let data = AonEdge::TransportTransport;
+                let data = AonEdge::TransportConnection;
                 let i = builder.transport_vidx(tail);
                 let j = builder.transport_vidx(head);
                 graph.edge(data, i, j);
@@ -63,11 +63,17 @@ fn find_head_for_tail<V: Variant>(
     curr_head: Transport,
     tail: Transport,
 ) -> Option<Transport> {
-    // TODO: connection time must come here
-    let ready = prob.transport_by_idx(tail).destination().time();
-    let departure = prob.transport_by_idx(curr_head).origin().time();
+    let at = prob.transport_by_idx(tail).destination().time();
 
-    if ready > departure {
+    let feasible = |head: Transport| {
+        let min_ct = prob.time_bounds.min_conn_time.bound(prob, tail, head);
+        let max_ct = prob.time_bounds.max_conn_time.bound(prob, tail, head);
+        let dt = prob.transport_by_idx(head).origin().time();
+
+        dt >= at + min_ct && dt <= at + max_ct
+    };
+
+    if !feasible(curr_head) {
         // none of the further heads can be connected to tail
         return None;
     }
@@ -76,8 +82,7 @@ fn find_head_for_tail<V: Variant>(
     loop {
         match heads_rev.peek() {
             Some(&next_head) => {
-                let departure = prob.transport_by_idx(next_head).origin().time();
-                match ready <= departure {
+                match feasible(next_head) {
                     // next_head can also connect to tail, so it must be preferred
                     true => curr_head = heads_rev.next().expect("is-some"),
                     // curr_head can connect to tail

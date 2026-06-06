@@ -1,3 +1,4 @@
+mod connection;
 mod edge;
 mod network;
 mod network_builder;
@@ -7,9 +8,9 @@ mod source_to_source;
 mod source_to_transport;
 mod sources;
 mod transport_to_sink;
-mod transport_to_transport;
 mod vertex;
 mod visualization;
+mod waiting;
 
 use edge::AonEdge;
 pub use network::AonNetwork;

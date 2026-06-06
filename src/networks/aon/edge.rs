@@ -3,5 +3,6 @@ pub enum AonEdge {
     SinkSink,
     SourceTransport,
     TransportSink,
-    TransportTransport,
+    TransportConnection,
+    TransportWaiting,
 }
