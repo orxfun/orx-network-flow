@@ -1,6 +1,35 @@
 use crate::spaces::{Coordinate, Geocode, Location, Space};
 use crate::{Problem, Variant, std_utils::Set};
 
+pub struct SpatialConnectivityBuilder<'a, V: Variant> {
+    conn: &'a mut SpatialConnectivity,
+    p: &'a Problem<V>,
+}
+
+impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
+    pub(crate) fn new(conn: &'a mut SpatialConnectivity, p: &'a Problem<V>) -> Self {
+        Self { conn, p }
+    }
+
+    pub fn ban_connection(&mut self, a: &V::S, b: &V::S, c: &V::S) {
+        let [a, b, c] = [a, b, c].map(|s| self.p.space_idx(s).expect("invalid space"));
+        self.conn.taboo_set.insert((a, b, c));
+    }
+
+    pub fn with_geographical_connectivity(&mut self, settings: GeographicalConnectivity) {
+        self.conn.geographical_connectivity = Some(settings)
+    }
+
+    pub fn with_euclidean_connectivity(&mut self, settings: EuclideanConnectivity) {
+        self.conn.euclidean_connectivity = Some(settings)
+    }
+
+    pub fn can_connect(&self, a: &V::S, b: &V::S, c: &V::S) -> bool {
+        let [a, b, c] = [a, b, c].map(|s| self.p.space_idx(s).expect("invalid space"));
+        self.conn.can_connect(self.p, a, b, c)
+    }
+}
+
 pub struct SpatialConnectivity {
     /// It is not allowed to connect transport a->b with b->c
     /// if (a,b,c) is in the taboo_set.
@@ -12,13 +41,15 @@ pub struct SpatialConnectivity {
 }
 
 impl SpatialConnectivity {
-    pub(crate) fn can_connect<V: Variant>(
-        &self,
-        p: &Problem<V>,
-        a: Space,
-        b: Space,
-        c: Space,
-    ) -> bool {
+    pub fn new() -> Self {
+        Self {
+            taboo_set: Default::default(),
+            geographical_connectivity: None,
+            euclidean_connectivity: None,
+        }
+    }
+
+    pub fn can_connect<V: Variant>(&self, p: &Problem<V>, a: Space, b: Space, c: Space) -> bool {
         match self.taboo_set.contains(&(a, b, c)) {
             true => false,
             false => {

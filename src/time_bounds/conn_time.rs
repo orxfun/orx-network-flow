@@ -145,7 +145,7 @@ impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
     ) -> Self {
         let space = self
             .p
-            .space_ind(space)
+            .space_idx(space)
             .expect("Space '{space}' does not belong to the problem");
         let ct = CT::new(same_vehicle, changed_vehicle);
         self.bounds().by_space.insert(space, ct);
@@ -182,7 +182,7 @@ impl<'a, V: Variant> ConnectionTimeBuilder<'a, V> {
     ) -> Self {
         let space = self
             .p
-            .space_ind(space)
+            .space_idx(space)
             .expect("Space '{space}' does not belong to the problem");
         let v1 = self
             .p

@@ -47,7 +47,7 @@ impl<V: Variant> Problem<V> {
 
     // get index
 
-    pub fn space_ind(&self, key: &V::S) -> Option<Space> {
+    pub fn space_idx(&self, key: &V::S) -> Option<Space> {
         self.spaces.get_ind_by_key(key)
     }
 
