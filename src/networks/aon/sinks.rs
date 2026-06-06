@@ -1,4 +1,4 @@
-use crate::commodities::Commodity;
+use crate::commodities::{Commodity, VecCommodity};
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
 use crate::spaces::Space;
@@ -13,6 +13,7 @@ impl_idx!(SinkIdx);
 pub struct Sinks {
     idx_map: IdxMap<SpaceTime, Sink, SinkIdx>,
     des_to_position: Map<Space, Range<usize>>,
+    commodity_to_sink_idx: VecCommodity<Option<SinkIdx>>,
 }
 
 impl Sinks {
@@ -20,6 +21,7 @@ impl Sinks {
         let mut no_sink_commodities = Set::default();
         let mut idx_map = IdxMap::default();
         let mut des_to_position = Map::default();
+        let mut commodity_to_sink_idx = VecCommodity::new_filled(p.len_commodities(), None);
 
         for (des, sorted_commodities) in &p.des_sorted_commodities {
             let mut arrivals = Set::default();
@@ -39,16 +41,9 @@ impl Sinks {
                 let max_earliness = p.time_bounds.max_earliness.bound(p, c);
                 let min_at = due - max_earliness;
                 // TODO: might use binary search here
-                let commodity_can_exit = |t: &&mut Sink| t.at >= min_at && t.at <= due;
-                let fitting_sinks = sinks.iter_mut().filter(commodity_can_exit);
-                let mut any_fitting_sink = false;
-                for sink in fitting_sinks {
-                    sink.commodities.push(c);
-                    any_fitting_sink = true;
-                }
-
-                if !any_fitting_sink {
-                    no_sink_commodities.insert(c);
+                match sinks.iter().position(|t| t.at >= min_at && t.at <= due) {
+                    Some(s) => sinks[s].commodities.push(c),
+                    None => _ = no_sink_commodities.insert(c),
                 }
             }
 
@@ -62,9 +57,16 @@ impl Sinks {
             idx_map.extend(des_sinks);
         }
 
+        for (t_idx, _, sink) in idx_map.entries() {
+            for &c in sink.commodities() {
+                commodity_to_sink_idx[c] = Some(t_idx);
+            }
+        }
+
         let sinks = Self {
             idx_map,
             des_to_position,
+            commodity_to_sink_idx,
         };
         (sinks, no_sink_commodities)
     }
