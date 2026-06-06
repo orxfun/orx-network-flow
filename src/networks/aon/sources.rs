@@ -1,4 +1,3 @@
-use crate::commodities::{Commodity, VecCommodity};
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
 use crate::spaces::Space;
@@ -11,19 +10,16 @@ use core::ops::Range;
 impl_idx!(SourceIdx);
 
 pub struct Sources {
-    idx_map: IdxMap<SpaceTime, Source, SourceIdx>,
+    idx_map: IdxMap<SpaceTime, Time, SourceIdx>,
     ori_to_position: Map<Space, Range<usize>>,
-    commodity_to_source_idx: VecCommodity<Option<SourceIdx>>,
 }
 
 impl Sources {
-    pub fn create<V: Variant>(p: &Problem<V>) -> (Self, Set<Commodity>) {
-        let mut no_source_commodities = Set::default();
+    pub fn create<V: Variant>(p: &Problem<V>) -> Self {
         let mut idx_map = IdxMap::default();
         let mut ori_to_position = Map::default();
-        let mut commodity_to_source_idx = VecCommodity::new_filled(p.len_commodities(), None);
 
-        for (ori, sorted_commodities) in &p.ori_sorted_commodities {
+        for (ori, _) in &p.ori_sorted_commodities {
             let mut departures = Set::default();
 
             if let Some(des_transports) = p.ori_des_sorted_transports.get(ori) {
@@ -33,50 +29,27 @@ impl Sources {
                 }
             }
 
-            let mut sources: Vec<_> = departures.into_iter().map(Source::new).collect();
-            sources.sort_by_key(|s| s.dt);
+            let mut sources: Vec<_> = departures.into_iter().collect();
+            sources.sort();
 
-            for &c in sorted_commodities {
-                let ready = p.commodity_by_idx(c).origin().time();
-                let max_waiting = p.time_bounds.max_waiting.bound(p, c);
-                let max_dt = ready + max_waiting;
-                // TODO: might use binary search here
-                match sources.iter().position(|s| s.dt >= ready && s.dt <= max_dt) {
-                    Some(s) => sources[s].commodities.push(c),
-                    None => _ = no_source_commodities.insert(c),
-                }
-            }
-
-            let num_sources = sources.iter().filter(|s| !s.commodities.is_empty()).count();
-            let ori_sources = sources
-                .into_iter()
-                .filter(|s| !s.commodities.is_empty())
-                .map(|s| (SpaceTime::new(*ori, s.dt), s));
-            let slice_range = idx_map.len()..(idx_map.len() + num_sources);
+            let ori_sources = sources.into_iter().map(|s| (SpaceTime::new(*ori, s), s));
+            let slice_range = idx_map.len()..(idx_map.len() + ori_sources.len());
             ori_to_position.insert(*ori, slice_range);
             idx_map.extend(ori_sources);
         }
 
-        for (s_idx, _, source) in idx_map.entries() {
-            for &c in source.commodities() {
-                commodity_to_source_idx[c] = Some(s_idx);
-            }
-        }
-
-        let sources = Self {
+        Self {
             idx_map,
             ori_to_position,
-            commodity_to_source_idx,
-        };
-        (sources, no_source_commodities)
+        }
     }
 
     pub fn len(&self) -> usize {
         self.idx_map.len()
     }
 
-    pub fn get_by_idx(&self, idx: SourceIdx) -> Option<&Source> {
-        self.idx_map.get_by_idx(idx)
+    pub fn get_by_idx(&self, idx: SourceIdx) -> Option<Time> {
+        self.idx_map.get_by_idx(idx).copied()
     }
 
     pub fn get_st(&self, idx: SourceIdx) -> Option<SpaceTime> {
@@ -91,41 +64,17 @@ impl Sources {
         self.idx_map.keys().copied()
     }
 
-    pub fn iter_sidx_and_commodities(&self) -> impl Iterator<Item = (SourceIdx, &[Commodity])> {
-        self.idx_map
-            .entries()
-            .map(|(sidx, _, source)| (sidx, source.commodities.as_slice()))
-    }
-
-    pub fn slice_st_and_sources_by_ori(&self, ori: Space) -> &[(SpaceTime, Source)] {
+    pub fn slice_st_and_sources_by_ori(&self, ori: Space) -> &[(SpaceTime, Time)] {
         let idx_data_vec = self.idx_map.index_and_data();
         let slice_range = self.ori_to_position.get(&ori).expect("invalid ori");
         &idx_data_vec[slice_range.clone()]
     }
 
-    pub fn sources_by_origins(&self) -> impl Iterator<Item = (Space, &[(SpaceTime, Source)])> {
+    pub fn sources_by_origins(&self) -> impl Iterator<Item = (Space, &[(SpaceTime, Time)])> {
         let idx_data_vec = self.idx_map.index_and_data();
         self.ori_to_position.iter().map(|(ori, slice_range)| {
             let sources = &idx_data_vec[slice_range.clone()];
             (*ori, sources)
         })
-    }
-}
-
-pub struct Source {
-    dt: Time,
-    commodities: Vec<Commodity>,
-}
-
-impl Source {
-    fn new(dt: Time) -> Self {
-        Self {
-            dt,
-            commodities: Default::default(),
-        }
-    }
-
-    pub fn commodities(&self) -> &[Commodity] {
-        &self.commodities
     }
 }

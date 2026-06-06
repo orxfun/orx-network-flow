@@ -1,8 +1,9 @@
-use crate::networks::aon::sinks::{Sink, SinkIdx, Sinks};
-use crate::networks::aon::sources::{Source, SourceIdx, Sources};
+use crate::networks::aon::sinks::{SinkIdx, Sinks};
+use crate::networks::aon::sources::{SourceIdx, Sources};
 use crate::networks::aon::visualization::dot::{AonDotGraph, AonDotGraphSettings};
 use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
 use crate::space_time::SpaceTime;
+use crate::time::Time;
 use crate::{Graph, Problem, Variant};
 
 #[derive(derive_new::new)]
@@ -22,7 +23,7 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
         self.sources.get_st(idx).expect("invalid source idx")
     }
 
-    pub fn source(&self, idx: SourceIdx) -> &Source {
+    pub fn source(&self, idx: SourceIdx) -> Time {
         self.sources.get_by_idx(idx).expect("invalid source idx")
     }
 
@@ -30,7 +31,7 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
         self.sinks.get_st(idx).expect("invalid sink idx")
     }
 
-    pub fn sink(&self, idx: SinkIdx) -> &Sink {
+    pub fn sink(&self, idx: SinkIdx) -> Time {
         self.sinks.get_by_idx(idx).expect("invalid sink idx")
     }
 

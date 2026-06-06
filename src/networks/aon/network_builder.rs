@@ -17,7 +17,6 @@ pub struct AonNetworkBuilder<'a, V: Variant> {
     pub(super) builder: GraphBuilder<AonVertex, AonEdge>,
     pub(super) sources: Sources,
     pub(super) sinks: Sinks,
-    untransported_commodities: Set<Commodity>,
     offset_sources: usize,
     offset_sinks: usize,
 }
@@ -32,16 +31,13 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             .map(Transport::from)
             .map(AonVertex::Transport);
 
-        let (sources, no_source_commodities) = Sources::create(p);
+        let sources = Sources::create(p);
         let source_vertices = rng(sources.len())
             .map(SourceIdx::from)
             .map(AonVertex::Source);
 
-        let (sinks, no_sink_commodities) = Sinks::create(p);
+        let sinks = Sinks::create(p);
         let sink_vertices = rng(sinks.len()).map(SinkIdx::from).map(AonVertex::Sink);
-
-        let mut untransported_commodities = no_source_commodities;
-        untransported_commodities.extend(no_sink_commodities);
 
         let vertices = transports.chain(source_vertices).chain(sink_vertices);
 
@@ -55,7 +51,6 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
             builder,
             sources,
             sinks,
-            untransported_commodities,
             offset_sources,
             offset_sinks,
         }
