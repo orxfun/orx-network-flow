@@ -11,5 +11,5 @@ mod visualization;
 mod waiting;
 
 use edge::AonEdge;
-pub use network::AonNetwork;
+pub use network::CoreNetwork;
 use vertex::AonVertex;

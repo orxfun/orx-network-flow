@@ -49,11 +49,11 @@ impl Sources {
     }
 
     pub fn get_by_idx(&self, idx: SourceIdx) -> Option<Time> {
-        self.idx_map.get_by_idx(idx).copied()
+        self.idx_map.value(idx).copied()
     }
 
     pub fn get_st(&self, idx: SourceIdx) -> Option<SpaceTime> {
-        self.idx_map.idx_to_key(idx).copied()
+        self.idx_map.key(idx).copied()
     }
 
     pub fn get_s_idx(&self, st: SpaceTime) -> Option<SourceIdx> {

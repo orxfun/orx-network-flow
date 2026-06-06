@@ -1,20 +1,20 @@
-use crate::networks::aon::sinks::{SinkIdx, Sinks};
-use crate::networks::aon::sources::{SourceIdx, Sources};
-use crate::networks::aon::visualization::dot::{AonDotGraph, AonDotGraphSettings};
-use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
+use crate::networks::core::sinks::{SinkIdx, Sinks};
+use crate::networks::core::sources::{SourceIdx, Sources};
+use crate::networks::core::visualization::dot::{AonDotGraphSettings, CoreDotGraph};
+use crate::networks::core::{edge::AonEdge, vertex::AonVertex};
 use crate::space_time::SpaceTime;
 use crate::time::Time;
 use crate::{Graph, Problem, Variant};
 
 #[derive(derive_new::new)]
-pub struct AonNetwork<'a, V: Variant> {
+pub struct CoreNetwork<'a, V: Variant> {
     p: &'a Problem<V>,
     graph: Graph<AonVertex, AonEdge>,
     sources: Sources,
     sinks: Sinks,
 }
 
-impl<'a, V: Variant> AonNetwork<'a, V> {
+impl<'a, V: Variant> CoreNetwork<'a, V> {
     pub fn graph(&self) -> &Graph<AonVertex, AonEdge> {
         &self.graph
     }
@@ -37,10 +37,10 @@ impl<'a, V: Variant> AonNetwork<'a, V> {
 
     // visualization
 
-    pub fn dot(&'a self, custom_settings: Option<AonDotGraphSettings>) -> AonDotGraph<'a, V> {
+    pub fn dot(&'a self, custom_settings: Option<AonDotGraphSettings>) -> CoreDotGraph<'a, V> {
         match custom_settings {
-            Some(settings) => AonDotGraph::with_settings(self.p, self, settings),
-            None => AonDotGraph::new(self.p, self),
+            Some(settings) => CoreDotGraph::with_settings(self.p, self, settings),
+            None => CoreDotGraph::new(self.p, self),
         }
     }
 }

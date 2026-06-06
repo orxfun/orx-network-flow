@@ -80,19 +80,15 @@ fn main() {
 
     let problem = builder.finish();
 
-    let nw = problem.aon_network();
+    let nw = problem.core_network();
 
     let dot = nw.dot(None);
-
-    // let graph = problem.build_aon_graph();
-
-    // let dot = AonDotGraph::new(&problem, &graph);
 
     let dot_text = dot.to_dot_string();
     println!("{dot_text}");
 
-    let dot_path = "target/aon_graph.dot";
-    let svg_path = "target/aon_graph.svg";
+    let dot_path = "target/core_graph.dot";
+    let svg_path = "target/core_graph.svg";
 
     if let Err(err) = fs::create_dir_all("target") {
         eprintln!("failed to create target directory: {err}");

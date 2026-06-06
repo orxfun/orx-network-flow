@@ -1,15 +1,15 @@
 use crate::graph::{GraphBuilder, VIdx};
 use crate::indices::IdxCore;
-use crate::networks::aon::connection::add_connection_edges;
-use crate::networks::aon::sinks::{SinkIdx, Sinks};
-use crate::networks::aon::source_to_transport::add_source_to_transport_edges;
-use crate::networks::aon::sources::{SourceIdx, Sources};
-use crate::networks::aon::transport_to_sink::add_transport_to_sink_edges;
-use crate::networks::aon::waiting::add_waiting_edges;
-use crate::networks::aon::{edge::AonEdge, vertex::AonVertex};
+use crate::networks::core::connection::add_connection_edges;
+use crate::networks::core::sinks::{SinkIdx, Sinks};
+use crate::networks::core::source_to_transport::add_source_to_transport_edges;
+use crate::networks::core::sources::{SourceIdx, Sources};
+use crate::networks::core::transport_to_sink::add_transport_to_sink_edges;
+use crate::networks::core::waiting::add_waiting_edges;
+use crate::networks::core::{edge::AonEdge, vertex::AonVertex};
 use crate::space_time::SpaceTime;
 use crate::transports::Transport;
-use crate::{AonNetwork, Graph, Problem, Variant};
+use crate::{CoreNetwork, Graph, Problem, Variant};
 
 pub struct AonNetworkBuilder<'a, V: Variant> {
     pub(super) p: &'a Problem<V>,
@@ -55,8 +55,8 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
         }
     }
 
-    pub fn finish(self) -> AonNetwork<'a, V> {
-        AonNetwork::new(self.p, self.builder.finish(), self.sources, self.sinks)
+    pub fn finish(self) -> CoreNetwork<'a, V> {
+        CoreNetwork::new(self.p, self.builder.finish(), self.sources, self.sinks)
     }
 
     pub fn sidx_to_vidx(&self, sidx: SourceIdx) -> VIdx {
@@ -88,7 +88,7 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
 }
 
 impl<V: Variant> Problem<V> {
-    pub fn aon_network(&self) -> AonNetwork<'_, V> {
+    pub fn core_network(&self) -> CoreNetwork<'_, V> {
         let mut builder = AonNetworkBuilder::initiate(self);
 
         let b = &mut builder;

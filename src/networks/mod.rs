@@ -1,3 +1,3 @@
-mod aon;
+mod core;
 
-pub use aon::AonNetwork;
+pub use core::CoreNetwork;

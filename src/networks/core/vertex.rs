@@ -1,4 +1,4 @@
-use crate::networks::aon::{sinks::SinkIdx, sources::SourceIdx};
+use crate::networks::core::{sinks::SinkIdx, sources::SourceIdx};
 use crate::transports::Transport;
 
 pub enum AonVertex {
