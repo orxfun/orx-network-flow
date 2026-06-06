@@ -29,23 +29,3 @@ impl<K: Debug + Display + Clone + Eq + core::hash::Hash> MapKey for K {}
 pub trait MapKey: Debug + Display + Clone + PartialOrd + Ord {}
 #[cfg(not(feature = "std"))]
 impl<K: Debug + Display + Clone + PartialOrd + Ord> MapKey for K {}
-
-// index
-
-#[cfg(feature = "std")]
-pub trait Idx:
-    Debug + Clone + Copy + Send + Sync + PartialEq + Eq + PartialOrd + Ord + core::hash::Hash
-{
-}
-
-#[cfg(feature = "std")]
-impl<I> Idx for I where
-    I: Debug + Clone + Copy + Send + Sync + PartialEq + Eq + PartialOrd + Ord + core::hash::Hash
-{
-}
-
-#[cfg(not(feature = "std"))]
-pub trait Idx: Debug + Clone + Copy + Send + Sync + PartialEq + Eq + PartialOrd + Ord {}
-
-#[cfg(not(feature = "std"))]
-impl<I> Idx for I where I: Debug + Clone + Copy + Send + Sync + PartialEq + Eq + PartialOrd + Ord {}
