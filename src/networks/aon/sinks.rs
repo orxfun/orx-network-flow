@@ -63,4 +63,12 @@ impl Sinks {
     pub fn iter_st_sorted(&self) -> impl Iterator<Item = SpaceTime> {
         self.idx_map.keys().copied()
     }
+
+    pub fn chunks_by_destinations(&self) -> impl Iterator<Item = (Space, &[(SpaceTime, Time)])> {
+        let idx_data_vec = self.idx_map.index_and_data();
+        self.des_to_position.iter().map(|(ori, slice_range)| {
+            let sinks = &idx_data_vec[slice_range.clone()];
+            (*ori, sinks)
+        })
+    }
 }

@@ -70,7 +70,7 @@ impl Sources {
         &idx_data_vec[slice_range.clone()]
     }
 
-    pub fn sources_by_origins(&self) -> impl Iterator<Item = (Space, &[(SpaceTime, Time)])> {
+    pub fn chunks_by_origins(&self) -> impl Iterator<Item = (Space, &[(SpaceTime, Time)])> {
         let idx_data_vec = self.idx_map.index_and_data();
         self.ori_to_position.iter().map(|(ori, slice_range)| {
             let sources = &idx_data_vec[slice_range.clone()];
