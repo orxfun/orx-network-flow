@@ -1,3 +1,4 @@
+use crate::commodities::CommodityData;
 use crate::flow_units::FlowUnit;
 use crate::graph::visualization::dot::{DotGraph, NodeSettings, NodeStyle};
 use crate::graph::{VIdx, Vertex};
@@ -70,19 +71,35 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
     }
 
     fn vertex_tooltip(&self, _: VIdx, vertex: &Vertex<Self::V>) -> Option<String> {
-        let prob = self.problem;
+        let p = self.problem;
         let nw = self.network;
+
+        let commodity_info = |x: (&V::K, &CommodityData<V>)| {
+            let ori = p.space_key(x.1.origin().space());
+            let des = p.space_key(x.1.destination().space());
+            let rt = x.1.origin().time();
+            let due = x.1.destination().time();
+            format!(
+                "{}: {}-{} | {}-{} | {}",
+                x.0,
+                ori,
+                des,
+                rt,
+                due,
+                x.1.amount()
+            )
+        };
         match vertex.data() {
             AonVertex::Source(s) => {
                 let source = nw.source(*s);
                 let commodities = source
                     .commodities()
                     .iter()
-                    .map(|&c| (prob.commodity_key(c), prob.commodity_by_idx(c)))
+                    .map(|&c| (p.commodity_key(c), p.commodity_by_idx(c)))
                     .into_iterable();
                 let num_commodities = commodities.iter().len();
                 let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
-                let keys: Vec<_> = commodities.iter().map(|x| x.0.to_string()).collect();
+                let keys: Vec<_> = commodities.iter().map(commodity_info).collect();
                 let keys = keys.join("\n");
                 Some(format!(
                     "total amount = {}\n{} commodities:\n{}",
@@ -94,11 +111,11 @@ impl<V: Variant> DotGraph for AonDotGraph<'_, V> {
                 let commodities = sink
                     .commodities()
                     .iter()
-                    .map(|&c| (prob.commodity_key(c), prob.commodity_by_idx(c)))
+                    .map(|&c| (p.commodity_key(c), p.commodity_by_idx(c)))
                     .into_iterable();
                 let num_commodities = commodities.iter().len();
                 let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
-                let keys: Vec<_> = commodities.iter().map(|x| x.0.to_string()).collect();
+                let keys: Vec<_> = commodities.iter().map(commodity_info).collect();
                 let keys = keys.join("\n");
                 Some(format!(
                     "total amount = {}\n{} commodities:\n{}",
