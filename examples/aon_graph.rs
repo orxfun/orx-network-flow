@@ -80,7 +80,7 @@ fn main() {
 
     let problem = builder.finish();
 
-    let nw = problem.aon_network();
+    let nw = problem.core_network();
 
     let dot = nw.dot(None);
 

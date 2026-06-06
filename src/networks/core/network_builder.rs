@@ -88,7 +88,7 @@ impl<'a, V: Variant> AonNetworkBuilder<'a, V> {
 }
 
 impl<V: Variant> Problem<V> {
-    pub fn aon_network(&self) -> CoreNetwork<'_, V> {
+    pub fn core_network(&self) -> CoreNetwork<'_, V> {
         let mut builder = AonNetworkBuilder::initiate(self);
 
         let b = &mut builder;
