@@ -1,6 +1,6 @@
 #[derive(derive_new::new)]
 pub struct SpaceData {
-    location: Location,
+    pub location: Location,
 }
 
 #[derive(Clone, Copy)]

@@ -1,7 +1,7 @@
 use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::costs::Costs;
 use crate::problem::variant::Variant;
-use crate::spaces::{Space, Spaces};
+use crate::spaces::{Space, SpaceData, Spaces};
 use crate::std_utils::Map;
 use crate::time_bounds::TimeBounds;
 use crate::transports::{Transport, TransportData, Transports};
@@ -84,6 +84,10 @@ impl<V: Variant> Problem<V> {
     }
 
     // get by idx
+
+    pub(crate) fn space_by_idx(&self, s: Space) -> &SpaceData {
+        self.spaces.get_by_idx(s).expect("validated problem")
+    }
 
     pub(crate) fn commodity_by_idx(&self, c: Commodity) -> &CommodityData<V> {
         self.commodities.get_by_idx(c).expect("validated problem")
