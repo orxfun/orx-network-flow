@@ -1,5 +1,5 @@
 use crate::transports::Transport;
 
-pub enum AonVertex {
+pub enum TrNwVertex {
     Transport(Transport),
 }

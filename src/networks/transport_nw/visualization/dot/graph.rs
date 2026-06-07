@@ -1,26 +1,26 @@
 use crate::graph::visualization::dot::DotGraph;
 use crate::graph::{VIdx, Vertex};
-use crate::networks::core::visualization::dot::settings::AonDotGraphSettings;
-use crate::networks::core::{AonEdge, AonVertex};
-use crate::{CoreNetwork, Graph, Problem, Variant};
+use crate::networks::transport_nw::visualization::dot::settings::TransportNwDotSettings;
+use crate::networks::transport_nw::{TrNwEdge, TrNwVertex};
+use crate::{Graph, Problem, TransportNw, Variant};
 use alloc::format;
 use alloc::string::{String, ToString};
 
-pub struct CoreDotGraph<'a, V: Variant> {
+pub struct TransportNwDot<'a, V: Variant> {
     problem: &'a Problem<V>,
-    network: &'a CoreNetwork<'a, V>,
-    settings: AonDotGraphSettings,
+    network: &'a TransportNw<'a, V>,
+    settings: TransportNwDotSettings,
 }
 
-impl<'a, V: Variant> CoreDotGraph<'a, V> {
-    pub fn new(problem: &'a Problem<V>, network: &'a CoreNetwork<'a, V>) -> Self {
+impl<'a, V: Variant> TransportNwDot<'a, V> {
+    pub fn new(problem: &'a Problem<V>, network: &'a TransportNw<'a, V>) -> Self {
         Self::with_settings(problem, network, Default::default())
     }
 
     pub fn with_settings(
         problem: &'a Problem<V>,
-        network: &'a CoreNetwork<'a, V>,
-        settings: AonDotGraphSettings,
+        network: &'a TransportNw<'a, V>,
+        settings: TransportNwDotSettings,
     ) -> Self {
         Self {
             problem,
@@ -30,10 +30,10 @@ impl<'a, V: Variant> CoreDotGraph<'a, V> {
     }
 }
 
-impl<V: Variant> DotGraph for CoreDotGraph<'_, V> {
-    type V = AonVertex;
+impl<V: Variant> DotGraph for TransportNwDot<'_, V> {
+    type V = TrNwVertex;
 
-    type E = AonEdge;
+    type E = TrNwEdge;
 
     fn graph(&self) -> &Graph<Self::V, Self::E> {
         self.network.graph()
@@ -42,7 +42,7 @@ impl<V: Variant> DotGraph for CoreDotGraph<'_, V> {
     fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String {
         let p = self.problem;
         match vertex.data() {
-            AonVertex::Transport(t) => {
+            TrNwVertex::Transport(t) => {
                 let transport = p.transport_by_idx(*t);
                 let ori = p.space_key(transport.origin().space());
                 let des = p.space_key(transport.destination().space());
@@ -59,7 +59,7 @@ impl<V: Variant> DotGraph for CoreDotGraph<'_, V> {
 
     fn vertex_settings(&self, _: VIdx, vertex: &Vertex<Self::V>) -> String {
         match vertex.data() {
-            AonVertex::Transport(_) => self.settings.transport.to_string(),
+            TrNwVertex::Transport(_) => self.settings.transport.to_string(),
         }
     }
 }
