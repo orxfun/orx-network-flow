@@ -1,8 +1,9 @@
-use crate::Graph;
 use crate::graph::{Edge, VecEdge, VecVertex, Vertex};
 use crate::graph_extended::builder::ExtGraphBuilder;
 use crate::graph_extended::edge::CoreEdge;
-use crate::graph_extended::vertex::CoreVertex;
+use crate::graph_extended::vertex::{CoreVertex, ExtVertex};
+use crate::indices::IdxCore;
+use crate::{Graph, VIdx};
 
 pub struct ExtGraph<'a, V, E, Ve, Ee> {
     pub(super) core: &'a Graph<V, E>,
@@ -28,5 +29,18 @@ impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
 
     pub fn len_edges(&self) -> usize {
         self.core_edges.len() + self.ext_edges.len()
+    }
+
+    // helpers
+
+    pub(super) fn vertex(&self, vidx: VIdx) -> ExtVertex<'_, Ve> {
+        let idx = vidx.into_inner();
+        match idx < self.core_vertices.len() {
+            true => ExtVertex::Core(&self.core_vertices[vidx]),
+            false => {
+                let vidx = VIdx::from(idx - self.core_vertices.len());
+                ExtVertex::Ext(&self.ext_vertices[vidx])
+            }
+        }
     }
 }

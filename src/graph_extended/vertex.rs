@@ -2,9 +2,9 @@ use crate::VIdx;
 use crate::graph::{InEdge, OutEdge, Vertex};
 use alloc::vec::Vec;
 
-pub enum ExtVertex<V, Ve> {
-    Core(CoreVertex<V>),
-    Ext(Vertex<Ve>),
+pub enum ExtVertex<'a, Ve> {
+    Core(&'a CoreVertex<Ve>),
+    Ext(&'a Vertex<Ve>),
 }
 
 pub struct CoreVertex<Ve> {
