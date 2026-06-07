@@ -49,6 +49,10 @@ impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
             .add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
 
+    pub fn finish(self) -> ExtGraph<'a, V, E, Ve, Ee> {
+        self.0
+    }
+
     // helpers
 
     fn vertex(&self, vidx: VIdx) -> ExtVertex<'_, V, E, Ve> {
