@@ -36,7 +36,7 @@ impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
     pub(super) fn vertex(&self, vidx: VIdx) -> ExtVertex<'_, V, E, Ve> {
         let idx = vidx.into_inner();
         match idx < self.core_vertices.len() {
-            true => ExtVertex::Core(&self.core_vertices[vidx]),
+            true => ExtVertex::Core(self.core, &self.core_vertices[vidx]),
             false => {
                 let vidx = VIdx::from(idx - self.core_vertices.len());
                 ExtVertex::Ext(&self.ext_vertices[vidx])
