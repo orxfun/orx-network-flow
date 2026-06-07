@@ -14,6 +14,7 @@ pub struct ExtGraph<'a, V, E, Ve, Ee> {
 
 impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
     pub fn builder(
+        core: &'a Graph<V, E>,
         core_vertices: impl Iterator<Item = Ve>,
         core_edges: impl Iterator<Item = Ee>,
         ext_vertices: impl Iterator<Item = Ve>,

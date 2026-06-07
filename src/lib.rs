@@ -35,7 +35,7 @@ mod vehicle_types;
 mod vehicles;
 
 pub use graph::visualization::dot::DotGraph;
-pub use graph::{Graph, VIdx};
+pub use graph::{EIdx, Graph, VIdx};
 pub use networks::CoreNw;
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
