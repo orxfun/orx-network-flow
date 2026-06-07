@@ -30,28 +30,4 @@ impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
     pub fn len_edges(&self) -> usize {
         self.core_edges.len() + self.ext_edges.len()
     }
-
-    // helpers
-
-    pub(super) fn vertex(&self, vidx: VIdx) -> ExtVertex<'_, V, E, Ve> {
-        let idx = vidx.into_inner();
-        match idx < self.core_vertices.len() {
-            true => ExtVertex::Core(self.core, &self.core_vertices[vidx]),
-            false => {
-                let vidx = VIdx::from(idx - self.core_vertices.len());
-                ExtVertex::Ext(&self.ext_vertices[vidx])
-            }
-        }
-    }
-
-    pub(super) fn vertex_mut(&mut self, vidx: VIdx) -> ExtVertexMut<'_, V, E, Ve> {
-        let idx = vidx.into_inner();
-        match idx < self.core_vertices.len() {
-            true => ExtVertexMut::Core(self.core, &mut self.core_vertices[vidx]),
-            false => {
-                let vidx = VIdx::from(idx - self.core_vertices.len());
-                ExtVertexMut::Ext(&mut self.ext_vertices[vidx])
-            }
-        }
-    }
 }

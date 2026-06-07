@@ -1,4 +1,5 @@
 use crate::graph::{Edge, OutEdge, VecEdge, VecVertex, Vertex};
+use crate::graph_extended::vertex::{ExtVertex, ExtVertexMut};
 use crate::graph_extended::{edge::CoreEdge, ext_graph::ExtGraph, vertex::CoreVertex};
 use crate::indices::IdxCore;
 use crate::{EIdx, Graph, VIdx};
@@ -37,43 +38,39 @@ impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
     pub fn edge(&mut self, data: Ee, tail: VIdx, head: VIdx) {
         let edges_idx = EIdx::from(self.0.len_edges());
 
-        match tail.into_inner() < self.0.core_vertices.len() {
-            true => {
-                let vertex = &self.0.core_vertices[tail];
-                let core_out_edges = self.0.core.vertex(vertex.core_vidx).out_edges().len();
-                let new_out_edges = vertex.ext_out_edges.len();
-                let tail_out_edge_idx = core_out_edges + new_out_edges;
-            }
+        let tail_out_edge_idx = self.vertex(tail).len_out_edges();
+        let head_in_edge_idx = self.vertex(head).len_in_edges();
+
+        self.0.ext_edges.push(Edge::new(tail, head, data));
+
+        self.vertex_mut(tail)
+            .add_out_edge(edges_idx, head, head_in_edge_idx);
+        self.vertex_mut(head)
+            .add_in_edge(edges_idx, tail, tail_out_edge_idx);
+    }
+
+    // helpers
+
+    fn vertex(&self, vidx: VIdx) -> ExtVertex<'_, V, E, Ve> {
+        let idx = vidx.into_inner();
+        match idx < self.0.core_vertices.len() {
+            true => ExtVertex::Core(self.0.core, &self.0.core_vertices[vidx]),
             false => {
-                let vidx = VIdx::from(tail.into_inner() - self.0.core_vertices.len());
-                let vertex = &self.0.ext_vertices[vidx];
-                let tail_out_edge_idx = vertex.out_edges().len();
+                let vidx = VIdx::from(idx - self.0.core_vertices.len());
+                ExtVertex::Ext(&self.0.ext_vertices[vidx])
             }
         }
+    }
 
-        match head.into_inner() < self.0.core_vertices.len() {
-            true => {
-                let vertex = &self.0.core_vertices[head];
-                let core_in_edges = self.0.core.vertex(vertex.core_vidx).in_edges().len();
-                let new_in_edges = vertex.ext_in_edges.len();
-                let head_in_edge_idx = core_in_edges + new_in_edges;
-            }
+    fn vertex_mut(&mut self, vidx: VIdx) -> ExtVertexMut<'_, V, E, Ve> {
+        let idx = vidx.into_inner();
+        match idx < self.0.core_vertices.len() {
+            true => ExtVertexMut::Core(self.0.core, &mut self.0.core_vertices[vidx]),
             false => {
-                let vidx = VIdx::from(head.into_inner() - self.0.core_vertices.len());
-                let vertex = &self.0.ext_vertices[vidx];
-                let head_in_edge_idx = vertex.in_edges().len();
+                let vidx = VIdx::from(idx - self.0.core_vertices.len());
+                ExtVertexMut::Ext(&mut self.0.ext_vertices[vidx])
             }
         }
-
-        // let tail_out_edge_idx = self.0.vertex(tail).len_out_edges();
-        // let head_in_edge_idx = self.0.vertex(head).len_in_edges();
-        // self.0.ext_edges.push(Edge::new(tail, head, data));
-        // self.0
-        //     .vertex(tail)
-        //     .add_out_edge(edges_idx, head, head_in_edge_idx);
-        // self.0
-        //     .vertex(head)
-        //     .add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
 
     pub(super) fn add_out_edge(
@@ -83,6 +80,6 @@ impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
         head: VIdx,
         head_in_edge_idx: usize,
     ) {
-        //
+        //* */
     }
 }
