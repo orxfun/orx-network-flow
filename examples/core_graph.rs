@@ -79,6 +79,8 @@ fn main() {
     transport("BRU", "SIN", 10, 15);
     transport("BRU", "SIN", 15, 20);
     transport("BRU", "EMA", 15, 17);
+    transport("SIN", "AMS", 30, 35);
+    transport("BRU", "AMS", 10, 15);
     // transport("BRU", "SIN", 20, 25);
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);
@@ -86,9 +88,16 @@ fn main() {
 
     // settings
 
+    let geo_conn = GeographicalConnectivity {
+        near_ac_km: 500.0,
+        far_via_b_km: 900.0,
+        min_detour_ratio: 1.8,
+        min_excess_km: 700.0,
+        epsilon_ac_km: 50.0,
+    };
     builder
         .spatial_connectivity()
-        .with_geographical_connectivity(GeographicalConnectivity::default());
+        .with_geographical_connectivity(geo_conn);
     builder.temporal_connectivity().global(2i64, 1000i64);
 
     builder.max_waiting().global(1000i64);
