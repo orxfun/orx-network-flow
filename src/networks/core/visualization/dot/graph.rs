@@ -40,25 +40,12 @@ impl<V: Variant> DotGraph for CoreDotGraph<'_, V> {
     }
 
     fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String {
-        let prob = self.problem;
-        let nw = self.network;
+        let p = self.problem;
         match vertex.data() {
-            AonVertex::Source(s) => {
-                let st = nw.source_st(*s);
-                let space = prob.space_key(st.space());
-                let time = st.time();
-                format!("{} : s{}\n{}-{}", v, s, space, time)
-            }
-            AonVertex::Sink(t) => {
-                let st = nw.sink_st(*t);
-                let space = prob.space_key(st.space());
-                let time = st.time();
-                format!("{} : t{}\n{}-{}", v, t, space, time)
-            }
             AonVertex::Transport(t) => {
-                let transport = prob.transport_by_idx(*t);
-                let ori = prob.space_key(transport.origin().space());
-                let des = prob.space_key(transport.destination().space());
+                let transport = p.transport_by_idx(*t);
+                let ori = p.space_key(transport.origin().space());
+                let des = p.space_key(transport.destination().space());
                 let dt = transport.origin().time();
                 let at = transport.destination().time();
                 format!("{}\n{}-{}\n{}-{}", v, ori, des, dt, at)
@@ -72,8 +59,6 @@ impl<V: Variant> DotGraph for CoreDotGraph<'_, V> {
 
     fn vertex_settings(&self, _: VIdx, vertex: &Vertex<Self::V>) -> String {
         match vertex.data() {
-            AonVertex::Source(_) => self.settings.source.to_string(),
-            AonVertex::Sink(_) => self.settings.sink.to_string(),
             AonVertex::Transport(_) => self.settings.transport.to_string(),
         }
     }
