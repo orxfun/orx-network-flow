@@ -34,3 +34,25 @@ impl Default for TemporalConnectivity {
         }
     }
 }
+
+impl TemporalConnectivity {
+    pub fn can_connect<V: Variant>(
+        &self,
+        p: &Problem<V>,
+        space: Space,
+        first_at: Time,
+        second_dt: Time,
+    ) -> bool {
+        match second_dt >= first_at {
+            false => false,
+            true => {
+                let [min_ct, max_ct] = match self.local_min_max_ct.get(&space) {
+                    Some(local) => local,
+                    None => &self.global_min_max_ct,
+                };
+                let ct = second_dt - first_at;
+                ct >= *min_ct && ct <= *max_ct
+            }
+        }
+    }
+}

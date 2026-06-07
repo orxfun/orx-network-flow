@@ -1,4 +1,4 @@
-use crate::{Variant, space_time::SpaceTime, vehicles::Vehicle};
+use crate::{Variant, space_time::SpaceTime, spaces::Space, time::Time, vehicles::Vehicle};
 
 pub struct TransportData<V: Variant> {
     vehicle: Vehicle,
@@ -31,5 +31,13 @@ impl<V: Variant> TransportData<V> {
 
     pub fn capacity(&self) -> V::F {
         self.cap
+    }
+
+    pub fn ori_des(&self) -> [Space; 2] {
+        [self.ori.space(), self.des.space()]
+    }
+
+    pub fn dt_at(&self) -> [Time; 2] {
+        [self.ori.time(), self.des.time()]
     }
 }
