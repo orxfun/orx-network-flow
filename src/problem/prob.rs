@@ -1,5 +1,6 @@
 use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::costs::Costs;
+use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, Spaces};
 use crate::std_utils::Map;
@@ -15,6 +16,7 @@ pub struct Problem<V: Variant> {
     pub vehicles: Vehicles<V>,
     pub commodities: Commodities<V>,
     pub transports: Transports<V>,
+    pub connectivity: Connectivity,
     pub costs: Costs<V>,
     pub time_bounds: TimeBounds,
     pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,

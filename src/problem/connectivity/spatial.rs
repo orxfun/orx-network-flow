@@ -30,6 +30,7 @@ impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
     }
 }
 
+#[derive(Default)]
 pub struct SpatialConnectivity {
     /// It is not allowed to connect transport a->b with b->c
     /// if (a,b,c) is in the taboo_set.

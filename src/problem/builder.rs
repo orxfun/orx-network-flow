@@ -1,6 +1,7 @@
 use crate::commodities::Commodity;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
+use crate::problem::connectivity::{Connectivity, SpatialConnectivity, SpatialConnectivityBuilder};
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
@@ -31,6 +32,7 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
                 vehicles: Default::default(),
                 commodities: Default::default(),
                 transports: Default::default(),
+                connectivity: Default::default(),
                 costs: Default::default(),
                 time_bounds: Default::default(),
                 ori_sorted_commodities: Default::default(),
@@ -224,6 +226,12 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             .entry(ori_space)
             .or_default()
             .push(transport);
+    }
+
+    pub fn spatial_connectivity(&mut self) -> SpatialConnectivityBuilder<'_, V> {
+        let spatial =
+            unsafe { &mut *(&mut self.0.connectivity.spatial as *mut SpatialConnectivity) };
+        SpatialConnectivityBuilder::new(spatial, &self.0)
     }
 
     // costs

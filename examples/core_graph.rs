@@ -1,5 +1,5 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
-use orx_network_flow::{ProblemBuilder, Variant};
+use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
 use std::fs;
 use std::process::Command;
 
@@ -83,6 +83,12 @@ fn main() {
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);
     transport("AMS", "EMA", 12, 16);
+
+    // settings
+
+    builder
+        .spatial_connectivity()
+        .with_geographical_connectivity(GeographicalConnectivity::default());
 
     builder.max_waiting().global(1000i64);
 
