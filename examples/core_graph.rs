@@ -38,6 +38,7 @@ fn main() {
     let mut builder = builder.with_geographic_spaces([
         ("AMS".to_string(), 52.308_613, 4.763_889),
         ("BRU".to_string(), 50.901_389, 4.484_444),
+        ("CVG".to_string(), 39.0488, -84.6678),
         ("SIN".to_string(), 1.350_189, 103.994_433),
         ("EMA".to_string(), 52.831_111, -1.328_056),
     ]);
@@ -50,9 +51,10 @@ fn main() {
         *c += 1;
     };
 
-    commodity("AMS", "BRU", 3, 16);
-    commodity("BRU", "SIN", 6, 17);
-    commodity("AMS", "SIN", 9, 26);
+    commodity("AMS", "BRU", 0, 20);
+    commodity("AMS", "CVG", 0, 20);
+    commodity("CVG", "AMS", 0, 20);
+    commodity("CVG", "BRU", 0, 20);
 
     // transports
     let mut t_idx = 0;
@@ -71,20 +73,18 @@ fn main() {
         *t += 1;
     };
 
-    transport("AMS", "BRU", 4, 6);
-    // transport("AMS", "BRU", 8, 10);
-    // transport("AMS", "BRU", 14, 16);
-    // transport("AMS", "BRU", 15, 17);
-    transport("AMS", "BRU", 18, 20);
-    transport("BRU", "SIN", 10, 15);
-    transport("BRU", "SIN", 15, 20);
-    transport("BRU", "EMA", 15, 17);
-    transport("SIN", "AMS", 30, 35);
-    transport("BRU", "AMS", 10, 15);
-    // transport("BRU", "SIN", 20, 25);
-    // transport("BRU", "SIN", 25, 30);
-    // transport("AMS", "EMA", 5, 9);
-    transport("AMS", "EMA", 12, 16);
+    transport("AMS", "BRU", 1, 2);
+    transport("AMS", "BRU", 4, 5);
+    transport("AMS", "BRU", 7, 8);
+
+    transport("BRU", "CVG", 1, 6);
+    transport("BRU", "CVG", 7, 12);
+    transport("BRU", "CVG", 13, 18);
+
+    transport("CVG", "AMS", 1, 5);
+    transport("CVG", "AMS", 4, 8);
+    transport("CVG", "AMS", 7, 11);
+    transport("CVG", "AMS", 10, 14);
 
     // settings
 
