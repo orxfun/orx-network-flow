@@ -1,4 +1,4 @@
-use crate::{CoreNw, Graph, Problem, Variant};
+use crate::{CoreNw, Problem, Variant};
 
 #[derive(derive_new::new)]
 pub struct AggReadyDueNw<'a, V: Variant> {

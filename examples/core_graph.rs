@@ -1,5 +1,4 @@
-use orx_network_flow::graph::visualization::dot::DotGraph;
-use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
+use orx_network_flow::{DotGraph, GeographicalConnectivity, ProblemBuilder, Variant};
 use std::fs;
 use std::process::Command;
 

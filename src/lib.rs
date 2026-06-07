@@ -12,16 +12,15 @@
 )]
 #![no_std]
 
+extern crate alloc;
 #[cfg(any(test, feature = "std"))]
 extern crate std;
-
-extern crate alloc;
 
 mod commodities;
 mod cost;
 mod costs;
 mod flow_units;
-pub mod graph;
+mod graph;
 mod indices;
 mod networks;
 mod problem;
@@ -34,6 +33,7 @@ mod transports;
 mod vehicle_types;
 mod vehicles;
 
+pub use graph::visualization::dot::DotGraph;
 pub use graph::{Graph, VIdx};
 pub use networks::CoreNw;
 pub use problem::{
