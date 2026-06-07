@@ -1,7 +1,7 @@
 use crate::graph::{Edge, VecEdge, VecVertex, Vertex};
 use crate::graph_extended::builder::ExtGraphBuilder;
 use crate::graph_extended::edge::CoreEdge;
-use crate::graph_extended::vertex::{CoreVertex, ExtVertex};
+use crate::graph_extended::vertex::{CoreVertex, ExtVertex, ExtVertexMut};
 use crate::indices::IdxCore;
 use crate::{EIdx, Graph, VIdx};
 
@@ -40,6 +40,17 @@ impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
             false => {
                 let vidx = VIdx::from(idx - self.core_vertices.len());
                 ExtVertex::Ext(&self.ext_vertices[vidx])
+            }
+        }
+    }
+
+    pub(super) fn vertex_mut(&mut self, vidx: VIdx) -> ExtVertexMut<'_, V, E, Ve> {
+        let idx = vidx.into_inner();
+        match idx < self.core_vertices.len() {
+            true => ExtVertexMut::Core(self.core, &mut self.core_vertices[vidx]),
+            false => {
+                let vidx = VIdx::from(idx - self.core_vertices.len());
+                ExtVertexMut::Ext(&mut self.ext_vertices[vidx])
             }
         }
     }
