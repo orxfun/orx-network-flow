@@ -34,7 +34,8 @@ impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
     }
 
     pub fn edge(&mut self, data: E, tail: VIdx, head: VIdx) {
-        // let edges_idx = EIdx::from(self.0.edges.len());
+        let edges_idx = EIdx::from(self.0.len_edges());
+
         // let tail_out_edge_idx = self.0.vertices[tail].out_edges().len();
         // let head_in_edge_idx = self.0.vertices[head].in_edges().len();
         // self.0.edges.push(Edge::new(tail, head, data));

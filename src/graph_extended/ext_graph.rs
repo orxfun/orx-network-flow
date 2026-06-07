@@ -21,4 +21,12 @@ impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
     ) -> ExtGraphBuilder<'a, V, E, Ve, Ee> {
         ExtGraphBuilder::new(core, core_vertices, core_edges, ext_vertices)
     }
+
+    pub fn len_vertices(&self) -> usize {
+        self.core_vertices.len() + self.ext_vertices.len()
+    }
+
+    pub fn len_edges(&self) -> usize {
+        self.core_edges.len() + self.ext_edges.len()
+    }
 }

@@ -1,6 +1,11 @@
 use crate::VIdx;
-use crate::graph::{InEdge, OutEdge};
+use crate::graph::{InEdge, OutEdge, Vertex};
 use alloc::vec::Vec;
+
+pub enum ExtVertex<V, Ve> {
+    Core(CoreVertex<V>),
+    Ext(Vertex<Ve>),
+}
 
 pub struct CoreVertex<Ve> {
     core_vidx: VIdx,
