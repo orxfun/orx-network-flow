@@ -21,6 +21,7 @@ mod cost;
 mod costs;
 mod flow_units;
 mod graph;
+mod graph_extended;
 mod indices;
 mod networks;
 mod problem;
