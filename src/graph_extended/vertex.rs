@@ -33,6 +33,30 @@ impl<'a, V, E, Ve> ExtVertex<'a, V, E, Ve> {
             Self::Ext(v) => v.out_edges().into_iter().chain((&[]).into_iter()),
         }
     }
+
+    pub fn len_in_edges(&self) -> usize {
+        match self {
+            Self::Core(core, v) => {
+                let core_vertex = core.vertex(v.core_vidx);
+                let core_in_edges = core_vertex.in_edges().len();
+                let new_in_edges = v.ext_in_edges.len();
+                core_in_edges + new_in_edges
+            }
+            Self::Ext(v) => v.in_edges().len(),
+        }
+    }
+
+    pub fn in_edges(&self) -> impl Iterator<Item = &InEdge> {
+        match self {
+            Self::Core(core, v) => {
+                let core_vertex = core.vertex(v.core_vidx);
+                let core_in_edges = core_vertex.in_edges().into_iter();
+                let new_in_edges = v.ext_in_edges.iter();
+                core_in_edges.chain(new_in_edges)
+            }
+            Self::Ext(v) => v.in_edges().into_iter().chain((&[]).into_iter()),
+        }
+    }
 }
 
 pub struct CoreVertex<V, E, Ve> {
