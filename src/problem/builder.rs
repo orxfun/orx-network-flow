@@ -2,16 +2,14 @@ use crate::commodities::Commodity;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
 use crate::problem::connectivity::{
-    Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
+    SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
 use crate::time::Time;
-use crate::time_bounds::{
-    ArrivalTimeBoundsBuilder, ConnectionTimeBuilder, DepartureTimeBoundsBuilder,
-};
+use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
 use crate::transports::Transport;
 use core::marker::PhantomData;
 
@@ -262,14 +260,6 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
     }
 
     // time bounds
-
-    pub fn min_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
-        ConnectionTimeBuilder::min(&mut self.0)
-    }
-
-    pub fn max_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
-        ConnectionTimeBuilder::max(&mut self.0)
-    }
 
     pub fn max_lateness(&mut self) -> ArrivalTimeBoundsBuilder<'_, V> {
         ArrivalTimeBoundsBuilder::lateness(&mut self.0)

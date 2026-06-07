@@ -97,13 +97,11 @@ fn main() {
     };
     builder
         .spatial_connectivity()
-        .with_geographical_connectivity(geo_conn);
+        .with_geographical_connectivity(geo_conn)
+        .ban_connection(&"AMS".to_string(), &"BRU".to_string(), &"SIN".to_string());
     builder.temporal_connectivity().global(2i64, 1000i64);
 
     builder.max_waiting().global(1000i64);
-
-    builder.min_conn_time().global(0i64, 0i64);
-    builder.max_conn_time().global(1000i64, 1000i64);
 
     builder.max_earliness().global(1000i64);
     builder.max_lateness().global(0i64);

@@ -8,17 +8,20 @@ pub struct SpatialConnectivityBuilder<'a, V: Variant> {
 }
 
 impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
-    pub fn ban_connection(&mut self, a: &V::S, b: &V::S, c: &V::S) {
+    pub fn ban_connection(self, a: &V::S, b: &V::S, c: &V::S) -> Self {
         let [a, b, c] = [a, b, c].map(|s| self.p.space_idx(s).expect("invalid space"));
         self.conn.taboo_set.insert((a, b, c));
+        self
     }
 
-    pub fn with_geographical_connectivity(&mut self, settings: GeographicalConnectivity) {
-        self.conn.geographical_connectivity = Some(settings)
+    pub fn with_geographical_connectivity(self, settings: GeographicalConnectivity) -> Self {
+        self.conn.geographical_connectivity = Some(settings);
+        self
     }
 
-    pub fn with_euclidean_connectivity(&mut self, settings: EuclideanConnectivity) {
-        self.conn.euclidean_connectivity = Some(settings)
+    pub fn with_euclidean_connectivity(self, settings: EuclideanConnectivity) -> Self {
+        self.conn.euclidean_connectivity = Some(settings);
+        self
     }
 
     pub fn can_connect(&self, a: &V::S, b: &V::S, c: &V::S) -> bool {
