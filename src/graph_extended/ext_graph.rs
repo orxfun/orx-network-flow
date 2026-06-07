@@ -19,7 +19,6 @@ impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
         core_edges: impl Iterator<Item = Ee>,
         ext_vertices: impl Iterator<Item = Ve>,
     ) -> ExtGraphBuilder<'a, V, E, Ve, Ee> {
-        // GraphBuilder::new(vertices)
-        todo!()
+        ExtGraphBuilder::new(core, core_vertices, core_edges, ext_vertices)
     }
 }
