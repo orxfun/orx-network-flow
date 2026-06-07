@@ -1,16 +1,13 @@
 use crate::spaces::{Coordinate, Geocode, Location, Space};
 use crate::{Problem, Variant, std_utils::Set};
 
+#[derive(derive_new::new)]
 pub struct SpatialConnectivityBuilder<'a, V: Variant> {
-    conn: &'a mut SpatialConnectivity,
     p: &'a Problem<V>,
+    conn: &'a mut SpatialConnectivity,
 }
 
 impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
-    pub(crate) fn new(conn: &'a mut SpatialConnectivity, p: &'a Problem<V>) -> Self {
-        Self { conn, p }
-    }
-
     pub fn ban_connection(&mut self, a: &V::S, b: &V::S, c: &V::S) {
         let [a, b, c] = [a, b, c].map(|s| self.p.space_idx(s).expect("invalid space"));
         self.conn.taboo_set.insert((a, b, c));

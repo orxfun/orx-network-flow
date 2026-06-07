@@ -1,7 +1,10 @@
 use crate::commodities::Commodity;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
-use crate::problem::connectivity::{Connectivity, SpatialConnectivity, SpatialConnectivityBuilder};
+use crate::problem::connectivity::{
+    Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
+    TemporalConnectivityBuilder,
+};
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
 use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
@@ -231,7 +234,13 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
     pub fn spatial_connectivity(&mut self) -> SpatialConnectivityBuilder<'_, V> {
         let spatial =
             unsafe { &mut *(&mut self.0.connectivity.spatial as *mut SpatialConnectivity) };
-        SpatialConnectivityBuilder::new(spatial, &self.0)
+        SpatialConnectivityBuilder::new(&self.0, spatial)
+    }
+
+    pub fn temporal_connectivity(&mut self) -> TemporalConnectivityBuilder<'_, V> {
+        let temporal =
+            unsafe { &mut *(&mut self.0.connectivity.temporal as *mut TemporalConnectivity) };
+        TemporalConnectivityBuilder::new(&self.0, temporal)
     }
 
     // costs

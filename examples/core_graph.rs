@@ -89,6 +89,7 @@ fn main() {
     builder
         .spatial_connectivity()
         .with_geographical_connectivity(GeographicalConnectivity::default());
+    builder.temporal_connectivity().global(2i64, 1000i64);
 
     builder.max_waiting().global(1000i64);
 

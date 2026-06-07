@@ -7,3 +7,4 @@ pub use spatial::{
     EuclideanConnectivity, GeographicalConnectivity, SpatialConnectivity,
     SpatialConnectivityBuilder,
 };
+pub use temporal::{TemporalConnectivity, TemporalConnectivityBuilder};
