@@ -1,6 +1,6 @@
 use crate::Variant;
 use crate::networks::core::CoreNwEdge;
-use crate::networks::core::network_builder::CoreNwBuilder;
+use crate::networks::core::nw_builder::CoreNwBuilder;
 
 pub fn add_waiting_edges<V: Variant>(builder: &mut CoreNwBuilder<'_, V>) {
     let (builder, graph) = builder.split_graph();

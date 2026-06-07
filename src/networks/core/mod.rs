@@ -1,7 +1,7 @@
 mod connection;
 mod edge;
-mod network;
-mod network_builder;
+mod nw;
+mod nw_builder;
 mod sinks;
 mod sources;
 mod vertex;
@@ -9,5 +9,5 @@ mod visualization;
 mod waiting;
 
 use edge::CoreNwEdge;
-pub use network::CoreNw;
+pub use nw::CoreNw;
 use vertex::CoreNwVertex;
