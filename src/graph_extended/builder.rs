@@ -1,4 +1,4 @@
-use crate::graph::{Edge, OutEdge, VecEdge, VecVertex, Vertex};
+use crate::graph::{Edge, VecEdge, VecVertex, Vertex};
 use crate::graph_extended::vertex::{ExtVertex, ExtVertexMut};
 use crate::graph_extended::{edge::CoreEdge, ext_graph::ExtGraph, vertex::CoreVertex};
 use crate::indices::IdxCore;
@@ -75,15 +75,5 @@ impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
                 ExtVertexMut::Ext(&mut self.0.ext_vertices[vidx])
             }
         }
-    }
-
-    pub(super) fn add_out_edge(
-        &mut self,
-        vidx: VIdx,
-        edges_idx: EIdx,
-        head: VIdx,
-        head_in_edge_idx: usize,
-    ) {
-        //* */
     }
 }
