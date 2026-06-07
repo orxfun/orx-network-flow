@@ -1,40 +1,91 @@
 use crate::commodities::Commodity;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
 use crate::problem::Problem;
+use crate::problem::connectivity::{
+    SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
+    TemporalConnectivityBuilder,
+};
 use crate::problem::variant::Variant;
 use crate::space_time::SpaceTime;
+use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
 use crate::time::Time;
-use crate::time_bounds::{
-    ArrivalTimeBoundsBuilder, ConnectionTimeBuilder, DepartureTimeBoundsBuilder,
-};
+use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
 use crate::transports::Transport;
+use core::marker::PhantomData;
 
-pub struct ProblemBuilder<V: Variant>(Problem<V>);
+pub trait ProblemBuilderState {}
 
-impl<V: Variant> Default for ProblemBuilder<V> {
-    fn default() -> Self {
-        Self(Problem {
-            spaces: Default::default(),
-            vehicle_types: Default::default(),
-            vehicles: Default::default(),
-            commodities: Default::default(),
-            transports: Default::default(),
-            costs: Default::default(),
-            time_bounds: Default::default(),
-            ori_sorted_commodities: Default::default(),
-            des_sorted_commodities: Default::default(),
-            ori_des_sorted_transports: Default::default(),
-            des_ori_sorted_transports: Default::default(),
-        })
+pub struct DefiningSpaces;
+impl ProblemBuilderState for DefiningSpaces {}
+
+pub struct DefiningProblem;
+impl ProblemBuilderState for DefiningProblem {}
+
+pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState>(Problem<V>, PhantomData<S>);
+
+impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
+    // create and complete
+    pub fn new() -> Self {
+        Self(
+            Problem {
+                spaces: Default::default(),
+                vehicle_types: Default::default(),
+                vehicles: Default::default(),
+                commodities: Default::default(),
+                transports: Default::default(),
+                connectivity: Default::default(),
+                costs: Default::default(),
+                time_bounds: Default::default(),
+                ori_sorted_commodities: Default::default(),
+                des_sorted_commodities: Default::default(),
+                ori_des_sorted_transports: Default::default(),
+                des_ori_sorted_transports: Default::default(),
+            },
+            PhantomData,
+        )
+    }
+
+    pub fn spaces(self) -> ProblemBuilder<V, DefiningProblem> {
+        ProblemBuilder(self.0, PhantomData)
+    }
+
+    pub fn with_basic_spaces(
+        mut self,
+        spaces: impl IntoIterator<Item = V::S>,
+    ) -> ProblemBuilder<V, DefiningProblem> {
+        for s in spaces {
+            self.0.spaces.push(s, SpaceData::new(Location::Basic));
+        }
+        ProblemBuilder(self.0, PhantomData)
+    }
+
+    pub fn with_euclidean_spaces(
+        mut self,
+        spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
+    ) -> ProblemBuilder<V, DefiningProblem> {
+        for (s, x, y) in spaces {
+            self.0
+                .spaces
+                .push(s, SpaceData::new(Location::Euclidean(Coordinate { x, y })));
+        }
+        ProblemBuilder(self.0, PhantomData)
+    }
+
+    pub fn with_geographic_spaces(
+        mut self,
+        spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
+    ) -> ProblemBuilder<V, DefiningProblem> {
+        for (s, lat, lon) in spaces {
+            self.0.spaces.push(
+                s,
+                SpaceData::new(Location::Geographic(Geocode { lat, lon })),
+            );
+        }
+        ProblemBuilder(self.0, PhantomData)
     }
 }
 
-impl<V: Variant> ProblemBuilder<V> {
-    // create and complete
-    pub fn new() -> Self {
-        Default::default()
-    }
-
+impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
     pub fn finish(mut self) -> Problem<V> {
         // sort ori and des commodities by ready time and due time
 
@@ -101,6 +152,13 @@ impl<V: Variant> ProblemBuilder<V> {
 
     // build
 
+    fn space_unwrap(&self, key: &V::S) -> Space {
+        match self.0.spaces.get_ind_by_key(key) {
+            Some(s) => s,
+            None => panic!("Missing space '{key}'"),
+        }
+    }
+
     pub fn push_commodity(
         &mut self,
         commodity_key: V::K,
@@ -110,10 +168,10 @@ impl<V: Variant> ProblemBuilder<V> {
         due_time: impl Into<Time>,
         amount: V::F,
     ) {
-        let ori_space = self.0.spaces.push(origin);
+        let ori_space = self.space_unwrap(&origin);
         let ori = SpaceTime::new(ori_space, ready_time.into());
 
-        let des_space = self.0.spaces.push(destination);
+        let des_space = self.space_unwrap(&destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
         let commodity = self.0.commodities.push(commodity_key, ori, des, amount);
@@ -144,10 +202,10 @@ impl<V: Variant> ProblemBuilder<V> {
         let vehicle_type = self.0.vehicle_types.push(vehicle_type_key);
         let vehicle = self.0.vehicles.push(vehicle_key, vehicle_type);
 
-        let ori_space = self.0.spaces.push(origin);
+        let ori_space = self.space_unwrap(&origin);
         let ori = SpaceTime::new(ori_space, departure_time.into());
 
-        let des_space = self.0.spaces.push(destination);
+        let des_space = self.space_unwrap(&destination);
         let des = SpaceTime::new(des_space, arrival_time.into());
 
         let transport = self
@@ -171,6 +229,18 @@ impl<V: Variant> ProblemBuilder<V> {
             .push(transport);
     }
 
+    pub fn spatial_connectivity(&mut self) -> SpatialConnectivityBuilder<'_, V> {
+        let spatial =
+            unsafe { &mut *(&mut self.0.connectivity.spatial as *mut SpatialConnectivity) };
+        SpatialConnectivityBuilder::new(&self.0, spatial)
+    }
+
+    pub fn temporal_connectivity(&mut self) -> TemporalConnectivityBuilder<'_, V> {
+        let temporal =
+            unsafe { &mut *(&mut self.0.connectivity.temporal as *mut TemporalConnectivity) };
+        TemporalConnectivityBuilder::new(&self.0, temporal)
+    }
+
     // costs
 
     pub fn earliness_cost(&mut self) -> &mut EarlinessCost<V> {
@@ -190,14 +260,6 @@ impl<V: Variant> ProblemBuilder<V> {
     }
 
     // time bounds
-
-    pub fn min_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
-        ConnectionTimeBuilder::min(&mut self.0)
-    }
-
-    pub fn max_conn_time(&mut self) -> ConnectionTimeBuilder<'_, V> {
-        ConnectionTimeBuilder::max(&mut self.0)
-    }
 
     pub fn max_lateness(&mut self) -> ArrivalTimeBoundsBuilder<'_, V> {
         ArrivalTimeBoundsBuilder::lateness(&mut self.0)

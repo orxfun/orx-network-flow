@@ -75,7 +75,7 @@ impl<'a, V: Variant> ArrivalTimeBoundsBuilder<'a, V> {
     pub fn by_space(mut self, space: &V::S, bound: impl Into<Time>) -> Self {
         let space = self
             .p
-            .space_ind(space)
+            .space_idx(space)
             .expect("Space '{space}' does not belong to the problem");
         self.bounds().by_space.insert(space, bound.into());
         self

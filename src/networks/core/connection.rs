@@ -9,17 +9,23 @@ pub fn add_connection_edges<V: Variant>(builder: &mut AonNetworkBuilder<'_, V>) 
     let (builder, graph) = builder.split_graph();
     let p = &builder.p;
 
-    for (_x, des_sorted_transports) in &p.ori_des_sorted_transports {
+    for (x, des_sorted_transports) in &p.ori_des_sorted_transports {
         for (des, tail_sorted_transports) in des_sorted_transports {
             // tail: x => des
             if let Some(map_head_sorted_transports) = p.ori_des_sorted_transports.get(des) {
-                for (_y, head_sorted_transports) in map_head_sorted_transports {
+                for (y, head_sorted_transports) in map_head_sorted_transports {
                     // head: des => y
 
-                    let tails_rev = tail_sorted_transports.iter().copied().rev();
-                    let heads_rev = head_sorted_transports.iter().copied().rev().peekable();
+                    match x == y {
+                        // no entity will take the path x->des and des->x
+                        true => continue,
+                        false => {
+                            let tails_rev = tail_sorted_transports.iter().copied().rev();
+                            let heads_rev = head_sorted_transports.iter().copied().rev().peekable();
 
-                    connect_edges_for_od(p, builder, graph, tails_rev, heads_rev);
+                            connect_edges_for_od(p, builder, graph, tails_rev, heads_rev);
+                        }
+                    }
                 }
             }
         }
@@ -63,15 +69,8 @@ fn find_head_for_tail<V: Variant>(
     curr_head: Transport,
     tail: Transport,
 ) -> Option<Transport> {
-    let at = prob.transport_by_idx(tail).destination().time();
-
-    let feasible = |head: Transport| {
-        let min_ct = prob.time_bounds.min_conn_time.bound(prob, tail, head);
-        let max_ct = prob.time_bounds.max_conn_time.bound(prob, tail, head);
-        let dt = prob.transport_by_idx(head).origin().time();
-
-        dt >= at + min_ct && dt <= at + max_ct
-    };
+    // TODO: minor speed improvement possible by caching at of tail
+    let feasible = |head: Transport| prob.connectivity.can_connect(prob, tail, head);
 
     if !feasible(curr_head) {
         // none of the further heads can be connected to tail

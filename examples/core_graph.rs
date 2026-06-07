@@ -1,5 +1,5 @@
 use orx_network_flow::graph::visualization::dot::DotGraph;
-use orx_network_flow::{ProblemBuilder, Variant};
+use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
 use std::fs;
 use std::process::Command;
 
@@ -26,7 +26,21 @@ impl Variant for MyVariant {
 }
 
 fn main() {
-    let mut builder: ProblemBuilder<MyVariant> = ProblemBuilder::new();
+    let builder: ProblemBuilder<MyVariant, _> = ProblemBuilder::new();
+
+    // let mut builder = builder.with_basic_spaces([
+    //     "AMS".to_string(),
+    //     "BRU".to_string(),
+    //     "SIN".to_string(),
+    //     "EMA".to_string(),
+    // ]);
+
+    let mut builder = builder.with_geographic_spaces([
+        ("AMS".to_string(), 52.308_613, 4.763_889),
+        ("BRU".to_string(), 50.901_389, 4.484_444),
+        ("SIN".to_string(), 1.350_189, 103.994_433),
+        ("EMA".to_string(), 52.831_111, -1.328_056),
+    ]);
 
     // commodities
     let mut c_idx = 0;
@@ -65,15 +79,29 @@ fn main() {
     transport("BRU", "SIN", 10, 15);
     transport("BRU", "SIN", 15, 20);
     transport("BRU", "EMA", 15, 17);
+    transport("SIN", "AMS", 30, 35);
+    transport("BRU", "AMS", 10, 15);
     // transport("BRU", "SIN", 20, 25);
     // transport("BRU", "SIN", 25, 30);
     // transport("AMS", "EMA", 5, 9);
     transport("AMS", "EMA", 12, 16);
 
-    builder.max_waiting().global(1000i64);
+    // settings
 
-    builder.min_conn_time().global(0i64, 0i64);
-    builder.max_conn_time().global(1000i64, 1000i64);
+    let geo_conn = GeographicalConnectivity {
+        near_ac_km: 500.0,
+        far_via_b_km: 900.0,
+        min_detour_ratio: 1.8,
+        min_excess_km: 700.0,
+        epsilon_ac_km: 50.0,
+    };
+    builder
+        .spatial_connectivity()
+        .with_geographical_connectivity(geo_conn)
+        .ban_connection(&"AMS".to_string(), &"BRU".to_string(), &"SIN".to_string());
+    builder.temporal_connectivity().global(2i64, 1000i64);
+
+    builder.max_waiting().global(1000i64);
 
     builder.max_earliness().global(1000i64);
     builder.max_lateness().global(0i64);

@@ -36,4 +36,6 @@ mod vehicles;
 
 pub use graph::{Graph, VIdx};
 pub use networks::CoreNetwork;
-pub use problem::{Problem, ProblemBuilder, Variant};
+pub use problem::{
+    EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
+};
