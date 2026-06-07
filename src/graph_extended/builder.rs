@@ -1,5 +1,6 @@
-use crate::graph::{VecEdge, VecVertex, Vertex};
+use crate::graph::{Edge, OutEdge, VecEdge, VecVertex, Vertex};
 use crate::graph_extended::{edge::CoreEdge, ext_graph::ExtGraph, vertex::CoreVertex};
+use crate::indices::IdxCore;
 use crate::{EIdx, Graph, VIdx};
 
 pub struct ExtGraphBuilder<'a, V, E, Ve, Ee>(ExtGraph<'a, V, E, Ve, Ee>);
@@ -33,13 +34,55 @@ impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
         Self(graph)
     }
 
-    pub fn edge(&mut self, data: E, tail: VIdx, head: VIdx) {
+    pub fn edge(&mut self, data: Ee, tail: VIdx, head: VIdx) {
         let edges_idx = EIdx::from(self.0.len_edges());
 
-        // let tail_out_edge_idx = self.0.vertices[tail].out_edges().len();
-        // let head_in_edge_idx = self.0.vertices[head].in_edges().len();
-        // self.0.edges.push(Edge::new(tail, head, data));
-        // self.0.vertices[tail].add_out_edge(edges_idx, head, head_in_edge_idx);
-        // self.0.vertices[head].add_in_edge(edges_idx, tail, tail_out_edge_idx);
+        match tail.into_inner() < self.0.core_vertices.len() {
+            true => {
+                let vertex = &self.0.core_vertices[tail];
+                let core_out_edges = self.0.core.vertex(vertex.core_vidx).out_edges().len();
+                let new_out_edges = vertex.ext_out_edges.len();
+                let tail_out_edge_idx = core_out_edges + new_out_edges;
+            }
+            false => {
+                let vidx = VIdx::from(tail.into_inner() - self.0.core_vertices.len());
+                let vertex = &self.0.ext_vertices[vidx];
+                let tail_out_edge_idx = vertex.out_edges().len();
+            }
+        }
+
+        match head.into_inner() < self.0.core_vertices.len() {
+            true => {
+                let vertex = &self.0.core_vertices[head];
+                let core_in_edges = self.0.core.vertex(vertex.core_vidx).in_edges().len();
+                let new_in_edges = vertex.ext_in_edges.len();
+                let head_in_edge_idx = core_in_edges + new_in_edges;
+            }
+            false => {
+                let vidx = VIdx::from(head.into_inner() - self.0.core_vertices.len());
+                let vertex = &self.0.ext_vertices[vidx];
+                let head_in_edge_idx = vertex.in_edges().len();
+            }
+        }
+
+        // let tail_out_edge_idx = self.0.vertex(tail).len_out_edges();
+        // let head_in_edge_idx = self.0.vertex(head).len_in_edges();
+        // self.0.ext_edges.push(Edge::new(tail, head, data));
+        // self.0
+        //     .vertex(tail)
+        //     .add_out_edge(edges_idx, head, head_in_edge_idx);
+        // self.0
+        //     .vertex(head)
+        //     .add_in_edge(edges_idx, tail, tail_out_edge_idx);
+    }
+
+    pub(super) fn add_out_edge(
+        &mut self,
+        vidx: VIdx,
+        edges_idx: EIdx,
+        head: VIdx,
+        head_in_edge_idx: usize,
+    ) {
+        //
     }
 }

@@ -3,7 +3,7 @@ use crate::graph_extended::builder::ExtGraphBuilder;
 use crate::graph_extended::edge::CoreEdge;
 use crate::graph_extended::vertex::{CoreVertex, ExtVertex};
 use crate::indices::IdxCore;
-use crate::{Graph, VIdx};
+use crate::{EIdx, Graph, VIdx};
 
 pub struct ExtGraph<'a, V, E, Ve, Ee> {
     pub(super) core: &'a Graph<V, E>,

@@ -1,5 +1,5 @@
 use crate::graph::{InEdge, OutEdge, Vertex};
-use crate::{Graph, VIdx};
+use crate::{EIdx, Graph, VIdx};
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 
@@ -59,11 +59,38 @@ impl<'a, V, E, Ve> ExtVertex<'a, V, E, Ve> {
     }
 }
 
+pub enum ExtVertexMut<'a, V, E, Ve> {
+    Core(&'a Graph<V, E>, &'a mut CoreVertex<V, E, Ve>),
+    Ext(&'a mut Vertex<Ve>),
+}
+
+impl<'a, V, E, Ve> ExtVertexMut<'a, V, E, Ve> {
+    pub fn add_out_edge(&mut self, edges_idx: EIdx, head: VIdx, head_in_edge_idx: usize) {
+        match self {
+            Self::Core(_, v) => {
+                let out_edge = OutEdge::new(edges_idx, head, head_in_edge_idx);
+                v.ext_out_edges.push(out_edge);
+            }
+            Self::Ext(v) => v.add_out_edge(edges_idx, head, head_in_edge_idx),
+        }
+    }
+
+    pub fn add_in_edge(&mut self, edges_idx: EIdx, tail: VIdx, tail_out_edge_idx: usize) {
+        match self {
+            Self::Core(_, v) => {
+                let in_edge = InEdge::new(edges_idx, tail, tail_out_edge_idx);
+                v.ext_in_edges.push(in_edge);
+            }
+            Self::Ext(v) => v.add_in_edge(edges_idx, tail, tail_out_edge_idx),
+        }
+    }
+}
+
 pub struct CoreVertex<V, E, Ve> {
-    core_vidx: VIdx,
-    data: Ve,
-    ext_out_edges: Vec<OutEdge>,
-    ext_in_edges: Vec<InEdge>,
+    pub(super) core_vidx: VIdx,
+    pub(super) data: Ve,
+    pub(super) ext_out_edges: Vec<OutEdge>,
+    pub(super) ext_in_edges: Vec<InEdge>,
     p: PhantomData<(V, E)>,
 }
 
