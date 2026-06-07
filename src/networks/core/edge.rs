@@ -1,4 +1,4 @@
-pub enum TrNwEdge {
+pub enum CoreNwEdge {
     Connection,
     Waiting,
 }

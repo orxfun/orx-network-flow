@@ -8,6 +8,6 @@ mod vertex;
 mod visualization;
 mod waiting;
 
-use edge::TrNwEdge;
-pub use network::TransportNw;
-use vertex::TrNwVertex;
+use edge::CoreNwEdge;
+pub use network::CoreNw;
+use vertex::CoreNwVertex;

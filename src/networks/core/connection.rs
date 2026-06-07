@@ -1,11 +1,11 @@
 use crate::graph::GraphBuilder;
-use crate::networks::transport_nw::network_builder::TransportNwBuilder;
-use crate::networks::transport_nw::{TrNwEdge, TrNwVertex};
+use crate::networks::core::network_builder::CoreNwBuilder;
+use crate::networks::core::{CoreNwEdge, CoreNwVertex};
 use crate::transports::Transport;
 use crate::{Problem, Variant};
 use core::iter::Peekable;
 
-pub fn add_connection_edges<V: Variant>(builder: &mut TransportNwBuilder<'_, V>) {
+pub fn add_connection_edges<V: Variant>(builder: &mut CoreNwBuilder<'_, V>) {
     let (builder, graph) = builder.split_graph();
     let p = &builder.p;
 
@@ -34,8 +34,8 @@ pub fn add_connection_edges<V: Variant>(builder: &mut TransportNwBuilder<'_, V>)
 
 fn connect_edges_for_od<V: Variant>(
     prob: &Problem<V>,
-    builder: &TransportNwBuilder<'_, V>,
-    graph: &mut GraphBuilder<TrNwVertex, TrNwEdge>,
+    builder: &CoreNwBuilder<'_, V>,
+    graph: &mut GraphBuilder<CoreNwVertex, CoreNwEdge>,
     mut tails_rev: impl Iterator<Item = Transport>,
     mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
 ) -> Option<()> {
@@ -49,7 +49,7 @@ fn connect_edges_for_od<V: Variant>(
 
         match find_head_for_tail(prob, &mut heads_rev, curr_head, tail) {
             Some(head) => {
-                let data = TrNwEdge::Connection;
+                let data = CoreNwEdge::Connection;
                 let i = builder.transport_vidx(tail);
                 let j = builder.transport_vidx(head);
                 graph.edge(data, i, j);

@@ -1,8 +1,8 @@
 use crate::Variant;
-use crate::networks::transport_nw::TrNwEdge;
-use crate::networks::transport_nw::network_builder::TransportNwBuilder;
+use crate::networks::core::CoreNwEdge;
+use crate::networks::core::network_builder::CoreNwBuilder;
 
-pub fn add_waiting_edges<V: Variant>(builder: &mut TransportNwBuilder<'_, V>) {
+pub fn add_waiting_edges<V: Variant>(builder: &mut CoreNwBuilder<'_, V>) {
     let (builder, graph) = builder.split_graph();
     let p = &builder.p;
 
@@ -11,7 +11,7 @@ pub fn add_waiting_edges<V: Variant>(builder: &mut TransportNwBuilder<'_, V>) {
             let tails = sorted_transports.iter().copied();
             let heads = sorted_transports.iter().copied().skip(1);
             for (tail, head) in tails.zip(heads) {
-                let data = TrNwEdge::Waiting;
+                let data = CoreNwEdge::Waiting;
                 let i = builder.transport_vidx(tail);
                 let j = builder.transport_vidx(head);
                 graph.edge(data, i, j);

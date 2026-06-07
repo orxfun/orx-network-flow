@@ -1,13 +1,13 @@
 use crate::graph::visualization::dot::{NodeSettings, NodeShape, NodeStyle};
 use alloc::string::ToString;
 
-pub struct TransportNwDotSettings {
+pub struct CoreNwDotSettings {
     pub source: NodeSettings,
     pub sink: NodeSettings,
     pub transport: NodeSettings,
 }
 
-impl Default for TransportNwDotSettings {
+impl Default for CoreNwDotSettings {
     fn default() -> Self {
         Self {
             source: NodeSettings {
