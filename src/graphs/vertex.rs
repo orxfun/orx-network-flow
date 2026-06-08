@@ -1,4 +1,14 @@
-use crate::{impl_idx, impl_vec_of_idx};
+use crate::{graphs::EIdx, impl_idx, impl_vec_of_idx};
 
 impl_idx!(VIdx);
 impl_vec_of_idx!(VIdx, VecVertex);
+
+pub trait Vertex {
+    type Data;
+
+    fn data(&self) -> &Self::Data;
+
+    fn out_edges(&self) -> impl Iterator<Item = EIdx>;
+
+    fn in_edges(&self) -> impl Iterator<Item = EIdx>;
+}
