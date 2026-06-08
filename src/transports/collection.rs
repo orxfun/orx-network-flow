@@ -48,4 +48,8 @@ impl<V: Variant> Transports<V> {
     pub fn entries(&self) -> impl Iterator<Item = (Transport, &V::T, &TransportData<V>)> {
         self.map.entries()
     }
+
+    pub fn indices(&self) -> impl Iterator<Item = Transport> {
+        self.map.indices()
+    }
 }
