@@ -2,27 +2,27 @@ use crate::common_ds::EitherIter;
 use crate::graphs::{EIdx, Vertex, core::VertexCore};
 use alloc::vec::Vec;
 
-pub struct OriVertex<'a, Vc, Dv>
+pub struct OriVertex<Vc, Dv>
 where
     Vc: Vertex,
 {
-    pub(super) core_vertex: &'a Vc,
+    pub(super) core_vertex: Vc,
     pub(super) data: Dv,
     pub(super) more_out_edges: Vec<EIdx>,
     pub(super) more_in_edges: Vec<EIdx>,
 }
 
-pub enum ExtVertex<'a, 'g, Vc, Dv>
+pub enum ExtVertex<'a, Vc, Dv>
 where
     Vc: Vertex,
 {
-    Ori(&'a OriVertex<'g, Vc, Dv>),
+    Ori(&'a OriVertex<Vc, Dv>),
     New(&'a VertexCore<Dv>),
 }
 
-impl<'a, 'g, Vc, Dv> Vertex for ExtVertex<'a, 'g, Vc, Dv>
+impl<'a, Vc, Dv> Vertex for ExtVertex<'a, Vc, Dv>
 where
-    Vc: Vertex + 'g,
+    Vc: Vertex,
 {
     type Data = Dv;
 

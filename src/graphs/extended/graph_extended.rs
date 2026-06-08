@@ -8,8 +8,8 @@ where
     G: Graph,
 {
     pub(super) core: &'a G,
-    pub(super) core_vertices: VecVertex<OriVertex<'a, G::V<'a>, Dv>>,
-    pub(super) core_edges: VecEdge<OriEdge<'a, G::E<'a>, De>>,
+    pub(super) core_vertices: VecVertex<OriVertex<G::V<'a>, Dv>>,
+    pub(super) core_edges: VecEdge<OriEdge<G::E<'a>, De>>,
     pub(super) new_vertices: VecVertex<VertexCore<Dv>>,
     pub(super) new_edges: VecEdge<EdgeCore<De>>,
 }

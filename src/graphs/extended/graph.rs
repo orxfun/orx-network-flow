@@ -10,7 +10,7 @@ where
     type De = De;
 
     type V<'a>
-        = ExtVertex<'a, 'g, G::V<'g>, Dv>
+        = ExtVertex<'a, G::V<'g>, Dv>
     where
         Self: 'a;
 

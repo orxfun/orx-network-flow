@@ -1,10 +1,10 @@
 use crate::graphs::{Edge, VIdx, core::EdgeCore};
 
-pub struct OriEdge<'a, Ec, De>
+pub struct OriEdge<Ec, De>
 where
     Ec: Edge,
 {
-    pub(super) core_edge: &'a Ec,
+    pub(super) core_edge: Ec,
     pub(super) data: De,
 }
 
@@ -12,7 +12,7 @@ pub enum ExtEdge<'a, Ec, De>
 where
     Ec: Edge,
 {
-    Ori(&'a OriEdge<'a, Ec, De>),
+    Ori(&'a OriEdge<Ec, De>),
     New(&'a EdgeCore<De>),
 }
 
