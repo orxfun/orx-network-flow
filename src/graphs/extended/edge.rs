@@ -16,30 +16,30 @@ where
     New(EdgeCore<D>),
 }
 
-impl<'a, Ec, D> Edge for ExtEdge<'a, Ec, D>
-where
-    Ec: Edge,
-{
-    type Data = D;
+// impl<'a, Ec, D> Edge for ExtEdge<'a, Ec, D>
+// where
+//     Ec: Edge,
+// {
+//     type Data = D;
 
-    fn data(&self) -> &Self::Data {
-        match self {
-            Self::Ori(o) => &o.ext_data,
-            Self::New(n) => n.data(),
-        }
-    }
+//     fn data(&self) -> &Self::Data {
+//         match self {
+//             Self::Ori(o) => &o.ext_data,
+//             Self::New(n) => n.data(),
+//         }
+//     }
 
-    fn tail(&self) -> VIdx {
-        match self {
-            Self::Ori(o) => o.core_edge.tail(),
-            Self::New(n) => n.tail(),
-        }
-    }
+//     fn tail(&self) -> VIdx {
+//         match self {
+//             Self::Ori(o) => o.core_edge.tail(),
+//             Self::New(n) => n.tail(),
+//         }
+//     }
 
-    fn head(&self) -> VIdx {
-        match self {
-            Self::Ori(o) => o.core_edge.head(),
-            Self::New(n) => n.head(),
-        }
-    }
-}
+//     fn head(&self) -> VIdx {
+//         match self {
+//             Self::Ori(o) => o.core_edge.head(),
+//             Self::New(n) => n.head(),
+//         }
+//     }
+// }

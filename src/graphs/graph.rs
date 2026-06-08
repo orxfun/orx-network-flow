@@ -1,9 +1,17 @@
 use crate::graphs::{EIdx, Edge, VIdx, Vertex};
 
 pub trait Graph {
-    type V: Vertex;
+    type Dv;
 
-    type E: Edge;
+    type De;
+
+    type V<'a>: Vertex<Data = Self::Dv>
+    where
+        Self: 'a;
+
+    type E<'a>: Edge<Data = Self::De>
+    where
+        Self: 'a;
 
     fn v(&self) -> usize {
         self.vertices().len()
@@ -13,9 +21,9 @@ pub trait Graph {
         self.edges().len()
     }
 
-    fn vertices(&self) -> impl ExactSizeIterator<Item = &Self::V>;
+    fn vertices(&self) -> impl ExactSizeIterator<Item = Self::V<'_>>;
 
-    fn edges(&self) -> impl ExactSizeIterator<Item = &Self::E>;
+    fn edges(&self) -> impl ExactSizeIterator<Item = Self::E<'_>>;
 
     fn vertex_indices(&self) -> impl ExactSizeIterator<Item = VIdx> {
         (0..self.v()).map(VIdx::from)
@@ -25,11 +33,7 @@ pub trait Graph {
         (0..self.e()).map(EIdx::from)
     }
 
-    fn vertex(&self, v: VIdx) -> &Self::V;
+    fn vertex(&self, v: VIdx) -> Self::V<'_>;
 
-    fn edge(&self, e: EIdx) -> &Self::E;
+    fn edge(&self, e: EIdx) -> Self::E<'_>;
 }
-
-pub type VertexDataOf<G> = <<G as Graph>::V as Vertex>::Data;
-
-pub type EdgeDataOf<G> = <<G as Graph>::V as Edge>::Data;

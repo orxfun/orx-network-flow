@@ -7,7 +7,7 @@ pub struct EdgeCore<De> {
     data: De,
 }
 
-impl<E> Edge for EdgeCore<E> {
+impl<E> Edge for &EdgeCore<E> {
     type Data = E;
 
     fn data(&self) -> &Self::Data {
