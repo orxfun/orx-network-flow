@@ -23,7 +23,7 @@ impl<'a, G: Graph> DotGraph for DotGraphBasic<'a, G> {
         v.to_string()
     }
 
-    fn vertex_settings(&self, v: VIdx) -> &NodeSettings {
+    fn vertex_settings(&self, _: VIdx) -> &NodeSettings {
         &self.settings
     }
 

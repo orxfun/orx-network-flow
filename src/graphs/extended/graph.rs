@@ -32,7 +32,9 @@ where
     }
 
     fn edges(&self) -> impl Iterator<Item = Self::E<'_>> {
-        core::iter::empty()
+        let core_edges = self.core_edges.iter().map(ExtEdge::Ori);
+        let new_edges = self.new_edges.iter().map(ExtEdge::New);
+        core_edges.chain(new_edges)
     }
 
     fn vertex<'a>(&'a self, v: VIdx) -> Self::V<'a>
