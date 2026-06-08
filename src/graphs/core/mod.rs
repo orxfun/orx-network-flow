@@ -7,9 +7,6 @@ mod edge;
 mod graph;
 mod graph_core;
 mod graph_mut;
-mod in_edge;
-mod out_edge;
-
 mod vertex;
 mod visualization;
 
