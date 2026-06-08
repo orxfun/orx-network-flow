@@ -8,7 +8,7 @@ pub trait Vertex {
 
     fn data(&self) -> &Self::Data;
 
-    fn out_edges(&self) -> impl Iterator<Item = EIdx>;
+    fn out_edges(&self) -> impl ExactSizeIterator<Item = EIdx>;
 
-    fn in_edges(&self) -> impl Iterator<Item = EIdx>;
+    fn in_edges(&self) -> impl ExactSizeIterator<Item = EIdx>;
 }

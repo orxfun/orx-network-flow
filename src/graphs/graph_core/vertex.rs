@@ -2,9 +2,9 @@ use crate::graphs::{EIdx, InEdge, OutEdge, VIdx, Vertex};
 use alloc::vec::Vec;
 
 pub struct VertexCore<V> {
-    data: V,
     out_edges: Vec<OutEdge>,
     in_edges: Vec<InEdge>,
+    data: V,
 }
 
 impl<V> VertexCore<V> {
@@ -25,18 +25,6 @@ impl<V> VertexCore<V> {
         let in_edge = InEdge::new(edges_idx, tail, tail_out_edge_idx);
         self.in_edges.push(in_edge);
     }
-
-    pub fn out_edges(&self) -> &[OutEdge] {
-        &self.out_edges
-    }
-
-    pub fn in_edges(&self) -> &[InEdge] {
-        &self.in_edges
-    }
-
-    pub fn data(&self) -> &V {
-        &self.data
-    }
 }
 
 impl<V> Vertex for VertexCore<V> {
@@ -46,11 +34,11 @@ impl<V> Vertex for VertexCore<V> {
         &self.data
     }
 
-    fn out_edges(&self) -> impl Iterator<Item = EIdx> {
+    fn out_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
         self.out_edges.iter().map(|x| x.edges_idx())
     }
 
-    fn in_edges(&self) -> impl Iterator<Item = EIdx> {
+    fn in_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
         self.in_edges.iter().map(|x| x.edges_idx())
     }
 }
