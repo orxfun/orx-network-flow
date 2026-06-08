@@ -1,4 +1,5 @@
-use crate::graphs::{EIdx, Edge, GraphBuilder, VIdx, VecEdge, VecVertex, Vertex, graph::Graph};
+use crate::graphs::graph_core::Edge;
+use crate::graphs::{GraphBuilder, VIdx, VecEdge, VecVertex, graph_core::vertex::Vertex};
 
 pub struct GraphCore<V, E> {
     pub(super) vertices: VecVertex<Vertex<V>>,

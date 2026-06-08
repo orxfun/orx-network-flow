@@ -3,8 +3,12 @@ mod tests;
 
 mod builder;
 mod display;
+mod edge;
 mod graph;
-pub mod visualization;
+mod vertex;
+// pub mod visualization;
 
 pub use builder::GraphBuilder;
+pub use edge::Edge;
 pub use graph::GraphCore;
+pub use vertex::Vertex;

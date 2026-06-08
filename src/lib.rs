@@ -22,7 +22,7 @@ mod costs;
 mod flow_units;
 mod graphs;
 mod indices;
-mod networks;
+// mod networks;
 mod problem;
 mod space_time;
 mod spaces;
@@ -33,7 +33,7 @@ mod transports;
 mod vehicle_types;
 mod vehicles;
 
-pub use networks::CoreNw;
+// pub use networks::CoreNw;
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
