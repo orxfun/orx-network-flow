@@ -23,4 +23,10 @@ fn main() {
     let builder = GraphExtended::<_, String, usize>::builder(&core, core_vertices, core_edges);
 
     let extended = builder.finish();
+
+    let dot = extended.as_dot_graph();
+    dot.create_svg_file("target/graph_extended.dot", "target/graph_extended.svg")
+        .unwrap();
+
+    println!("\n\nDOT\n{}", dot.dot_string());
 }
