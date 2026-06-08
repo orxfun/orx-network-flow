@@ -1,11 +1,11 @@
-use crate::graphs::{EIdx, VIdx};
+use crate::graphs::{EIdx, Edge, VIdx, Vertex};
 
 pub trait Graph {
-    type V<'a>
+    type V<'a>: Vertex
     where
         Self: 'a;
 
-    type E<'a>
+    type E<'a>: Edge
     where
         Self: 'a;
 

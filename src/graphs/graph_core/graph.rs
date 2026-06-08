@@ -1,9 +1,10 @@
-use crate::graphs::graph_core::Edge;
-use crate::graphs::{GraphBuilder, VIdx, VecEdge, VecVertex, graph_core::vertex::Vertex};
+use crate::graphs::graph::Graph;
+use crate::graphs::graph_core::EdgeCore;
+use crate::graphs::{GraphBuilder, VIdx, VecEdge, VecVertex, graph_core::vertex::VertexCore};
 
 pub struct GraphCore<V, E> {
-    pub(super) vertices: VecVertex<Vertex<V>>,
-    pub(super) edges: VecEdge<Edge<E>>,
+    pub(super) vertices: VecVertex<VertexCore<V>>,
+    pub(super) edges: VecEdge<EdgeCore<E>>,
 }
 
 impl<V, E> GraphCore<V, E> {
@@ -19,7 +20,7 @@ impl<V, E> GraphCore<V, E> {
         self.edges.len()
     }
 
-    pub fn vertex(&self, vidx: VIdx) -> &Vertex<V> {
+    pub fn vertex(&self, vidx: VIdx) -> &VertexCore<V> {
         &self.vertices[vidx]
     }
 }
@@ -28,12 +29,4 @@ impl<V, E> GraphCore<V, E> {
 //     type V = V;
 
 //     type E = E;
-
-//     fn vertex(&self, v: VIdx) -> &Vertex<Self::V> {
-//         &self.vertices[v]
-//     }
-
-//     fn edge(&self, e: EIdx) -> &Edge<Self::E> {
-//         &self.edges[e]
-//     }
 // }

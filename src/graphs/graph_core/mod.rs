@@ -9,6 +9,6 @@ mod vertex;
 // pub mod visualization;
 
 pub use builder::GraphBuilder;
-pub use edge::Edge;
+pub use edge::EdgeCore;
 pub use graph::GraphCore;
-pub use vertex::Vertex;
+pub use vertex::VertexCore;

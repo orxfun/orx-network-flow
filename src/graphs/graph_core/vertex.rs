@@ -1,13 +1,13 @@
-use crate::graphs::{EIdx, InEdge, OutEdge, VIdx};
+use crate::graphs::{EIdx, InEdge, OutEdge, VIdx, Vertex};
 use alloc::vec::Vec;
 
-pub struct Vertex<V> {
+pub struct VertexCore<V> {
     data: V,
     out_edges: Vec<OutEdge>,
     in_edges: Vec<InEdge>,
 }
 
-impl<V> Vertex<V> {
+impl<V> VertexCore<V> {
     pub fn new(data: V) -> Self {
         Self {
             data,
@@ -36,5 +36,21 @@ impl<V> Vertex<V> {
 
     pub fn data(&self) -> &V {
         &self.data
+    }
+}
+
+impl<V> Vertex for VertexCore<V> {
+    type Data = V;
+
+    fn data(&self) -> &Self::Data {
+        &self.data
+    }
+
+    fn out_edges(&self) -> impl Iterator<Item = EIdx> {
+        self.out_edges.iter().map(|x| x.edges_idx())
+    }
+
+    fn in_edges(&self) -> impl Iterator<Item = EIdx> {
+        self.in_edges.iter().map(|x| x.edges_idx())
     }
 }

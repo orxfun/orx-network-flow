@@ -1,12 +1,12 @@
 use crate::graphs::VIdx;
 
-pub struct Edge<E> {
+pub struct EdgeCore<E> {
     tail: VIdx,
     head: VIdx,
     data: E,
 }
 
-impl<E> Edge<E> {
+impl<E> EdgeCore<E> {
     pub fn new(tail: VIdx, head: VIdx, data: E) -> Self {
         Self { tail, head, data }
     }
