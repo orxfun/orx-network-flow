@@ -1,25 +1,24 @@
-use crate::graphs::VIdx;
+use crate::graphs::{Edge, VIdx};
 
+#[derive(derive_new::new)]
 pub struct EdgeCore<E> {
     tail: VIdx,
     head: VIdx,
     data: E,
 }
 
-impl<E> EdgeCore<E> {
-    pub fn new(tail: VIdx, head: VIdx, data: E) -> Self {
-        Self { tail, head, data }
+impl<E> Edge for EdgeCore<E> {
+    type Data = E;
+
+    fn data(&self) -> &Self::Data {
+        &self.data
     }
 
-    pub fn tail(&self) -> VIdx {
+    fn tail(&self) -> VIdx {
         self.tail
     }
 
-    pub fn head(&self) -> VIdx {
+    fn head(&self) -> VIdx {
         self.head
-    }
-
-    pub fn data(&self) -> &E {
-        &self.data
     }
 }

@@ -1,5 +1,5 @@
 use crate::graphs::graph_core::{EdgeCore, VertexCore};
-use crate::graphs::{EIdx, GraphCore, VIdx, VecEdge, VecVertex};
+use crate::graphs::{EIdx, Edge, GraphCore, VIdx, VecEdge, VecVertex};
 
 pub struct GraphBuilder<V, E>(GraphCore<V, E>);
 
