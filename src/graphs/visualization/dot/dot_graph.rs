@@ -1,11 +1,14 @@
 use crate::graphs::{VIdx, visualization::dot::NodeSettings};
 use alloc::format;
 use alloc::string::String;
+use core::fmt::Display;
 
 pub trait DotGraph {
-    fn vertex_label(&self, v: VIdx) -> &str;
+    fn vertex_label(&self, v: VIdx) -> impl Display;
 
-    fn vertex_tooltip(&self, v: VIdx) -> Option<&str>;
+    fn vertex_tooltip(&self, _: VIdx) -> Option<impl Display> {
+        Option::<String>::None
+    }
 
     fn vertex_settings(&self, v: VIdx) -> &NodeSettings;
 

@@ -1,4 +1,4 @@
-use crate::graphs::graph_core::visualization::dot::{NodeShape, node_style::NodeStyle};
+use crate::graphs::graph_core::visualization::dot_zzz::{NodeShape, node_style::NodeStyle};
 use alloc::string::String;
 use core::fmt::Display;
 

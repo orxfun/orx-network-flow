@@ -11,7 +11,7 @@ mod in_edge;
 mod out_edge;
 
 mod vertex;
-// pub mod visualization;
+mod visualization;
 
 pub use builder::GraphBuilderCore;
 pub use edge::EdgeCore;
