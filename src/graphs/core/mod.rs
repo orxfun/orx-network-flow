@@ -8,7 +8,6 @@ mod graph;
 mod graph_core;
 mod graph_mut;
 mod vertex;
-mod visualization;
 
 pub use builder::GraphCoreBuilder;
 pub use edge::EdgeCore;

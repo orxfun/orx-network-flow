@@ -1,4 +1,7 @@
-use crate::graphs::{EIdx, Edge, VIdx, Vertex};
+use crate::graphs::{
+    EIdx, Edge, VIdx, Vertex,
+    visualization::dot::{DotGraphBasic, NodeSettings},
+};
 
 pub trait Graph {
     type Dv;
@@ -36,4 +39,13 @@ pub trait Graph {
     fn edge<'a>(&'a self, e: EIdx) -> Self::E<'a>
     where
         Self: 'a;
+
+    // visualization
+
+    fn as_basic_dot_graph(&self, custom_settings: Option<NodeSettings>) -> DotGraphBasic<'_, Self>
+    where
+        Self: Sized,
+    {
+        DotGraphBasic::new_with_settings(self, custom_settings.unwrap_or_default())
+    }
 }

@@ -1,6 +1,6 @@
-use orx_network_flow::graphs::VIdx;
 use orx_network_flow::graphs::core::GraphCore;
-use orx_network_flow::graphs::visualization::dot::{AsDotGraph, DotGraph};
+use orx_network_flow::graphs::visualization::dot::DotGraph;
+use orx_network_flow::graphs::{Graph, VIdx};
 
 fn main() {
     let vertices = (0..4).map(|_| ());
@@ -14,7 +14,7 @@ fn main() {
 
     let graph = builder.finish();
 
-    let dot = graph.as_dot_graph();
+    let dot = graph.as_basic_dot_graph(None);
     dot.create_svg_file("target/graph_core.dot", "target/graph_core.svg")
         .unwrap();
 

@@ -1,7 +1,7 @@
 use orx_network_flow::IdxCore;
 use orx_network_flow::graphs::core::GraphCore;
 use orx_network_flow::graphs::extended::GraphExtended;
-use orx_network_flow::graphs::visualization::dot::{AsDotGraph, DotGraph};
+use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::graphs::{Edge, Graph, VIdx};
 
 fn main() {
@@ -33,7 +33,7 @@ fn main() {
 
     let extended = builder.finish();
 
-    let dot = extended.as_dot_graph();
+    let dot = extended.as_basic_dot_graph(None);
     dot.create_svg_file("target/graph_extended.dot", "target/graph_extended.svg")
         .unwrap();
 
@@ -52,7 +52,7 @@ fn main() {
 
     let extended2 = builder.finish();
 
-    let dot = extended2.as_dot_graph();
+    let dot = extended2.as_basic_dot_graph(None);
     dot.create_svg_file("target/graph_extended2.dot", "target/graph_extended2.svg")
         .unwrap();
 
