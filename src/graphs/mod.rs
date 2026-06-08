@@ -10,4 +10,5 @@ pub mod visualization;
 pub use core::{GraphCore, GraphCoreBuilder};
 pub use edge::{EIdx, Edge, VecEdge};
 pub use graph::Graph;
+pub use graph_mut::GraphMut;
 pub use vertex::{VIdx, VecVertex, Vertex};

@@ -1,11 +1,10 @@
 use crate::graphs::core::EdgeCore;
 use crate::graphs::extended::graph_extended::GraphExtended;
-use crate::graphs::graph_mut::GraphMut;
-use crate::graphs::{EIdx, Graph, VIdx};
+use crate::graphs::{EIdx, Graph, GraphMut, VIdx};
 
 impl<'g, G, Dv, De> GraphMut for GraphExtended<'g, G, Dv, De>
 where
-    G: GraphMut,
+    G: Graph,
 {
     fn add_edge(&mut self, tail: VIdx, head: VIdx, data: Self::De) {
         let e = EIdx::from(self.e());

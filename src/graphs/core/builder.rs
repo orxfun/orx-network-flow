@@ -1,5 +1,6 @@
-use crate::graphs::core::{EdgeCore, VertexCore};
-use crate::graphs::{EIdx, GraphCore, VIdx, VecEdge, VecVertex};
+use crate::graphs::core::VertexCore;
+use crate::graphs::graph_mut::GraphMut;
+use crate::graphs::{GraphCore, VIdx, VecEdge, VecVertex};
 
 pub struct GraphCoreBuilder<Dv, De>(GraphCore<Dv, De>);
 
@@ -12,10 +13,7 @@ impl<Dv, De> GraphCoreBuilder<Dv, De> {
     }
 
     pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) {
-        let edges_idx = EIdx::from(self.0.edges.len());
-        self.0.edges.push(EdgeCore::new(tail, head, data));
-        self.0.vertices[tail].add_out_edge(edges_idx);
-        self.0.vertices[head].add_in_edge(edges_idx);
+        self.0.add_edge(tail, head, data);
     }
 
     pub fn finish(self) -> GraphCore<Dv, De> {

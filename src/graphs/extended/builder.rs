@@ -1,7 +1,7 @@
+use crate::graphs::extended::GraphExtended;
 use crate::graphs::extended::edge::OriEdge;
 use crate::graphs::extended::vertex::OriVertex;
-use crate::graphs::extended::{ExtEdge, ExtVertex, GraphExtended};
-use crate::graphs::{EIdx, Graph, VIdx, VecEdge, VecVertex};
+use crate::graphs::{EIdx, Graph, GraphMut, VIdx, VecEdge, VecVertex};
 
 pub struct GraphExtendedBuilder<'g, G, Dv, De>(GraphExtended<'g, G, Dv, De>)
 where
@@ -45,7 +45,9 @@ where
         Self(graph)
     }
 
-    pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) {}
+    pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) {
+        self.0.add_edge(tail, head, data);
+    }
 
     pub fn finish(self) -> GraphExtended<'g, G, Dv, De> {
         self.0
