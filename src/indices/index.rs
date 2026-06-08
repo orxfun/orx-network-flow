@@ -5,7 +5,7 @@ pub trait Idx:
 {
 }
 
-pub(crate) trait IdxCore {
+pub trait IdxCore {
     fn into_inner(self) -> usize;
 }
 

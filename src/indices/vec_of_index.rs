@@ -41,7 +41,7 @@ macro_rules! impl_vec_of_idx {
                 self.0.push(value);
             }
 
-            pub fn iter(&self) -> impl Iterator<Item = &T> {
+            pub fn iter(&self) -> impl ExactSizeIterator<Item = &T> {
                 self.0.iter()
             }
 

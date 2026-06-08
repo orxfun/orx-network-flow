@@ -4,4 +4,4 @@ mod vec_of_index;
 
 pub use idx_map::IdxMap;
 pub use index::Idx;
-pub(crate) use index::IdxCore;
+pub use index::IdxCore;
