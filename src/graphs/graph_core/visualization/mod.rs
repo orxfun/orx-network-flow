@@ -1,3 +1,5 @@
 // pub mod dot_zzz;
 
 mod dot;
+
+pub use dot::DotGraphCore;
