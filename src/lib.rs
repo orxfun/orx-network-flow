@@ -23,7 +23,7 @@ mod costs;
 mod flow_units;
 pub mod graphs;
 mod indices;
-mod networks;
+pub mod networks;
 mod problem;
 mod space_time;
 mod spaces;

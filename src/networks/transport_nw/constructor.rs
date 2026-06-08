@@ -6,7 +6,7 @@ use crate::transports::Transport;
 use crate::{IdxCore, Problem, Variant};
 use core::iter::Peekable;
 
-pub fn create_tr_nw<V: Variant>(p: &Problem<V>) -> TrNw<'_, V> {
+pub fn construct_tr_nw<V: Variant>(p: &Problem<V>) -> TrNw<'_, V> {
     let mut builder = GraphCore::builder();
 
     for t in p.transports.indices() {
