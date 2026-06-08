@@ -1,4 +1,4 @@
-use crate::graphs::{InEdge, OutEdge, VIdx, core::VertexCore};
+use crate::graphs::{EIdx, InEdge, OutEdge, VIdx, Vertex, core::VertexCore};
 use alloc::vec::Vec;
 
 pub struct OriVertex<V> {
@@ -11,4 +11,20 @@ pub struct OriVertex<V> {
 pub enum ExtVertex<V> {
     Ori(OriVertex<V>),
     New(VertexCore<V>),
+}
+
+impl<V> Vertex for ExtVertex<V> {
+    type Data = ();
+
+    fn data(&self) -> &Self::Data {
+        todo!()
+    }
+
+    fn out_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
+        core::iter::empty()
+    }
+
+    fn in_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
+        core::iter::empty()
+    }
 }
