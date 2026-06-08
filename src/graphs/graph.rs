@@ -9,6 +9,14 @@ pub trait Graph {
     where
         Self: 'a;
 
+    fn v(&self) -> usize {
+        self.vertices().len()
+    }
+
+    fn e(&self) -> usize {
+        self.edges().len()
+    }
+
     fn vertices(&self) -> impl ExactSizeIterator<Item = Self::V<'_>>;
 
     fn edges(&self) -> impl ExactSizeIterator<Item = Self::E<'_>>;
