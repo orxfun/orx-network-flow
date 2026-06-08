@@ -34,7 +34,7 @@ mod transports;
 mod vehicle_types;
 mod vehicles;
 
-pub use graph::visualization::dot::DotGraph;
+pub use graph::visualization;
 pub use graph::{EIdx, Graph, VIdx};
 pub use networks::CoreNw;
 pub use problem::{
