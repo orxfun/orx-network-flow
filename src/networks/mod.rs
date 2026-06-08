@@ -3,3 +3,5 @@
 
 // pub use core::CoreNw;
 mod transport_nw;
+
+pub use transport_nw::TrNw;
