@@ -1,4 +1,5 @@
 mod edge;
+mod graph;
 pub mod graph_core;
 mod graph_extended;
 mod in_edge;
