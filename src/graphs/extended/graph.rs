@@ -1,6 +1,4 @@
-use crate::graphs::extended::edge::ExtEdge;
-use crate::graphs::extended::graph_extended::GraphExtended;
-use crate::graphs::extended::vertex::ExtVertex;
+use crate::graphs::extended::{ExtEdge, ExtVertex, GraphExtended};
 use crate::graphs::{EIdx, Graph, VIdx};
 
 impl<'g, G, Dv, De> Graph for GraphExtended<'g, G, Dv, De>
