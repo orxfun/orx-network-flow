@@ -1,5 +1,5 @@
 use crate::graphs::graph_core::{EdgeCore, VertexCore};
-use crate::graphs::{EIdx, Edge, GraphCore, VIdx, VecEdge, VecVertex, Vertex};
+use crate::graphs::{EIdx, Edge, Graph, GraphCore, VIdx, VecEdge, VecVertex, Vertex};
 
 pub struct GraphBuilder<V, E>(GraphCore<V, E>);
 
@@ -13,14 +13,15 @@ impl<V, E> GraphBuilder<V, E> {
 
     pub fn edge(&mut self, data: E, tail: VIdx, head: VIdx) {
         let edges_idx = EIdx::from(self.0.edges.len());
-        let tail_out_edge_idx = self.0.vertices[tail].out_edges().len();
-        let head_in_edge_idx = self.0.vertices[head].in_edges().len();
+        let tail_out_edge_idx = self.0.vertex(tail).out_edges().len();
+        let head_in_edge_idx = self.0.vertex(head).in_edges().len();
         self.0.edges.push(EdgeCore::new(tail, head, data));
         self.0.vertices[tail].add_out_edge(edges_idx, head, head_in_edge_idx);
         self.0.vertices[head].add_in_edge(edges_idx, tail, tail_out_edge_idx);
     }
 
     pub fn validate(&self) {
+        let abc = 12;
         // let num_nodes = VIdx::from(self.0.vertices.len());
         // let num_edges = EIdx::from(self.0.edges.len());
 
