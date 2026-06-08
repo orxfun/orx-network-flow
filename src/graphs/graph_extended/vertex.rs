@@ -1,9 +1,9 @@
-use crate::graphs::{EIdx, Graph, InEdge, OutEdge, VIdx, Vertex};
+use crate::graphs::{EIdx, GraphCore, InEdge, OutEdge, VIdx, Vertex};
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 
 pub enum ExtVertex<'a, V, E, Ve> {
-    Core(&'a Graph<V, E>, &'a CoreVertex<V, E, Ve>),
+    Core(&'a GraphCore<V, E>, &'a CoreVertex<V, E, Ve>),
     Ext(&'a Vertex<Ve>),
 }
 
@@ -59,7 +59,7 @@ impl<'a, V, E, Ve> ExtVertex<'a, V, E, Ve> {
 }
 
 pub enum ExtVertexMut<'a, V, E, Ve> {
-    Core(&'a Graph<V, E>, &'a mut CoreVertex<V, E, Ve>),
+    Core(&'a GraphCore<V, E>, &'a mut CoreVertex<V, E, Ve>),
     Ext(&'a mut Vertex<Ve>),
 }
 

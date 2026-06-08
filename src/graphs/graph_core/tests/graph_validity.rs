@@ -1,9 +1,9 @@
-use crate::graphs::{Graph, VIdx, graph::visualization::dot::DotGraph};
+use crate::graphs::{GraphCore, VIdx, graph_core::visualization::dot::DotGraph};
 
 #[test]
 fn graph_validity() {
     let vertices = (0..4).map(|_| ());
-    let mut builder = Graph::<(), ()>::builder(vertices);
+    let mut builder = GraphCore::<(), ()>::builder(vertices);
 
     builder.edge((), VIdx::from(0), VIdx::from(1));
     builder.edge((), VIdx::from(0), VIdx::from(2));
@@ -17,7 +17,7 @@ fn graph_validity() {
 #[test]
 fn graph_dot_export() {
     let vertices = (0..3).map(|_| ());
-    let mut builder = Graph::<(), ()>::builder(vertices);
+    let mut builder = GraphCore::<(), ()>::builder(vertices);
     builder.edge((), VIdx::from(0), VIdx::from(1));
     builder.edge((), VIdx::from(1), VIdx::from(2));
 

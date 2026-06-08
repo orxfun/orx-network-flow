@@ -1,4 +1,4 @@
-use crate::graphs::Graph;
+use crate::graphs::GraphCore;
 use crate::networks::core::visualization::dot::{CoreNwDot, CoreNwDotSettings};
 use crate::networks::core::{edge::CoreNwEdge, vertex::CoreNwVertex};
 use crate::{Problem, Variant};
@@ -6,11 +6,11 @@ use crate::{Problem, Variant};
 #[derive(derive_new::new)]
 pub struct CoreNw<'a, V: Variant> {
     p: &'a Problem<V>,
-    graph: Graph<CoreNwVertex, CoreNwEdge>,
+    graph: GraphCore<CoreNwVertex, CoreNwEdge>,
 }
 
 impl<'a, V: Variant> CoreNw<'a, V> {
-    pub fn graph(&self) -> &Graph<CoreNwVertex, CoreNwEdge> {
+    pub fn graph(&self) -> &GraphCore<CoreNwVertex, CoreNwEdge> {
         &self.graph
     }
 

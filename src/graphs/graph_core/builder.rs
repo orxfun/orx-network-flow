@@ -1,12 +1,12 @@
-use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
+use crate::graphs::{EIdx, Edge, GraphCore, VIdx, VecEdge, VecVertex, Vertex};
 
-pub struct GraphBuilder<V, E>(Graph<V, E>);
+pub struct GraphBuilder<V, E>(GraphCore<V, E>);
 
 impl<V, E> GraphBuilder<V, E> {
     pub fn new(vertices: impl Iterator<Item = V>) -> Self {
         let vertices: VecVertex<_> = vertices.map(Vertex::new).collect();
         let edges = VecEdge::new();
-        let graph = Graph { vertices, edges };
+        let graph = GraphCore { vertices, edges };
         Self(graph)
     }
 
@@ -142,7 +142,7 @@ impl<V, E> GraphBuilder<V, E> {
         }
     }
 
-    pub fn finish(self) -> Graph<V, E> {
+    pub fn finish(self) -> GraphCore<V, E> {
         self.0
     }
 }

@@ -1,4 +1,4 @@
-use crate::graphs::Graph;
+use crate::graphs::GraphCore;
 #[cfg(feature = "std")]
 use alloc::{format, vec::Vec};
 #[cfg(feature = "std")]
@@ -6,7 +6,7 @@ use core::fmt::Debug;
 #[cfg(feature = "std")]
 use std::println;
 
-impl<N, E> Graph<N, E> {
+impl<N, E> GraphCore<N, E> {
     #[cfg(feature = "std")]
     pub fn print(&self)
     where

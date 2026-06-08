@@ -1,4 +1,4 @@
-use crate::graphs::{Graph, VIdx, Vertex};
+use crate::graphs::{GraphCore, VIdx, Vertex};
 use alloc::format;
 use alloc::string::{String, ToString};
 
@@ -7,7 +7,7 @@ pub trait DotGraph {
 
     type E;
 
-    fn graph(&self) -> &Graph<Self::V, Self::E>;
+    fn graph(&self) -> &GraphCore<Self::V, Self::E>;
 
     fn vertex_label(&self, v: VIdx, vertex: &Vertex<Self::V>) -> String;
 
@@ -41,12 +41,12 @@ pub trait DotGraph {
     }
 }
 
-impl DotGraph for Graph<(), ()> {
+impl DotGraph for GraphCore<(), ()> {
     type V = ();
 
     type E = ();
 
-    fn graph(&self) -> &Graph<Self::V, Self::E> {
+    fn graph(&self) -> &GraphCore<Self::V, Self::E> {
         self
     }
 

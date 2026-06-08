@@ -1,5 +1,5 @@
-use crate::graphs::graph::visualization::dot::DotGraph;
-use crate::graphs::{Graph, VIdx, Vertex};
+use crate::graphs::graph_core::visualization::dot::DotGraph;
+use crate::graphs::{GraphCore, VIdx, Vertex};
 use crate::networks::core::visualization::dot::settings::CoreNwDotSettings;
 use crate::networks::core::{CoreNwEdge, CoreNwVertex};
 use crate::{CoreNw, Problem, Variant};
@@ -35,7 +35,7 @@ impl<V: Variant> DotGraph for CoreNwDot<'_, V> {
 
     type E = CoreNwEdge;
 
-    fn graph(&self) -> &Graph<Self::V, Self::E> {
+    fn graph(&self) -> &GraphCore<Self::V, Self::E> {
         self.network.graph()
     }
 

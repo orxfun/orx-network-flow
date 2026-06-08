@@ -1,13 +1,13 @@
-use crate::graphs::graph::visualization::dot::DotGraph;
+use crate::graphs::graph_core::visualization::dot::DotGraph;
 use crate::graphs::graph_extended::ext_graph::ExtGraph;
-use crate::graphs::{Graph, VIdx, Vertex};
+use crate::graphs::{GraphCore, VIdx, Vertex};
 
 impl<'a, V, E, Ve, Ee> DotGraph for ExtGraph<'a, V, E, Ve, Ee> {
     type V = Ve;
 
     type E = Ee;
 
-    fn graph(&self) -> &Graph<Self::V, Self::E> {
+    fn graph(&self) -> &GraphCore<Self::V, Self::E> {
         todo!()
     }
 

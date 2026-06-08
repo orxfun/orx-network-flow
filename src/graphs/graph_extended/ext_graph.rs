@@ -1,10 +1,10 @@
 use crate::graphs::graph_extended::builder::ExtGraphBuilder;
 use crate::graphs::graph_extended::edge::CoreEdge;
 use crate::graphs::graph_extended::vertex::CoreVertex;
-use crate::graphs::{Edge, Graph, VecEdge, VecVertex, Vertex};
+use crate::graphs::{Edge, GraphCore, VecEdge, VecVertex, Vertex};
 
 pub struct ExtGraph<'a, V, E, Ve, Ee> {
-    pub(super) core: &'a Graph<V, E>,
+    pub(super) core: &'a GraphCore<V, E>,
     pub(super) core_vertices: VecVertex<CoreVertex<V, E, Ve>>,
     pub(super) core_edges: VecEdge<CoreEdge<Ee>>,
     pub(super) ext_vertices: VecVertex<Vertex<Ve>>,
@@ -13,7 +13,7 @@ pub struct ExtGraph<'a, V, E, Ve, Ee> {
 
 impl<'a, V, E, Ve, Ee> ExtGraph<'a, V, E, Ve, Ee> {
     pub fn builder(
-        core: &'a Graph<V, E>,
+        core: &'a GraphCore<V, E>,
         core_vertices: impl Iterator<Item = Ve>,
         core_edges: impl Iterator<Item = Ee>,
         ext_vertices: impl Iterator<Item = Ve>,

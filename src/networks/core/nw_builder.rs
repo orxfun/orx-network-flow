@@ -1,4 +1,4 @@
-use crate::graphs::{Graph, GraphBuilder, VIdx};
+use crate::graphs::{GraphBuilder, GraphCore, VIdx};
 use crate::indices::IdxCore;
 use crate::networks::core::connection::add_connection_edges;
 use crate::networks::core::waiting::add_waiting_edges;
@@ -21,7 +21,7 @@ impl<'a, V: Variant> CoreNwBuilder<'a, V> {
             .map(Transport::from)
             .map(CoreNwVertex::Transport);
 
-        let builder = Graph::builder(transports);
+        let builder = GraphCore::builder(transports);
 
         Self { p, builder }
     }

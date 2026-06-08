@@ -1,13 +1,13 @@
 use crate::graphs::graph_extended::vertex::{ExtVertex, ExtVertexMut};
 use crate::graphs::graph_extended::{edge::CoreEdge, ext_graph::ExtGraph, vertex::CoreVertex};
-use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
+use crate::graphs::{EIdx, Edge, GraphCore, VIdx, VecEdge, VecVertex, Vertex};
 use crate::indices::IdxCore;
 
 pub struct ExtGraphBuilder<'a, V, E, Ve, Ee>(ExtGraph<'a, V, E, Ve, Ee>);
 
 impl<'a, V, E, Ve, Ee> ExtGraphBuilder<'a, V, E, Ve, Ee> {
     pub fn new(
-        core: &'a Graph<V, E>,
+        core: &'a GraphCore<V, E>,
         core_vertices: impl Iterator<Item = Ve>,
         core_edges: impl Iterator<Item = Ee>,
         ext_vertices: impl Iterator<Item = Ve>,

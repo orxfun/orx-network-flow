@@ -1,4 +1,4 @@
-use crate::graphs::graph::visualization::dot::{NodeSettings, NodeShape, NodeStyle};
+use crate::graphs::graph_core::visualization::dot::{NodeSettings, NodeShape, NodeStyle};
 use alloc::string::ToString;
 
 pub struct CoreNwDotSettings {
