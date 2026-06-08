@@ -27,6 +27,7 @@ fn main() {
     builder.edge(45, v4, v5);
     builder.edge(14, VIdx::from(1), v4);
     builder.edge(52, v5, VIdx::from(2));
+    builder.edge(52, VIdx::from(3), VIdx::from(2));
 
     let extended = builder.finish();
 
