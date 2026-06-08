@@ -1,3 +1,4 @@
+use crate::graphs::core::VertexCore;
 use crate::graphs::extended::GraphExtended;
 use crate::graphs::extended::edge::OriEdge;
 use crate::graphs::extended::vertex::OriVertex;
@@ -43,6 +44,12 @@ where
         };
 
         Self(graph)
+    }
+
+    pub fn node(&mut self, data: Dv) -> VIdx {
+        let idx = self.0.v();
+        self.0.new_vertices.push(VertexCore::new(data));
+        VIdx::from(idx)
     }
 
     pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) {

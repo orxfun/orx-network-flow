@@ -20,7 +20,13 @@ fn main() {
     let core_edges = core
         .edges()
         .map(|e| e.head().into_inner() + e.tail().into_inner());
-    let builder = GraphExtended::<_, String, usize>::builder(&core, core_vertices, core_edges);
+    let mut builder = GraphExtended::<_, String, usize>::builder(&core, core_vertices, core_edges);
+
+    let v4 = builder.node("x".to_string());
+    let v5 = builder.node("y".to_string());
+    builder.edge(45, v4, v5);
+    builder.edge(14, VIdx::from(1), v4);
+    builder.edge(52, v5, VIdx::from(2));
 
     let extended = builder.finish();
 
