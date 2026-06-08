@@ -1,6 +1,6 @@
 use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::costs::Costs;
-use crate::networks::TrNw;
+use crate::networks::{TrNw, construct_tr_nw};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, Spaces};
@@ -106,7 +106,7 @@ impl<V: Variant> Problem<V> {
 
     // networks
 
-    pub fn construct_transport_nw(&self) -> TrNw<'_, V> {
-        TrNw::construct(self)
+    pub fn construct_transport_nw(&self) -> TrNw<V> {
+        construct_tr_nw(self)
     }
 }

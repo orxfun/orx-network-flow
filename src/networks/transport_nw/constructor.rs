@@ -6,7 +6,7 @@ use crate::transports::Transport;
 use crate::{IdxCore, Problem, Variant};
 use core::iter::Peekable;
 
-pub fn construct_tr_nw<V: Variant>(p: &Problem<V>) -> TrNw<'_, V> {
+pub fn construct_tr_nw<V: Variant>(p: &Problem<V>) -> TrNw<V> {
     let mut builder = GraphCore::builder();
 
     for t in p.transports.indices() {
@@ -16,8 +16,7 @@ pub fn construct_tr_nw<V: Variant>(p: &Problem<V>) -> TrNw<'_, V> {
     add_waiting_edges(p, &mut builder);
     add_connection_edges(p, &mut builder);
 
-    let graph = builder.finish();
-    TrNw::new(p, graph)
+    builder.finish()
 }
 
 fn into_vidx(t: Transport) -> VIdx {
