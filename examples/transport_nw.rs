@@ -1,3 +1,4 @@
+use orx_network_flow::graphs::{Graph, visualization::dot::DotGraph};
 use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
 
 struct MyVariant;
@@ -104,4 +105,10 @@ fn main() {
     builder.max_lateness().global(0i64);
 
     let problem = builder.finish();
+
+    let tr_nw = problem.construct_transport_nw();
+
+    let dot = tr_nw.graph().as_basic_dot_graph(None);
+    dot.create_svg_file("target/transport_nw.dot", "target/transport_nw.svg")
+        .unwrap();
 }

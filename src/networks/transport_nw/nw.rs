@@ -16,4 +16,8 @@ impl<'a, V: Variant> TrNw<'a, V> {
     pub fn construct(p: &'a Problem<V>) -> Self {
         construct_tr_nw(p)
     }
+
+    pub fn graph(&self) -> &GraphCore<TrDv, TrDe<V>> {
+        &self.graph
+    }
 }
