@@ -1,6 +1,6 @@
 use crate::graphs::core::{EdgeCore, VertexCore};
 use crate::graphs::extended::{edge::OriEdge, vertex::OriVertex};
-use crate::graphs::{Graph, VIdx, VecEdge, VecVertex};
+use crate::graphs::{EIdx, Graph, VIdx, VecEdge, VecVertex};
 use crate::indices::IdxCore;
 
 pub struct GraphExtended<'a, G, Dv, De>
@@ -23,6 +23,14 @@ where
         match v < self.core.v() {
             true => None,
             false => Some(VIdx::from(v - self.core.v())),
+        }
+    }
+
+    pub(super) fn new_e_idx(&self, e: EIdx) -> Option<EIdx> {
+        let e = e.into_inner();
+        match e < self.core.e() {
+            true => None,
+            false => Some(EIdx::from(e - self.core.e())),
         }
     }
 }

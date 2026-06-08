@@ -12,17 +12,17 @@ where
     pub(super) more_in_edges: Vec<EIdx>,
 }
 
-pub enum ExtVertex<'a, Vc, Dv>
+pub enum ExtVertex<'a, 'g, Vc, Dv>
 where
     Vc: Vertex,
 {
-    Ori(OriVertex<'a, Vc, Dv>),
+    Ori(&'a OriVertex<'g, Vc, Dv>),
     New(&'a VertexCore<Dv>),
 }
 
-impl<'a, Vc, Dv> Vertex for ExtVertex<'a, Vc, Dv>
+impl<'a, 'g, Vc, Dv> Vertex for ExtVertex<'a, 'g, Vc, Dv>
 where
-    Vc: Vertex + 'a,
+    Vc: Vertex + 'g,
 {
     type Data = Dv;
 

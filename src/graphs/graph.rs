@@ -29,7 +29,11 @@ pub trait Graph {
         (0..self.e()).map(EIdx::from)
     }
 
-    fn vertex(&self, v: VIdx) -> Self::V<'_>;
+    fn vertex<'a>(&'a self, v: VIdx) -> Self::V<'a>
+    where
+        Self: 'a;
 
-    fn edge(&self, e: EIdx) -> Self::E<'_>;
+    fn edge<'a>(&'a self, e: EIdx) -> Self::E<'a>
+    where
+        Self: 'a;
 }

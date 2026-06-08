@@ -32,11 +32,17 @@ impl<Dv, De> Graph for GraphCore<Dv, De> {
         self.edges.iter()
     }
 
-    fn vertex(&self, v: VIdx) -> Self::V<'_> {
+    fn vertex<'a>(&'a self, v: VIdx) -> Self::V<'a>
+    where
+        Self: 'a,
+    {
         &self.vertices[v]
     }
 
-    fn edge(&self, e: EIdx) -> Self::E<'_> {
+    fn edge<'a>(&'a self, e: EIdx) -> Self::E<'a>
+    where
+        Self: 'a,
+    {
         &self.edges[e]
     }
 }

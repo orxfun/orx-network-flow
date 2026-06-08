@@ -12,7 +12,7 @@ pub enum ExtEdge<'a, Ec, De>
 where
     Ec: Edge,
 {
-    Ori(OriEdge<'a, Ec, De>),
+    Ori(&'a OriEdge<'a, Ec, De>),
     New(&'a EdgeCore<De>),
 }
 

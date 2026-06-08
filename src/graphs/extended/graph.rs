@@ -12,12 +12,12 @@ where
     type De = De;
 
     type V<'a>
-        = ExtVertex<'a, G::V<'a>, Dv>
+        = ExtVertex<'a, 'g, G::V<'g>, Dv>
     where
         Self: 'a;
 
     type E<'a>
-        = ExtEdge<'a, G::E<'a>, De>
+        = ExtEdge<'a, G::E<'g>, De>
     where
         Self: 'a;
 
@@ -37,11 +37,23 @@ where
         core::iter::empty()
     }
 
-    fn vertex(&self, v: VIdx) -> Self::V<'_> {
-        todo!()
+    fn vertex<'a>(&'a self, v: VIdx) -> Self::V<'a>
+    where
+        Self: 'a,
+    {
+        match self.new_v_idx(v) {
+            None => ExtVertex::Ori(&self.core_vertices[v]),
+            Some(n) => ExtVertex::New(&self.new_vertices[n]),
+        }
     }
 
-    fn edge(&self, e: EIdx) -> Self::E<'_> {
-        todo!()
+    fn edge<'a>(&'a self, e: EIdx) -> Self::E<'a>
+    where
+        Self: 'a,
+    {
+        match self.new_e_idx(e) {
+            None => ExtEdge::Ori(&self.core_edges[e]),
+            Some(n) => ExtEdge::New(&self.new_edges[n]),
+        }
     }
 }
