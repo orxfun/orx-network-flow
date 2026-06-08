@@ -1,6 +1,5 @@
 use crate::graphs::core::{EdgeCore, VertexCore};
-use crate::graphs::extended::builder::GraphExtendedBuilder;
-use crate::graphs::extended::{edge::OriEdge, vertex::OriVertex};
+use crate::graphs::extended::{GraphExtendedBuilder, edge::OriEdge, vertex::OriVertex};
 use crate::graphs::{EIdx, Graph, VIdx, VecEdge, VecVertex};
 use crate::indices::IdxCore;
 

@@ -35,6 +35,7 @@ mod vehicle_types;
 mod vehicles;
 
 // pub use networks::CoreNw;
+pub use indices::{Idx, IdxCore};
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
