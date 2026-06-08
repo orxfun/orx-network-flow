@@ -1,4 +1,5 @@
 use crate::graphs::core::{EdgeCore, VertexCore};
+use crate::graphs::extended::builder::GraphExtendedBuilder;
 use crate::graphs::extended::{edge::OriEdge, vertex::OriVertex};
 use crate::graphs::{EIdx, Graph, VIdx, VecEdge, VecVertex};
 use crate::indices::IdxCore;
@@ -18,6 +19,14 @@ impl<'a, G, Dv, De> GraphExtended<'a, G, Dv, De>
 where
     G: Graph,
 {
+    pub fn builder(
+        core: &'a G,
+        core_vertices: impl IntoIterator<Item = Dv>,
+        core_edges: impl IntoIterator<Item = De>,
+    ) -> GraphExtendedBuilder<'a, G, Dv, De> {
+        GraphExtendedBuilder::new(core, core_vertices, core_edges)
+    }
+
     pub(super) fn new_v_idx(&self, v: VIdx) -> Option<VIdx> {
         let v = v.into_inner();
         match v < self.core.v() {

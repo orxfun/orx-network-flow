@@ -1,5 +1,6 @@
 use orx_network_flow::graphs::VIdx;
 use orx_network_flow::graphs::core::GraphCore;
+use orx_network_flow::graphs::extended::GraphExtended;
 use orx_network_flow::graphs::visualization::dot::{AsDotGraph, DotGraph};
 
 fn main() {
