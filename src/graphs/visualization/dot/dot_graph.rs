@@ -47,6 +47,8 @@ pub trait DotGraph {
             dot.push('\n');
         }
 
+        dot.push('}');
+
         dot
     }
 

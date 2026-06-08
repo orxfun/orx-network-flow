@@ -15,6 +15,8 @@ fn main() {
     let graph = builder.finish();
 
     let dot = graph.as_dot_graph();
+    dot.create_svg_file("target/graph_core.dot", "target/graph_core.svg")
+        .unwrap();
 
     graph.print();
 
