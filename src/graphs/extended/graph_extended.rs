@@ -1,4 +1,6 @@
-use crate::graphs::{Edge, Graph, VecVertex, Vertex, extended::vertex::OriVertex};
+use crate::graphs::core::{EdgeCore, VertexCore};
+use crate::graphs::extended::{edge::OriEdge, vertex::OriVertex};
+use crate::graphs::{Graph, VecEdge, VecVertex};
 
 pub struct GraphExtended<'a, G, Dv, De>
 where
@@ -6,12 +8,7 @@ where
 {
     pub(super) core: &'a G,
     pub(super) core_vertices: VecVertex<OriVertex<'a, G::V<'a>, Dv>>,
-
-    // pub(super) core_edges: VecVertex<OriVertex<V>>,
-
-    // abc
-    x: (Dv, De), // pub(super) core_vertices: VecVertex<CoreVertex<V, E, Ve>>,
-                 // pub(super) core_edges: VecEdge<CoreEdge<Ee>>,
-                 // pub(super) ext_vertices: VecVertex<Vertex<Ve>>,
-                 // pub(super) ext_edges: VecEdge<Edge<Ee>>,
+    pub(super) core_edges: VecEdge<OriEdge<'a, G::E<'a>, De>>,
+    pub(super) new_vertices: VecVertex<VertexCore<Dv>>,
+    pub(super) new_edges: VecEdge<EdgeCore<De>>,
 }
