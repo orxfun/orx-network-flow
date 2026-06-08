@@ -5,8 +5,11 @@ use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::graphs::{Edge, Graph, VIdx};
 
 fn main() {
-    let vertices = (0..4).map(|_| ());
-    let mut builder = GraphCore::<(), ()>::builder(vertices);
+    let mut builder = GraphCore::<(), ()>::builder();
+
+    for _ in 0..4 {
+        builder.node(());
+    }
 
     builder.edge((), VIdx::from(0), VIdx::from(1));
     builder.edge((), VIdx::from(0), VIdx::from(2));
