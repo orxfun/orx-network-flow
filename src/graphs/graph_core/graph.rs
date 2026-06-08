@@ -1,4 +1,4 @@
-use crate::graphs::{Edge, GraphBuilder, VIdx, VecEdge, VecVertex, Vertex};
+use crate::graphs::{Edge, GraphBuilder, VIdx, VecEdge, VecVertex, Vertex, graph::Graph};
 
 pub struct GraphCore<V, E> {
     pub(super) vertices: VecVertex<Vertex<V>>,
@@ -22,3 +22,17 @@ impl<V, E> GraphCore<V, E> {
         &self.vertices[vidx]
     }
 }
+
+// impl<V, E> Graph for GraphCore<V, E> {
+//     type V = V;
+
+//     type E = E;
+
+//     fn vertex(&self, v: crate::graphs::vertex::VIdx) -> &Vertex<Self::V> {
+//         todo!()
+//     }
+
+//     fn edge(&self, e: crate::graphs::edge::EIdx) -> &Edge<Self::E> {
+//         todo!()
+//     }
+// }

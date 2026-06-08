@@ -1,4 +1,4 @@
-use crate::graphs::{Edge, Vertex, edge::EIdx, vertex::VIdx};
+use crate::graphs::{EIdx, Edge, VIdx, Vertex};
 
 pub trait Graph {
     type V;

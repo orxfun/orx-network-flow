@@ -1,4 +1,4 @@
-use crate::graphs::{edge::EIdx, vertex::VIdx};
+use crate::graphs::{EIdx, VIdx};
 
 pub struct OutEdge {
     edges_idx: EIdx,
