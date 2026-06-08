@@ -108,7 +108,7 @@ fn main() {
 
     let tr_nw = problem.construct_transport_nw();
 
-    let dot = tr_nw.as_basic_dot_graph(None);
+    let dot = tr_nw.as_dot_graph(&problem, None);
     dot.create_svg_file("target/transport_nw.dot", "target/transport_nw.svg")
         .unwrap();
 }
