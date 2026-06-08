@@ -1,10 +1,10 @@
 use crate::graphs::{EIdx, Vertex};
 use alloc::vec::Vec;
 
-pub struct VertexCore<V> {
+pub struct VertexCore<D> {
     out_edges: Vec<EIdx>,
     in_edges: Vec<EIdx>,
-    data: V,
+    data: D,
 }
 
 impl<V> VertexCore<V> {
@@ -32,11 +32,19 @@ impl<V> Vertex for VertexCore<V> {
         &self.data
     }
 
-    fn out_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
+    fn out_edges(&self) -> impl Iterator<Item = EIdx> {
         self.out_edges.iter().copied()
     }
 
-    fn in_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
+    fn in_edges(&self) -> impl Iterator<Item = EIdx> {
         self.in_edges.iter().copied()
+    }
+
+    fn len_out_edges(&self) -> usize {
+        self.out_edges.len()
+    }
+
+    fn len_in_edges(&self) -> usize {
+        self.in_edges.len()
     }
 }
