@@ -1,9 +1,9 @@
 use crate::graphs::graph_core::{EdgeCore, VertexCore};
 use crate::graphs::{EIdx, Edge, Graph, GraphCore, VIdx, VecEdge, VecVertex, Vertex};
 
-pub struct GraphBuilder<V, E>(GraphCore<V, E>);
+pub struct GraphBuilderCore<V, E>(GraphCore<V, E>);
 
-impl<V, E> GraphBuilder<V, E> {
+impl<V, E> GraphBuilderCore<V, E> {
     pub fn new(vertices: impl Iterator<Item = V>) -> Self {
         let vertices: VecVertex<_> = vertices.map(VertexCore::new).collect();
         let edges = VecEdge::new();

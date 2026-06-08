@@ -17,13 +17,13 @@ impl<V> VertexCore<V> {
         }
     }
 
-    pub fn add_out_edge(&mut self, edges_idx: EIdx, head: VIdx, head_in_edge_idx: usize) {
-        let out_edge = OutEdge::new(edges_idx, head, head_in_edge_idx);
+    pub fn add_out_edge(&mut self, edges_idx: EIdx, head: VIdx, head_in_edge_pos: usize) {
+        let out_edge = OutEdge::new(edges_idx, head, head_in_edge_pos);
         self.out_edges.push(out_edge);
     }
 
-    pub fn add_in_edge(&mut self, edges_idx: EIdx, tail: VIdx, tail_out_edge_idx: usize) {
-        let in_edge = InEdge::new(edges_idx, tail, tail_out_edge_idx);
+    pub fn add_in_edge(&mut self, edges_idx: EIdx, tail: VIdx, tail_out_edge_pos: usize) {
+        let in_edge = InEdge::new(edges_idx, tail, tail_out_edge_pos);
         self.in_edges.push(in_edge);
     }
 }
