@@ -1,3 +1,4 @@
+mod as_dot_graph;
 mod dot_graph;
 mod node_settings;
 mod node_shape;
