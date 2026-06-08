@@ -1,4 +1,4 @@
-use crate::graphs::{EIdx, InEdge, OutEdge, VIdx, Vertex};
+use crate::graphs::{EIdx, Vertex};
 use alloc::vec::Vec;
 
 pub struct VertexCore<V> {
