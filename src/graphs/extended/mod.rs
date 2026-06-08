@@ -4,6 +4,7 @@ mod graph;
 mod graph_extended;
 mod graph_mut;
 mod vertex;
+mod visualization;
 
 pub use builder::GraphExtendedBuilder;
 pub use edge::ExtEdge;
