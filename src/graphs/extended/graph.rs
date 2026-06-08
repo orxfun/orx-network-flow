@@ -22,11 +22,11 @@ where
         Self: 'a;
 
     fn v(&self) -> usize {
-        0
+        self.core.v() + self.new_vertices.len()
     }
 
     fn e(&self) -> usize {
-        0
+        self.core.e() + self.new_edges.len()
     }
 
     fn vertices(&self) -> impl Iterator<Item = Self::V<'_>> {
