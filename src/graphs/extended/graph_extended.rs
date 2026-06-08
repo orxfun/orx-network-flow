@@ -1,4 +1,4 @@
-use crate::graphs::{Graph, VecVertex, core::VertexCore, extended::vertex::OriVertex};
+use crate::graphs::{Graph, VecVertex, extended::vertex::OriVertex};
 
 pub struct GraphExtended<'a, G, Vc, Ec, V, E>
 where
