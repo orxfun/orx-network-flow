@@ -1,16 +1,16 @@
-use crate::graphs::{Graph, VecVertex, extended::vertex::OriVertex};
+use crate::graphs::{Edge, Graph, VecVertex, Vertex, extended::vertex::OriVertex};
 
-pub struct GraphExtended<'a, G, Vc, Ec, V, E>
+pub struct GraphExtended<'a, G, Dv, De>
 where
-    G: Graph<V = Vc, E = Ec>,
+    G: Graph,
 {
     pub(super) core: &'a G,
-    // pub(super) core_vertices: VecVertex<OriVertex<V>>,
+    // pub(super) core_vertices: VecVertex<OriVertex<'a, Vc, V>>,
     // pub(super) core_edges: VecVertex<OriVertex<V>>,
 
     // abc
-    x: (V, E), // pub(super) core_vertices: VecVertex<CoreVertex<V, E, Ve>>,
-               // pub(super) core_edges: VecEdge<CoreEdge<Ee>>,
-               // pub(super) ext_vertices: VecVertex<Vertex<Ve>>,
-               // pub(super) ext_edges: VecEdge<Edge<Ee>>,
+    x: (Dv, De), // pub(super) core_vertices: VecVertex<CoreVertex<V, E, Ve>>,
+                 // pub(super) core_edges: VecEdge<CoreEdge<Ee>>,
+                 // pub(super) ext_vertices: VecVertex<Vertex<Ve>>,
+                 // pub(super) ext_edges: VecEdge<Edge<Ee>>,
 }

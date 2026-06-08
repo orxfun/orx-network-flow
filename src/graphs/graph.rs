@@ -29,3 +29,7 @@ pub trait Graph {
 
     fn edge(&self, e: EIdx) -> &Self::E;
 }
+
+pub type VertexDataOf<G> = <<G as Graph>::V as Vertex>::Data;
+
+pub type EdgeDataOf<G> = <<G as Graph>::V as Edge>::Data;

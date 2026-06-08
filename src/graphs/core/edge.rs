@@ -1,10 +1,10 @@
 use crate::graphs::{Edge, VIdx};
 
 #[derive(derive_new::new)]
-pub struct EdgeCore<E> {
+pub struct EdgeCore<De> {
     tail: VIdx,
     head: VIdx,
-    data: E,
+    data: De,
 }
 
 impl<E> Edge for EdgeCore<E> {

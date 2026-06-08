@@ -1,10 +1,10 @@
 use crate::graphs::core::{EdgeCore, GraphCore, VertexCore};
 use crate::graphs::{EIdx, Graph, VIdx};
 
-impl<V, E> Graph for GraphCore<V, E> {
-    type V = VertexCore<V>;
+impl<Dv, De> Graph for GraphCore<Dv, De> {
+    type V = VertexCore<Dv>;
 
-    type E = EdgeCore<E>;
+    type E = EdgeCore<De>;
 
     fn vertices(&self) -> impl ExactSizeIterator<Item = &Self::V> {
         self.vertices.iter()

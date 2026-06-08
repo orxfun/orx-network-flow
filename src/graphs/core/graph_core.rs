@@ -3,17 +3,17 @@ use crate::graphs::core::visualization::DotGraphCore;
 use crate::graphs::visualization::dot::NodeSettings;
 use crate::graphs::{GraphBuilderCore, VecEdge, VecVertex, core::vertex::VertexCore};
 
-pub struct GraphCore<V, E> {
-    pub(super) vertices: VecVertex<VertexCore<V>>,
-    pub(super) edges: VecEdge<EdgeCore<E>>,
+pub struct GraphCore<Dv, De> {
+    pub(super) vertices: VecVertex<VertexCore<Dv>>,
+    pub(super) edges: VecEdge<EdgeCore<De>>,
 }
 
-impl<V, E> GraphCore<V, E> {
-    pub fn builder(vertices: impl Iterator<Item = V>) -> GraphBuilderCore<V, E> {
+impl<Dv, De> GraphCore<Dv, De> {
+    pub fn builder(vertices: impl Iterator<Item = Dv>) -> GraphBuilderCore<Dv, De> {
         GraphBuilderCore::new(vertices)
     }
 
-    pub fn dot_graph(&self, settings: Option<NodeSettings>) -> DotGraphCore<'_, V, E> {
+    pub fn dot_graph(&self, settings: Option<NodeSettings>) -> DotGraphCore<'_, Dv, De> {
         DotGraphCore::new(self, settings.unwrap_or_default())
     }
 }

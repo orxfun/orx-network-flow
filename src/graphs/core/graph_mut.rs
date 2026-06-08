@@ -2,7 +2,7 @@ use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::graph_mut::GraphMut;
 use crate::graphs::{EIdx, Edge, Graph, VIdx};
 
-impl<V, E> GraphMut for GraphCore<V, E> {
+impl<Dv, De> GraphMut for GraphCore<Dv, De> {
     fn add_edge(&mut self, tail: VIdx, head: VIdx, data: <Self::E as Edge>::Data) {
         let e = EIdx::from(self.e());
 

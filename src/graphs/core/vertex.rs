@@ -1,10 +1,10 @@
 use crate::graphs::{EIdx, Vertex};
 use alloc::vec::Vec;
 
-pub struct VertexCore<D> {
+pub struct VertexCore<Dv> {
     out_edges: Vec<EIdx>,
     in_edges: Vec<EIdx>,
-    data: D,
+    data: Dv,
 }
 
 impl<V> VertexCore<V> {

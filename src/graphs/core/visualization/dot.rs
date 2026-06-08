@@ -4,12 +4,12 @@ use alloc::string::ToString;
 use core::fmt::Display;
 
 #[derive(derive_new::new)]
-pub struct DotGraphCore<'a, V, E> {
-    graph: &'a GraphCore<V, E>,
+pub struct DotGraphCore<'a, Dv, De> {
+    graph: &'a GraphCore<Dv, De>,
     settings: NodeSettings,
 }
 
-impl<V, E> DotGraph for DotGraphCore<'_, V, E> {
+impl<Dv, De> DotGraph for DotGraphCore<'_, Dv, De> {
     fn vertex_label(&self, v: VIdx) -> impl Display {
         v.to_string()
     }

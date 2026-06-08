@@ -1,10 +1,5 @@
 use crate::graphs::{EIdx, Edge, VIdx, core::EdgeCore};
 
-pub struct OriEdge2<E> {
-    pub(super) core_e: EIdx,
-    pub(super) ext_data: E,
-}
-
 pub struct OriEdge<'a, Ec, D>
 where
     Ec: Edge,

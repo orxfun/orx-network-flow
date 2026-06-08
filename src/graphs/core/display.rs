@@ -6,11 +6,11 @@ use core::fmt::Debug;
 #[cfg(feature = "std")]
 use std::println;
 
-impl<N, E> GraphCore<N, E> {
+impl<Dv, De> GraphCore<Dv, De> {
     #[cfg(feature = "std")]
     pub fn print(&self)
     where
-        E: Debug,
+        De: Debug,
     {
         let headers = ["index", "tail", "head", "data"];
         let mut rows: Vec<[alloc::string::String; 4]> = Vec::with_capacity(self.edges.len());
