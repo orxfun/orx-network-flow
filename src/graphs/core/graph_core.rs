@@ -7,7 +7,7 @@ pub struct GraphCore<Dv, De> {
 }
 
 impl<Dv, De> GraphCore<Dv, De> {
-    pub fn builder(vertices: impl Iterator<Item = Dv>) -> GraphCoreBuilder<Dv, De> {
-        GraphCoreBuilder::new(vertices)
+    pub fn builder() -> GraphCoreBuilder<Dv, De> {
+        GraphCoreBuilder::new()
     }
 }

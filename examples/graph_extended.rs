@@ -5,8 +5,11 @@ use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::graphs::{Edge, Graph, VIdx};
 
 fn main() {
-    let vertices = (0..4).map(|_| ());
-    let mut builder = GraphCore::<(), ()>::builder(vertices);
+    let mut builder = GraphCore::<(), ()>::builder();
+
+    for _ in 0..4 {
+        builder.vertex(());
+    }
 
     builder.edge((), VIdx::from(0), VIdx::from(1));
     builder.edge((), VIdx::from(0), VIdx::from(2));
@@ -24,8 +27,8 @@ fn main() {
         .map(|e| e.head().into_inner() + e.tail().into_inner());
     let mut builder = GraphExtended::<_, String, usize>::builder(&core, core_vertices, core_edges);
 
-    let v4 = builder.node("x".to_string());
-    let v5 = builder.node("y".to_string());
+    let v4 = builder.vertex("x".to_string());
+    let v5 = builder.vertex("y".to_string());
     builder.edge(45, v4, v5);
     builder.edge(14, VIdx::from(1), v4);
     builder.edge(52, v5, VIdx::from(2));
@@ -46,7 +49,7 @@ fn main() {
     let mut builder =
         GraphExtended::<_, String, usize>::builder(&extended, core_vertices, core_edges);
 
-    let v6 = builder.node("z".to_string());
+    let v6 = builder.vertex("z".to_string());
     builder.edge(99, v4, v6);
     builder.edge(99, v5, v6);
 

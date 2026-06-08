@@ -46,14 +46,16 @@ where
         Self(graph)
     }
 
-    pub fn node(&mut self, data: Dv) -> VIdx {
+    pub fn vertex(&mut self, data: Dv) -> VIdx {
         let idx = self.0.v();
         self.0.new_vertices.push(VertexCore::new(data));
         VIdx::from(idx)
     }
 
-    pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) {
+    pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) -> EIdx {
+        let idx = EIdx::from(self.0.e());
         self.0.add_edge(tail, head, data);
+        idx
     }
 
     pub fn finish(self) -> GraphExtended<'g, G, Dv, De> {

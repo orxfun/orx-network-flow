@@ -1,5 +1,6 @@
 use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::costs::Costs;
+use crate::networks::{TrNw, construct_tr_nw};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, Spaces};
@@ -101,5 +102,11 @@ impl<V: Variant> Problem<V> {
 
     pub(crate) fn vehicle_by_idx(&self, t: Vehicle) -> &VehicleData {
         self.vehicles.get_by_idx(t).expect("validated problem")
+    }
+
+    // networks
+
+    pub fn construct_transport_nw(&self) -> TrNw<V> {
+        construct_tr_nw(self)
     }
 }
