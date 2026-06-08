@@ -1,6 +1,6 @@
 use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::graph_mut::GraphMut;
-use crate::graphs::{EIdx, Edge, Graph, VIdx};
+use crate::graphs::{EIdx, Graph, VIdx};
 
 impl<Dv, De> GraphMut for GraphCore<Dv, De> {
     fn add_edge(&mut self, tail: VIdx, head: VIdx, data: Self::De) {

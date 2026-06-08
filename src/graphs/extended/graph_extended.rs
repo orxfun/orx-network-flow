@@ -5,7 +5,8 @@ where
     G: Graph,
 {
     pub(super) core: &'a G,
-    // pub(super) core_vertices: VecVertex<OriVertex<'a, Vc, V>>,
+    pub(super) core_vertices: VecVertex<OriVertex<'a, G::V<'a>, Dv>>,
+
     // pub(super) core_edges: VecVertex<OriVertex<V>>,
 
     // abc
