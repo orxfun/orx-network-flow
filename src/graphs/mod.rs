@@ -7,7 +7,7 @@ mod graph_mut;
 mod vertex;
 pub mod visualization;
 
-pub use core::{GraphBuilderCore, GraphCore};
+pub use core::{GraphCore, GraphCoreBuilder};
 pub use edge::{EIdx, Edge, VecEdge};
 pub use graph::Graph;
 pub use vertex::{VIdx, VecVertex, Vertex};

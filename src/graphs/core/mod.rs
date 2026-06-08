@@ -10,7 +10,7 @@ mod graph_mut;
 mod vertex;
 mod visualization;
 
-pub use builder::GraphBuilderCore;
+pub use builder::GraphCoreBuilder;
 pub use edge::EdgeCore;
 pub use graph_core::GraphCore;
 pub use vertex::VertexCore;
