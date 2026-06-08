@@ -1,11 +1,11 @@
 use crate::graphs::{EIdx, Edge, VIdx, Vertex};
 
-pub trait Graph {
-    type V;
+// pub trait Graph {
+//     type V;
 
-    type E;
+//     type E;
 
-    fn vertex(&self, v: VIdx) -> &Vertex<Self::V>;
+//     fn vertex(&self, v: VIdx) -> &Vertex<Self::V>;
 
-    fn edge(&self, e: EIdx) -> &Edge<Self::E>;
-}
+//     fn edge(&self, e: EIdx) -> &Edge<Self::E>;
+// }
