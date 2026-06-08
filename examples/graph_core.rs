@@ -6,7 +6,7 @@ fn main() {
     let mut builder = GraphCore::<(), ()>::builder();
 
     for _ in 0..4 {
-        builder.node(());
+        builder.vertex(());
     }
 
     builder.edge((), VIdx::from(0), VIdx::from(1));
