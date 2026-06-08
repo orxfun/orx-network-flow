@@ -1,5 +1,6 @@
 pub mod core;
 mod edge;
+pub mod extended;
 mod graph;
 mod graph_mut;
 // mod graph_extended;
