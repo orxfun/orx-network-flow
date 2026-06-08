@@ -1,4 +1,4 @@
-use crate::graphs::graph_core::{EdgeCore, VertexCore};
+use crate::graphs::core::{EdgeCore, VertexCore};
 use crate::graphs::{EIdx, Graph, GraphCore, VIdx, VecEdge, VecVertex, Vertex};
 
 pub struct GraphBuilderCore<V, E>(GraphCore<V, E>);

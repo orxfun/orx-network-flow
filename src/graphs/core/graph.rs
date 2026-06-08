@@ -1,4 +1,4 @@
-use crate::graphs::graph_core::{EdgeCore, GraphCore, VertexCore};
+use crate::graphs::core::{EdgeCore, GraphCore, VertexCore};
 use crate::graphs::{EIdx, Graph, VIdx};
 
 impl<V, E> Graph for GraphCore<V, E> {

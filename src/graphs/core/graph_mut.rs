@@ -1,4 +1,4 @@
-use crate::graphs::graph_core::{EdgeCore, GraphCore};
+use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::graph_mut::GraphMut;
 use crate::graphs::{EIdx, Edge, Graph, VIdx, Vertex};
 

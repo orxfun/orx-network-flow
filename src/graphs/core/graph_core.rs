@@ -1,7 +1,7 @@
-use crate::graphs::graph_core::EdgeCore;
-use crate::graphs::graph_core::visualization::DotGraphCore;
+use crate::graphs::core::EdgeCore;
+use crate::graphs::core::visualization::DotGraphCore;
 use crate::graphs::visualization::dot::NodeSettings;
-use crate::graphs::{GraphBuilderCore, VecEdge, VecVertex, graph_core::vertex::VertexCore};
+use crate::graphs::{GraphBuilderCore, VecEdge, VecVertex, core::vertex::VertexCore};
 
 pub struct GraphCore<V, E> {
     pub(super) vertices: VecVertex<VertexCore<V>>,
