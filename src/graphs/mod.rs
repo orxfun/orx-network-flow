@@ -4,6 +4,7 @@ pub mod graph_core;
 mod graph_mut;
 // mod graph_extended;
 mod vertex;
+pub mod visualization;
 
 pub use edge::{EIdx, Edge, VecEdge};
 pub use graph::Graph;
