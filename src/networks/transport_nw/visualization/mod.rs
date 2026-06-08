@@ -1,1 +1,1 @@
-mod dot;
+pub mod dot;
