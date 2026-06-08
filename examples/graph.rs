@@ -11,7 +11,6 @@ fn main() {
     builder.edge((), VIdx::from(1), VIdx::from(3));
     builder.edge((), VIdx::from(2), VIdx::from(3));
 
-    builder.validate();
     let graph = builder.finish();
 
     let dot = graph.as_dot_graph();
