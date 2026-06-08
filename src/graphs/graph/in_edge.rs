@@ -1,4 +1,4 @@
-use crate::graph::{edge::EIdx, vertex::VIdx};
+use crate::graphs::{EIdx, VIdx};
 
 pub struct InEdge {
     edges_idx: EIdx,

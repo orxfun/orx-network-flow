@@ -1,6 +1,4 @@
-use crate::graph::edge::{EIdx, VecEdge};
-use crate::graph::vertex::{VIdx, VecVertex, Vertex};
-use crate::graph::{edge::Edge, graph::Graph};
+use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 
 pub struct GraphBuilder<V, E>(Graph<V, E>);
 

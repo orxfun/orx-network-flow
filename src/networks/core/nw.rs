@@ -1,6 +1,7 @@
+use crate::graphs::Graph;
 use crate::networks::core::visualization::dot::{CoreNwDot, CoreNwDotSettings};
 use crate::networks::core::{edge::CoreNwEdge, vertex::CoreNwVertex};
-use crate::{Graph, Problem, Variant};
+use crate::{Problem, Variant};
 
 #[derive(derive_new::new)]
 pub struct CoreNw<'a, V: Variant> {

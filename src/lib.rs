@@ -20,8 +20,7 @@ mod commodities;
 mod cost;
 mod costs;
 mod flow_units;
-mod graph;
-mod graph_extended;
+mod graphs;
 mod indices;
 mod networks;
 mod problem;
@@ -34,8 +33,6 @@ mod transports;
 mod vehicle_types;
 mod vehicles;
 
-pub use graph::visualization;
-pub use graph::{EIdx, Graph, VIdx};
 pub use networks::CoreNw;
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,

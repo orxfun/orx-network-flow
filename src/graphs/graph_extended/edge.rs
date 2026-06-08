@@ -1,4 +1,4 @@
-use crate::graph::EIdx;
+use crate::graphs::EIdx;
 
 pub struct CoreEdge<Ee> {
     core_eidx: EIdx,

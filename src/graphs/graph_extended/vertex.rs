@@ -1,5 +1,4 @@
-use crate::graph::{InEdge, OutEdge, Vertex};
-use crate::{EIdx, Graph, VIdx};
+use crate::graphs::{EIdx, Graph, InEdge, OutEdge, VIdx, Vertex};
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 

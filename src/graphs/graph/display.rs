@@ -1,4 +1,4 @@
-use crate::graph::Graph;
+use crate::graphs::Graph;
 #[cfg(feature = "std")]
 use alloc::{format, vec::Vec};
 #[cfg(feature = "std")]

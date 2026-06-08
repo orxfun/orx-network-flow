@@ -1,5 +1,6 @@
-use crate::{Graph, VIdx};
-use crate::{graph::Vertex, graph_extended::ext_graph::ExtGraph, visualization::dot::DotGraph};
+use crate::graphs::graph::visualization::dot::DotGraph;
+use crate::graphs::graph_extended::ext_graph::ExtGraph;
+use crate::graphs::{Graph, VIdx, Vertex};
 
 impl<'a, V, E, Ve, Ee> DotGraph for ExtGraph<'a, V, E, Ve, Ee> {
     type V = Ve;

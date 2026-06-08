@@ -1,8 +1,8 @@
-use crate::graph::visualization::dot::DotGraph;
-use crate::graph::{VIdx, Vertex};
+use crate::graphs::graph::visualization::dot::DotGraph;
+use crate::graphs::{Graph, VIdx, Vertex};
 use crate::networks::core::visualization::dot::settings::CoreNwDotSettings;
 use crate::networks::core::{CoreNwEdge, CoreNwVertex};
-use crate::{CoreNw, Graph, Problem, Variant};
+use crate::{CoreNw, Problem, Variant};
 use alloc::format;
 use alloc::string::{String, ToString};
 

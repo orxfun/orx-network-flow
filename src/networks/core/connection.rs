@@ -1,4 +1,4 @@
-use crate::graph::GraphBuilder;
+use crate::graphs::GraphBuilder;
 use crate::networks::core::nw_builder::CoreNwBuilder;
 use crate::networks::core::{CoreNwEdge, CoreNwVertex};
 use crate::transports::Transport;

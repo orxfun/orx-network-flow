@@ -1,10 +1,10 @@
-use crate::graph::{GraphBuilder, VIdx};
+use crate::graphs::{Graph, GraphBuilder, VIdx};
 use crate::indices::IdxCore;
 use crate::networks::core::connection::add_connection_edges;
 use crate::networks::core::waiting::add_waiting_edges;
 use crate::networks::core::{edge::CoreNwEdge, vertex::CoreNwVertex};
 use crate::transports::Transport;
-use crate::{CoreNw, Graph, Problem, Variant};
+use crate::{CoreNw, Problem, Variant};
 
 pub struct CoreNwBuilder<'a, V: Variant> {
     pub(super) p: &'a Problem<V>,

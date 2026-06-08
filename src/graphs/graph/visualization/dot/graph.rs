@@ -1,5 +1,4 @@
-use crate::Graph;
-use crate::graph::{VIdx, Vertex};
+use crate::graphs::{Graph, VIdx, Vertex};
 use alloc::format;
 use alloc::string::{String, ToString};
 

@@ -1,4 +1,4 @@
-use crate::graph::{edge::EIdx, in_edge::InEdge, out_edge::OutEdge};
+use crate::graphs::{EIdx, InEdge, OutEdge};
 use crate::{impl_idx, impl_vec_of_idx};
 use alloc::vec::Vec;
 

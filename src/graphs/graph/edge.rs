@@ -1,4 +1,4 @@
-use crate::graph::vertex::VIdx;
+use crate::graphs::VIdx;
 use crate::{impl_idx, impl_vec_of_idx};
 
 impl_idx!(EIdx);

@@ -1,9 +1,7 @@
-use crate::graph::{Edge, VecEdge, VecVertex, Vertex};
-use crate::graph_extended::builder::ExtGraphBuilder;
-use crate::graph_extended::edge::CoreEdge;
-use crate::graph_extended::vertex::{CoreVertex, ExtVertex, ExtVertexMut};
-use crate::indices::IdxCore;
-use crate::{EIdx, Graph, VIdx};
+use crate::graphs::graph_extended::builder::ExtGraphBuilder;
+use crate::graphs::graph_extended::edge::CoreEdge;
+use crate::graphs::graph_extended::vertex::CoreVertex;
+use crate::graphs::{Edge, Graph, VecEdge, VecVertex, Vertex};
 
 pub struct ExtGraph<'a, V, E, Ve, Ee> {
     pub(super) core: &'a Graph<V, E>,
