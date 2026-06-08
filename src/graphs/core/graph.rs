@@ -2,29 +2,23 @@ use crate::graphs::core::{EdgeCore, GraphCore, VertexCore};
 use crate::graphs::{EIdx, Graph, VIdx};
 
 impl<V, E> Graph for GraphCore<V, E> {
-    type V<'a>
-        = &'a VertexCore<V>
-    where
-        Self: 'a;
+    type V = VertexCore<V>;
 
-    type E<'a>
-        = &'a EdgeCore<E>
-    where
-        Self: 'a;
+    type E = EdgeCore<E>;
 
-    fn vertices(&self) -> impl ExactSizeIterator<Item = Self::V<'_>> {
+    fn vertices(&self) -> impl ExactSizeIterator<Item = &Self::V> {
         self.vertices.iter()
     }
 
-    fn edges(&self) -> impl ExactSizeIterator<Item = Self::E<'_>> {
+    fn edges(&self) -> impl ExactSizeIterator<Item = &Self::E> {
         self.edges.iter()
     }
 
-    fn vertex(&self, v: VIdx) -> Self::V<'_> {
+    fn vertex(&self, v: VIdx) -> &Self::V {
         &self.vertices[v]
     }
 
-    fn edge(&self, e: EIdx) -> Self::E<'_> {
+    fn edge(&self, e: EIdx) -> &Self::E {
         &self.edges[e]
     }
 }

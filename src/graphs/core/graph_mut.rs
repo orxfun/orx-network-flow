@@ -3,10 +3,7 @@ use crate::graphs::graph_mut::GraphMut;
 use crate::graphs::{EIdx, Edge, Graph, VIdx, Vertex};
 
 impl<V, E> GraphMut for GraphCore<V, E> {
-    fn add_edge<'a>(&mut self, tail: VIdx, head: VIdx, data: <Self::E<'a> as Edge>::Data)
-    where
-        Self: 'a,
-    {
+    fn add_edge(&mut self, tail: VIdx, head: VIdx, data: <Self::E as Edge>::Data) {
         let e = EIdx::from(self.e());
 
         let tail_out_edge_pos = self.vertex(tail).len_out_edges();

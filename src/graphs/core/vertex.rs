@@ -28,7 +28,7 @@ impl<V> VertexCore<V> {
     }
 }
 
-impl<V> Vertex for &VertexCore<V> {
+impl<V> Vertex for VertexCore<V> {
     type Data = V;
 
     fn data(&self) -> &Self::Data {
