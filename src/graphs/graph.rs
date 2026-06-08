@@ -9,9 +9,9 @@ pub trait Graph {
     where
         Self: 'a;
 
-    fn vertices(&self) -> impl Iterator<Item = Self::V<'_>>;
+    fn vertices(&self) -> impl ExactSizeIterator<Item = Self::V<'_>>;
 
-    fn edges(&self) -> impl Iterator<Item = Self::E<'_>>;
+    fn edges(&self) -> impl ExactSizeIterator<Item = Self::E<'_>>;
 
     fn vertex(&self, v: VIdx) -> Self::V<'_>;
 
