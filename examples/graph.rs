@@ -1,22 +1,22 @@
-// use orx_network_flow::visualization::dot::DotGraph;
-// use orx_network_flow::{Graph, VIdx};
+use orx_network_flow::graphs::visualization::dot::{AsDotGraph, DotGraph};
+use orx_network_flow::graphs::{GraphCore, VIdx};
 
-// fn main() {
-//     let vertices = (0..4).map(|_| ());
-//     let mut builder = Graph::<(), ()>::builder(vertices);
+fn main() {
+    let vertices = (0..4).map(|_| ());
+    let mut builder = GraphCore::<(), ()>::builder(vertices);
 
-//     builder.edge((), VIdx::from(0), VIdx::from(1));
-//     builder.edge((), VIdx::from(0), VIdx::from(2));
-//     builder.edge((), VIdx::from(1), VIdx::from(2));
-//     builder.edge((), VIdx::from(1), VIdx::from(3));
-//     builder.edge((), VIdx::from(2), VIdx::from(3));
+    builder.edge((), VIdx::from(0), VIdx::from(1));
+    builder.edge((), VIdx::from(0), VIdx::from(2));
+    builder.edge((), VIdx::from(1), VIdx::from(2));
+    builder.edge((), VIdx::from(1), VIdx::from(3));
+    builder.edge((), VIdx::from(2), VIdx::from(3));
 
-//     builder.validate();
-//     let graph = builder.finish();
+    builder.validate();
+    let graph = builder.finish();
 
-//     graph.print();
+    let dot = graph.as_dot_graph();
 
-//     println!("\n\nDOT\n{}", graph.to_dot_string());
-// }
+    graph.print();
 
-fn main() {}
+    println!("\n\nDOT\n{}", dot.dot_string());
+}

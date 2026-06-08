@@ -20,7 +20,7 @@ mod commodities;
 mod cost;
 mod costs;
 mod flow_units;
-mod graphs;
+pub mod graphs;
 mod indices;
 // mod networks;
 mod problem;
