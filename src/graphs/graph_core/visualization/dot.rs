@@ -1,4 +1,4 @@
-use crate::graphs::visualization::dot::{DotGraph, NodeSettings};
+use crate::graphs::visualization::dot::{AsDotGraph, DotGraph, NodeSettings};
 use crate::graphs::{Edge, Graph, GraphCore, VIdx};
 use alloc::string::ToString;
 use core::fmt::Display;
@@ -24,5 +24,17 @@ impl<V, E> DotGraph for DotGraphCore<'_, V, E> {
 
     fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)> {
         self.graph.edges.iter().map(|e| (e.tail(), e.head()))
+    }
+}
+
+impl<V, E> AsDotGraph for GraphCore<V, E> {
+    type Settings = NodeSettings;
+
+    fn as_dot_graph(&self) -> impl DotGraph {
+        DotGraphCore::new(self, Default::default())
+    }
+
+    fn as_dot_graph_with_settings(&self, settings: Self::Settings) -> impl DotGraph {
+        DotGraphCore::new(self, settings)
     }
 }
