@@ -2,8 +2,8 @@ use crate::graphs::{EIdx, InEdge, OutEdge, VIdx, Vertex};
 use alloc::vec::Vec;
 
 pub struct VertexCore<V> {
-    out_edges: Vec<OutEdge>,
-    in_edges: Vec<InEdge>,
+    out_edges: Vec<EIdx>,
+    in_edges: Vec<EIdx>,
     data: V,
 }
 
@@ -16,14 +16,12 @@ impl<V> VertexCore<V> {
         }
     }
 
-    pub fn add_out_edge(&mut self, edges_idx: EIdx, head: VIdx, head_in_edge_pos: usize) {
-        let out_edge = OutEdge::new(edges_idx, head, head_in_edge_pos);
-        self.out_edges.push(out_edge);
+    pub fn add_out_edge(&mut self, edges_idx: EIdx) {
+        self.out_edges.push(edges_idx);
     }
 
-    pub fn add_in_edge(&mut self, edges_idx: EIdx, tail: VIdx, tail_out_edge_pos: usize) {
-        let in_edge = InEdge::new(edges_idx, tail, tail_out_edge_pos);
-        self.in_edges.push(in_edge);
+    pub fn add_in_edge(&mut self, edges_idx: EIdx) {
+        self.in_edges.push(edges_idx);
     }
 }
 
@@ -35,10 +33,10 @@ impl<V> Vertex for VertexCore<V> {
     }
 
     fn out_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
-        self.out_edges.iter().map(|x| x.edges_idx())
+        self.out_edges.iter().copied()
     }
 
     fn in_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
-        self.in_edges.iter().map(|x| x.edges_idx())
+        self.in_edges.iter().copied()
     }
 }

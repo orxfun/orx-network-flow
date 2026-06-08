@@ -14,14 +14,20 @@ pub enum ExtVertex<V> {
 }
 
 impl<V> Vertex for ExtVertex<V> {
-    type Data = ();
+    type Data = V;
 
     fn data(&self) -> &Self::Data {
-        todo!()
+        match self {
+            Self::Ori(o) => &o.ext_data,
+            Self::New(v) => v.data(),
+        }
     }
 
     fn out_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
-        core::iter::empty()
+        match self {
+            Self::Ori(o) => todo!(),
+            Self::New(v) => v.out_edges(),
+        }
     }
 
     fn in_edges(&self) -> impl ExactSizeIterator<Item = EIdx> {
