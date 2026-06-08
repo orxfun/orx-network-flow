@@ -1,6 +1,6 @@
-use crate::graphs::core::VertexCore;
+use crate::graphs::core::{GraphCore, VertexCore};
 use crate::graphs::graph_mut::GraphMut;
-use crate::graphs::{GraphCore, VIdx, VecEdge, VecVertex};
+use crate::graphs::{VIdx, VecEdge, VecVertex};
 
 pub struct GraphCoreBuilder<Dv, De>(GraphCore<Dv, De>);
 

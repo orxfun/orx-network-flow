@@ -1,5 +1,5 @@
 use crate::graphs::visualization::dot::{AsDotGraph, DotGraph, NodeSettings};
-use crate::graphs::{Edge, Graph, GraphCore, VIdx};
+use crate::graphs::{Edge, Graph, VIdx, core::GraphCore};
 use alloc::string::ToString;
 use core::fmt::Display;
 

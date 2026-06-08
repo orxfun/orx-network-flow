@@ -1,4 +1,4 @@
-use crate::graphs::{Edge, GraphCore};
+use crate::graphs::{Edge, core::GraphCore};
 #[cfg(feature = "std")]
 use alloc::{format, vec::Vec};
 #[cfg(feature = "std")]
