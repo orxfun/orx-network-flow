@@ -13,17 +13,13 @@ pub trait Graph {
     where
         Self: 'a;
 
-    fn v(&self) -> usize {
-        self.vertices().len()
-    }
+    fn v(&self) -> usize;
 
-    fn e(&self) -> usize {
-        self.edges().len()
-    }
+    fn e(&self) -> usize;
 
-    fn vertices(&self) -> impl ExactSizeIterator<Item = Self::V<'_>>;
+    fn vertices(&self) -> impl Iterator<Item = Self::V<'_>>;
 
-    fn edges(&self) -> impl ExactSizeIterator<Item = Self::E<'_>>;
+    fn edges(&self) -> impl Iterator<Item = Self::E<'_>>;
 
     fn vertex_indices(&self) -> impl ExactSizeIterator<Item = VIdx> {
         (0..self.v()).map(VIdx::from)

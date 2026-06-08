@@ -16,11 +16,19 @@ impl<Dv, De> Graph for GraphCore<Dv, De> {
     where
         Self: 'a;
 
-    fn vertices(&self) -> impl ExactSizeIterator<Item = Self::V<'_>> {
+    fn v(&self) -> usize {
+        self.vertices.len()
+    }
+
+    fn e(&self) -> usize {
+        self.edges.len()
+    }
+
+    fn vertices(&self) -> impl Iterator<Item = Self::V<'_>> {
         self.vertices.iter()
     }
 
-    fn edges(&self) -> impl ExactSizeIterator<Item = Self::E<'_>> {
+    fn edges(&self) -> impl Iterator<Item = Self::E<'_>> {
         self.edges.iter()
     }
 
