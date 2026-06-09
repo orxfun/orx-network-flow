@@ -23,3 +23,9 @@ impl Display for SpaceTime {
         write!(f, "{}-{}", self.0, self.1)
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Eq, Ord, Hash, derive_new::new)]
+pub struct SpaceTimeOd {
+    pub ori: SpaceTime,
+    pub des: SpaceTime,
+}
