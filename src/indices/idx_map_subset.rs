@@ -8,20 +8,17 @@ pub struct IdxMapSubset<'a, K: MapKey, V, I: Idx> {
 }
 
 impl<'a, K: MapKey, V, I: Idx> IdxMapSubset<'a, K, V, I> {
-    pub fn new(map: &'a IdxMap<K, V, I>, subset: impl IntoIterator<Item = I>) -> Self {
-        let subset = subset.into_iter().collect();
+    pub fn new(map: &'a IdxMap<K, V, I>) -> Self {
+        let subset = Vec::new();
         Self { map, subset }
+    }
+
+    pub fn push(&mut self, idx: I) {
+        self.subset.push(idx);
     }
 
     pub fn len(&self) -> usize {
         self.subset.len()
-    }
-    pub fn value(&self, idx: I) -> Option<&V>
-    where
-        I: IdxCore,
-    {
-        debug_assert!(self.subset.contains(&idx));
-        self.map.value(idx)
     }
 
     pub fn indices(&self) -> impl Iterator<Item = I> {
