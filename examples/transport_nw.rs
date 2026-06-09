@@ -1,4 +1,4 @@
-use orx_network_flow::graphs::{Graph, visualization::dot::DotGraph};
+use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
 
 struct MyVariant;
