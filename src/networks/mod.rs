@@ -2,7 +2,7 @@
 // mod core;
 
 // pub use core::CoreNw;
-mod com_agg_ready_due;
+mod com_nw_by_ready_due;
 mod transport_nw;
 
 pub use transport_nw::TrNw;
