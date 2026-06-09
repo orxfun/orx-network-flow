@@ -1,4 +1,5 @@
 mod idx_map;
+mod idx_map_subset;
 mod index;
 mod vec_of_index;
 
