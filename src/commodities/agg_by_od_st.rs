@@ -20,4 +20,17 @@ impl<'a, V: Variant> CommoditiesByOdSt<'a, V> {
 
         Self { od_commodities }
     }
+
+    #[cfg(test)]
+    pub(super) fn len_groups(&self) -> usize {
+        self.od_commodities.len()
+    }
+
+    #[cfg(test)]
+    pub(super) fn group(
+        &self,
+        od_st: &SpaceTimeOd,
+    ) -> Option<&IdxMapSubset<'a, V::K, CommodityData<V>, Commodity>> {
+        self.od_commodities.get(od_st)
+    }
 }
