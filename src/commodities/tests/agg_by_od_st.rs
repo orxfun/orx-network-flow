@@ -4,6 +4,7 @@ use crate::{Problem, ProblemBuilder, Variant};
 use alloc::vec;
 use alloc::vec::Vec;
 
+#[derive(Clone, Copy)]
 struct TestVariant;
 
 impl Variant for TestVariant {

@@ -5,4 +5,5 @@ mod vertex_data;
 pub mod visualization;
 
 pub use constructor::construct_tr_nw;
+pub use edge_data::TrDe;
 pub use nw::TrNw;

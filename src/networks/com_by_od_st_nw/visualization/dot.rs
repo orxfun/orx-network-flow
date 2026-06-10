@@ -7,7 +7,7 @@ use alloc::{format, string::ToString};
 
 pub struct DotComOdStNw<'a, V: Variant> {
     p: &'a Problem<V>,
-    nw: &'a ComOdStNw,
+    nw: &'a ComOdStNw<'a, V>,
     transport_settings: NodeSettings,
     source_settings: NodeSettings,
     sink_settings: NodeSettings,
@@ -16,7 +16,7 @@ pub struct DotComOdStNw<'a, V: Variant> {
 impl<'a, V: Variant> DotComOdStNw<'a, V> {
     pub fn new(
         p: &'a Problem<V>,
-        nw: &'a ComOdStNw,
+        nw: &'a ComOdStNw<'a, V>,
         transport_settings: Option<NodeSettings>,
         source_settings: Option<NodeSettings>,
         sink_settings: Option<NodeSettings>,

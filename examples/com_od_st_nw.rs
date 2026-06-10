@@ -1,6 +1,7 @@
 use orx_network_flow::graphs::visualization::dot::DotGraph;
-use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
+use orx_network_flow::{ProblemBuilder, Variant};
 
+#[derive(Clone, Copy)]
 struct MyVariant;
 
 impl Variant for MyVariant {

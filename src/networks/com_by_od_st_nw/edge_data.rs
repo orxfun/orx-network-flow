@@ -1,7 +1,8 @@
-#[derive(derive_new::new)]
-pub enum ComOdStDe {
+use crate::{Variant, networks::transport_nw::TrDe};
+
+pub enum ComOdStDe<V: Variant> {
     SourceTransport,
-    TransportTransport,
+    TransportTransport(TrDe<V>),
     TransportSink,
     SourceSink,
 }
