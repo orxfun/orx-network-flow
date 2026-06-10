@@ -1,6 +1,6 @@
 use crate::graphs::visualization::dot::{DotGraph, NodeSettings, NodeShape};
 use crate::graphs::{Edge, Graph, VIdx, Vertex};
-use crate::networks::com_nw_by_od_st::{nw::ComOdStNw, vertex_data::ComOdStDv};
+use crate::networks::com_by_od_st_nw::{nw::ComOdStNw, vertex_data::ComOdStDv};
 use crate::networks::transport_nw::visualization::dot::dot_vertex_label;
 use crate::{Problem, Variant};
 use alloc::{format, string::ToString};

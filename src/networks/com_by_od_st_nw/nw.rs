@@ -1,7 +1,7 @@
 use crate::graphs::core::GraphCore;
 use crate::graphs::visualization::dot::NodeSettings;
-use crate::networks::com_nw_by_od_st::visualization::dot::DotComOdStNw;
-use crate::networks::com_nw_by_od_st::{edge_data::ComOdStDe, vertex_data::ComOdStDv};
+use crate::networks::com_by_od_st_nw::visualization::dot::DotComOdStNw;
+use crate::networks::com_by_od_st_nw::{edge_data::ComOdStDe, vertex_data::ComOdStDv};
 use crate::{Problem, Variant};
 
 pub type ComOdStNw = GraphCore<ComOdStDv, ComOdStDe>;

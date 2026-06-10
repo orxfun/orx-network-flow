@@ -2,7 +2,7 @@ use crate::commodities::CommoditiesByOdSt;
 use crate::graphs::VIdx;
 use crate::graphs::core::{GraphCore, GraphCoreBuilder};
 use crate::networks::TrNw;
-use crate::networks::com_nw_by_od_st::{
+use crate::networks::com_by_od_st_nw::{
     edge_data::ComOdStDe, nw::ComOdStNw, vertex_data::ComOdStDv,
 };
 use crate::space_time::SpaceTimeOd;
