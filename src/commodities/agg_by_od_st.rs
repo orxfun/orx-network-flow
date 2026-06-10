@@ -30,11 +30,21 @@ impl<'a, V: Variant> CommoditiesByOdSt<'a, V> {
         self.od_commodities.len()
     }
 
-    #[cfg(test)]
-    pub(super) fn group(
+    pub fn group(
         &self,
         od_st: &SpaceTimeOd,
     ) -> Option<&IdxMapSubset<'a, V::K, CommodityData<V>, Commodity>> {
         self.od_commodities.get(od_st)
+    }
+
+    pub fn iter(
+        &self,
+    ) -> impl Iterator<
+        Item = (
+            &SpaceTimeOd,
+            &IdxMapSubset<'a, V::K, CommodityData<V>, Commodity>,
+        ),
+    > {
+        self.od_commodities.iter()
     }
 }

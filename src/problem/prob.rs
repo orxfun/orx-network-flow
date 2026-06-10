@@ -121,8 +121,7 @@ impl<V: Variant> Problem<V> {
         &'a self,
         transport_nw: &'a TrNw<V>,
         groups: &'a CommoditiesByOdSt<'a, V>,
-        od: SpaceTimeOd,
     ) -> ComOdStNw<'a, V> {
-        construct_com_by_od_st_nw(self, transport_nw, groups, od)
+        construct_com_by_od_st_nw(self, transport_nw, groups)
     }
 }

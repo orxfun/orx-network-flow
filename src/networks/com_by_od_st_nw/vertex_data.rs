@@ -1,8 +1,7 @@
-use crate::{space_time::SpaceTime, transports::Transport};
+use crate::{Variant, space_time::SpaceTimeOd, transports::Transport};
 
-#[derive(derive_new::new)]
-pub enum ComOdStDv {
+pub enum ComOdStDv<V: Variant> {
     Transport(Transport),
-    OriSt(SpaceTime),
-    DesSt(SpaceTime),
+    OriSt(SpaceTimeOd, V::F),
+    DesSt(SpaceTimeOd, V::F),
 }

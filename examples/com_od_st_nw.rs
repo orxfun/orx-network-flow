@@ -82,9 +82,7 @@ fn main() {
 
     let tr_nw = problem.construct_transport_nw();
     let com_group = problem.commodities_by_od_st();
-
-    let od = *com_group.keys().next().unwrap();
-    let com_by_od_st_nw = problem.construct_com_by_od_st_nw(&tr_nw, &com_group, od);
+    let com_by_od_st_nw = problem.construct_com_by_od_st_nw(&tr_nw, &com_group);
 
     let dot = com_by_od_st_nw.as_dot_graph(&problem, None, None, None);
     dot.create_svg_file("target/com_od_st_nw.dot", "target/com_od_st_nw.svg")

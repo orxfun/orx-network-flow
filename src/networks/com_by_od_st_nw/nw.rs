@@ -5,7 +5,7 @@ use crate::networks::com_by_od_st_nw::visualization::dot::DotComOdStNw;
 use crate::networks::com_by_od_st_nw::{edge_data::ComOdStDe, vertex_data::ComOdStDv};
 use crate::{Problem, Variant};
 
-pub type ComOdStNw<'a, V: Variant> = GraphExtended<'a, TrNw<V>, ComOdStDv, ComOdStDe<V>>;
+pub type ComOdStNw<'a, V: Variant> = GraphExtended<'a, TrNw<V>, ComOdStDv<V>, ComOdStDe<V>>;
 
 impl<'a, V: Variant> ComOdStNw<'a, V> {
     pub fn as_dot_graph(
