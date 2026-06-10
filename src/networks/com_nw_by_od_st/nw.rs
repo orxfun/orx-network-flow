@@ -10,9 +10,10 @@ impl ComOdStNw {
     pub fn as_dot_graph<'a, V: Variant>(
         &'a self,
         p: &'a Problem<V>,
-        node_settings: Option<NodeSettings>,
+        transport_settings: Option<NodeSettings>,
+        source_settings: Option<NodeSettings>,
+        sink_settings: Option<NodeSettings>,
     ) -> DotComOdStNw<'a, V> {
-        // DotComOdStNw::new(p, self, node_settings)
-        todo!()
+        DotComOdStNw::new(p, self, transport_settings, source_settings, sink_settings)
     }
 }
