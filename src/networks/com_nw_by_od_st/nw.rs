@@ -4,7 +4,7 @@ use crate::networks::com_nw_by_od_st::visualization::dot::DotComOdStNw;
 use crate::networks::com_nw_by_od_st::{edge_data::ComOdStDe, vertex_data::ComOdStDv};
 use crate::{Problem, Variant};
 
-pub type ComOdStNw = GraphCore<ComOdStDe, ComOdStDv>;
+pub type ComOdStNw = GraphCore<ComOdStDv, ComOdStDe>;
 
 impl ComOdStNw {
     pub fn as_dot_graph<'a, V: Variant>(

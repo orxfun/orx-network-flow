@@ -2,7 +2,7 @@ mod constructor;
 mod edge_data;
 mod nw;
 mod vertex_data;
-mod visualization;
+pub mod visualization;
 
 pub use constructor::construct_tr_nw;
 pub use nw::TrNw;

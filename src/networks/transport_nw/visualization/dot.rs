@@ -1,10 +1,9 @@
 use crate::graphs::visualization::dot::{DotGraph, NodeSettings, NodeShape};
 use crate::graphs::{Edge, Graph, VIdx, Vertex};
 use crate::networks::TrNw;
+use crate::transports::Transport;
 use crate::{Problem, Variant};
-use alloc::format;
-
-// dot graph
+use alloc::{format, string::String};
 
 pub struct DotTrNw<'a, V: Variant> {
     p: &'a Problem<V>,
@@ -28,15 +27,8 @@ impl<'a, V: Variant> DotTrNw<'a, V> {
 
 impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
-        let p = self.p;
-        let vertex = self.nw.vertex(v);
-        let t = vertex.data().t;
-        let transport = p.transport_by_idx(t);
-        let ori = p.space_key(transport.origin().space());
-        let des = p.space_key(transport.destination().space());
-        let dt = transport.origin().time();
-        let at = transport.destination().time();
-        format!("{}\n{}-{}\n{}-{}", v, ori, des, dt, at)
+        let t = self.nw.vertex(v).data().t;
+        dot_vertex_label(self.p, v, t)
     }
 
     fn vertex_settings(&self, _: VIdx) -> &NodeSettings {
@@ -50,4 +42,13 @@ impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
     fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)> {
         self.nw.edges().map(|x| (x.tail(), x.head()))
     }
+}
+
+pub(crate) fn dot_vertex_label<V: Variant>(p: &Problem<V>, v: VIdx, t: Transport) -> String {
+    let transport = p.transport_by_idx(t);
+    let ori = p.space_key(transport.origin().space());
+    let des = p.space_key(transport.destination().space());
+    let dt = transport.origin().time();
+    let at = transport.destination().time();
+    format!("{}\n{}-{}\n{}-{}", v, ori, des, dt, at)
 }
