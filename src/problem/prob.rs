@@ -1,8 +1,9 @@
-use crate::commodities::{Commodities, Commodity, CommodityData};
+use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
 use crate::costs::Costs;
-use crate::networks::{TrNw, construct_tr_nw};
+use crate::networks::{ComOdStNw, TrNw, construct_com_by_od_st_nw, construct_tr_nw};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
+use crate::space_time::SpaceTimeOd;
 use crate::spaces::{Space, SpaceData, Spaces};
 use crate::std_utils::Map;
 use crate::time_bounds::TimeBounds;
@@ -108,5 +109,14 @@ impl<V: Variant> Problem<V> {
 
     pub fn construct_transport_nw(&self) -> TrNw<V> {
         construct_tr_nw(self)
+    }
+
+    pub fn construct_com_by_od_st_nw<'a>(
+        &'a self,
+        transport_nw: &'a TrNw<V>,
+        groups: &'a CommoditiesByOdSt<'a, V>,
+        od: SpaceTimeOd,
+    ) -> ComOdStNw {
+        construct_com_by_od_st_nw(self, transport_nw, groups, od)
     }
 }
