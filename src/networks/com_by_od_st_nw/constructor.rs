@@ -29,7 +29,7 @@ pub fn construct_com_by_od_st_nw<'a, V: Variant>(
     let b = &mut builder;
 
     for (od_st, group) in groups.iter() {
-        add_source_vertices(b, od_st, group);
+        add_source_sink_vertices(b, od_st, group);
     }
 
     // for t in p.transports.indices() {
@@ -42,12 +42,16 @@ pub fn construct_com_by_od_st_nw<'a, V: Variant>(
     builder.finish()
 }
 
-fn add_source_vertices<V: Variant>(
+fn add_source_sink_vertices<V: Variant>(
     b: &mut GraphExtendedBuilder<'_, TrNw<V>, ComOdStDv<V>, ComOdStDe<V>>,
     od_st: &SpaceTimeOd,
     group: &IdxMapSubset<'_, V::K, CommodityData<V>, Commodity>,
 ) {
     let total_amount = FlowUnit::sum(group.values().map(|x| x.amount()));
-    let data = ComOdStDv::OriSt(*od_st, total_amount);
-    b.vertex(data);
+
+    let source = ComOdStDv::OriSt(*od_st, total_amount);
+    b.vertex(source);
+
+    let sink = ComOdStDv::DesSt(*od_st, total_amount);
+    b.vertex(sink);
 }

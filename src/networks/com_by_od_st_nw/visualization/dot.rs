@@ -37,7 +37,7 @@ impl<'a, V: Variant> DotComOdStNw<'a, V> {
         let sink_settings = sink_settings.unwrap_or(NodeSettings {
             shape: Some(NodeShape::InvHouse),
             style: Some(NodeStyle::Filled),
-            fill_color: Some("red".to_string()),
+            fill_color: Some("tomato".to_string()),
             ..Default::default()
         });
 
