@@ -6,7 +6,7 @@ use crate::{Problem, Variant};
 
 pub type TrNw<V> = GraphCore<TrDv, TrDe<V>>;
 
-impl<V: Variant> GraphCore<TrDv, TrDe<V>> {
+impl<V: Variant> TrNw<V> {
     pub fn as_dot_graph<'a>(
         &'a self,
         p: &'a Problem<V>,

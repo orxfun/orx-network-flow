@@ -1,7 +1,6 @@
 use crate::graphs::VIdx;
 use crate::graphs::core::{GraphCore, GraphCoreBuilder};
-use crate::networks::transport_nw::nw::TrNw;
-use crate::networks::transport_nw::{edge_data::TrDe, vertex_data::TrDv};
+use crate::networks::transport_nw::{edge_data::TrDe, nw::TrNw, vertex_data::TrDv};
 use crate::transports::Transport;
 use crate::{IdxCore, Problem, Variant};
 use core::iter::Peekable;
