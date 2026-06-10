@@ -21,6 +21,10 @@ impl<'a, V: Variant> CommoditiesByOdSt<'a, V> {
         Self { od_commodities }
     }
 
+    pub fn keys(&self) -> impl Iterator<Item = &SpaceTimeOd> {
+        self.od_commodities.keys()
+    }
+
     #[cfg(test)]
     pub(super) fn len_groups(&self) -> usize {
         self.od_commodities.len()

@@ -105,6 +105,12 @@ impl<V: Variant> Problem<V> {
         self.vehicles.get_by_idx(t).expect("validated problem")
     }
 
+    // commodity grouping
+
+    pub fn commodities_by_od_st(&self) -> CommoditiesByOdSt<'_, V> {
+        CommoditiesByOdSt::create(self)
+    }
+
     // networks
 
     pub fn construct_transport_nw(&self) -> TrNw<V> {
