@@ -19,6 +19,8 @@ impl<'a, G: Graph> DotGraphBasic<'a, G> {
 }
 
 impl<'a, G: Graph> DotGraph for DotGraphBasic<'a, G> {
+    type G = G;
+
     fn vertex_label(&self, v: VIdx) -> impl Display {
         v.to_string()
     }
@@ -27,7 +29,7 @@ impl<'a, G: Graph> DotGraph for DotGraphBasic<'a, G> {
         &self.settings
     }
 
-    fn graph(&self) -> &impl Graph {
+    fn graph(&self) -> &G {
         self.g
     }
 }

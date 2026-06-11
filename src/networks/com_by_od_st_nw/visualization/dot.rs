@@ -52,6 +52,8 @@ impl<'a, V: Variant> DotComOdStNw<'a, V> {
 }
 
 impl<'a, V: Variant> DotGraph for DotComOdStNw<'a, V> {
+    type G = ComOdStNw<'a, V>;
+
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
         let p = self.p;
         let vertex = self.nw.vertex(v);
@@ -87,7 +89,7 @@ impl<'a, V: Variant> DotGraph for DotComOdStNw<'a, V> {
         })
     }
 
-    fn graph(&self) -> &impl Graph {
+    fn graph(&self) -> &Self::G {
         self.nw
     }
 

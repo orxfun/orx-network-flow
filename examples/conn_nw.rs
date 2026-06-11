@@ -75,6 +75,7 @@ fn main() {
     transport("AMS", "BRU", 1, 2);
     transport("AMS", "CVG", 1, 5);
     transport("BRU", "CVG", 3, 5);
+    transport("CVG", "SIN", 7, 9);
 
     // transport("AMS", "BRU", 7, 8);
 
@@ -91,7 +92,7 @@ fn main() {
 
     let conn_nw = problem.construct_conn_nw();
 
-    let dot = conn_nw.as_dot_graph(None);
+    let dot = conn_nw.as_dot_graph(None, None);
     dot.create_svg_file("target/conn_nw.dot", "target/conn_nw.svg")
         .unwrap();
 }

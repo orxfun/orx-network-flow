@@ -26,6 +26,8 @@ impl<'a, V: Variant> DotTrNw<'a, V> {
 }
 
 impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
+    type G = TrNw<V>;
+
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
         let t = self.nw.vertex(v).data().t;
         dot_vertex_label(self.p, v, t)
@@ -35,7 +37,7 @@ impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
         &self.node_settings
     }
 
-    fn graph(&self) -> &impl Graph {
+    fn graph(&self) -> &Self::G {
         self.nw
     }
 

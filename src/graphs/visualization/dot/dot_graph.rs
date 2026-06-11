@@ -11,6 +11,8 @@ use std::process::Command;
 use std::{io::Error, path::Path};
 
 pub trait DotGraph {
+    type G: Graph;
+
     fn vertex_label(&self, v: VIdx) -> impl Display;
 
     fn vertex_tooltip(&self, _: VIdx) -> Option<impl Display> {
@@ -19,7 +21,7 @@ pub trait DotGraph {
 
     fn vertex_settings(&self, v: VIdx) -> &NodeSettings;
 
-    fn graph(&self) -> &impl Graph;
+    fn graph(&self) -> &Self::G;
 
     fn vertices(&self) -> impl Iterator<Item = VIdx> {
         self.graph().vertex_indices()
