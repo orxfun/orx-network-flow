@@ -1,5 +1,6 @@
 pub mod visualization;
 
+mod construct;
 mod edge_data;
 mod nw;
 mod vertex_data;

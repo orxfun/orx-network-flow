@@ -18,6 +18,11 @@ impl<'a, V> ConnWaitNw<'a, V>
 where
     V: Variant,
 {
+    pub fn construct(p: &'a Problem<V>) -> Self {
+        let g = super::construct::construct_graph(p);
+        Self { p, g }
+    }
+
     pub fn p(&self) -> &Problem<V> {
         self.p
     }

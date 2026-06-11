@@ -10,5 +10,6 @@ mod transport_nw;
 pub use com_by_od_st_nw::ComOdStNw;
 pub(super) use com_by_od_st_nw::construct_com_by_od_st_nw;
 pub use conn_nw::ConnNw;
+pub use conn_wait_nw::ConnWaitNw;
 pub use transport_nw::TrNw;
 pub(super) use transport_nw::construct_tr_nw;
