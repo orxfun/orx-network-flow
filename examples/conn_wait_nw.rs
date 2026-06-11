@@ -89,7 +89,7 @@ fn main() {
 
     let nw = problem.construct_wait_nw();
 
-    let dot = nw.as_dot_graph(None);
+    let dot = nw.as_dot_graph(None, None, None);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 }

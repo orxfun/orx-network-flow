@@ -9,15 +9,17 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>) -> ConnWaitGraph {
     let mut builder = ConnWaitGraph::builder();
     let b = &mut builder;
 
-    for (_, des_transports) in &p.ori_des_sorted_transports {
-        for (_, transports) in des_transports {
-            let mut tail = None;
-            for &t in transports {
-                let head = b.vertex(ConnWaitVertex::Transport(t));
-                if let Some(tail) = tail {
-                    b.edge(ConnWaitEdge::Wait, tail, head);
+    for ori in &p.sorted_transport_origins {
+        if let Some(des_transports) = p.ori_des_sorted_transports.get(ori) {
+            for (_, transports) in des_transports {
+                let mut tail = None;
+                for &t in transports {
+                    let head = b.vertex(ConnWaitVertex::Transport(t));
+                    if let Some(tail) = tail {
+                        b.edge(ConnWaitEdge::Wait, tail, head);
+                    }
+                    tail = Some(head);
                 }
-                tail = Some(head);
             }
         }
     }
@@ -67,7 +69,7 @@ fn connect_edges_for_od<V: Variant>(
 
         match find_head_for_tail(p, &mut heads_rev, curr_head, tail) {
             Some(head) => {
-                b.edge(ConnWaitEdge::Transport, into_vidx(tail), into_vidx(head));
+                b.edge(ConnWaitEdge::Connect, into_vidx(tail), into_vidx(head));
 
                 // same head can be assigned to prior tails
                 curr_head = head;

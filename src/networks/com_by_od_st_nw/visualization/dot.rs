@@ -1,5 +1,7 @@
-use crate::graphs::visualization::dot::{DotGraph, VertexSettings, VertexShape, VertexStyle};
-use crate::graphs::{Edge, Graph, VIdx, Vertex};
+use crate::graphs::visualization::dot::{
+    DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
+};
+use crate::graphs::{Graph, VIdx, Vertex};
 use crate::networks::com_by_od_st_nw::{nw::ComOdStNw, vertex_data::ComOdStDv};
 use crate::networks::transport_nw::visualization::dot::dot_vertex_label;
 use crate::space_time::SpaceTimeOd;
@@ -101,11 +103,11 @@ impl<'a, V: Variant> DotGraph for DotComOdStNw<'a, V> {
         }
     }
 
-    fn vertices(&self) -> impl Iterator<Item = VIdx> {
-        self.nw.vertex_indices()
+    fn edge_settings(&self, e: crate::graphs::EIdx) -> &EdgeSettings {
+        todo!()
     }
 
-    fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)> {
-        self.nw.edges().map(|x| (x.tail(), x.head()))
+    fn vertices(&self) -> impl Iterator<Item = VIdx> {
+        self.nw.vertex_indices()
     }
 }

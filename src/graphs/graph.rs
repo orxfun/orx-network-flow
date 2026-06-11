@@ -46,6 +46,10 @@ pub trait Graph {
     where
         Self: Sized,
     {
-        DotGraphBasic::new_with_settings(self, custom_settings.unwrap_or_default())
+        DotGraphBasic::new_with_settings(
+            self,
+            custom_settings.unwrap_or_default(),
+            Default::default(),
+        )
     }
 }

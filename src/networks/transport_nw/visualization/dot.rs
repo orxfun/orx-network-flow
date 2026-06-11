@@ -1,5 +1,5 @@
 use crate::graphs::visualization::dot::{DotGraph, VertexSettings, VertexShape};
-use crate::graphs::{Edge, Graph, VIdx, Vertex};
+use crate::graphs::{Graph, VIdx, Vertex};
 use crate::networks::TrNw;
 use crate::transports::Transport;
 use crate::{Problem, Variant};
@@ -37,16 +37,19 @@ impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
         &self.node_settings
     }
 
+    fn edge_settings(
+        &self,
+        e: crate::graphs::EIdx,
+    ) -> &crate::graphs::visualization::dot::EdgeSettings {
+        todo!()
+    }
+
     fn graph(&self) -> &Self::G {
         self.nw
     }
 
     fn vertices(&self) -> impl Iterator<Item = VIdx> {
         self.nw.vertex_indices()
-    }
-
-    fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)> {
-        self.nw.edges().map(|x| (x.tail(), x.head()))
     }
 }
 

@@ -5,7 +5,6 @@ use crate::networks::{
 };
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
-use crate::space_time::SpaceTimeOd;
 use crate::spaces::{Space, SpaceData, Spaces};
 use crate::std_utils::Map;
 use crate::time_bounds::TimeBounds;
@@ -27,6 +26,7 @@ pub struct Problem<V: Variant> {
     pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub ori_des_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
     pub des_ori_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
+    pub sorted_transport_origins: Vec<Space>,
 }
 
 impl<V: Variant> Problem<V> {

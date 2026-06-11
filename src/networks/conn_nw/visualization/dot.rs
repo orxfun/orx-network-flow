@@ -72,6 +72,13 @@ where
         }
     }
 
+    fn edge_settings(
+        &self,
+        e: crate::graphs::EIdx,
+    ) -> &crate::graphs::visualization::dot::EdgeSettings {
+        todo!()
+    }
+
     fn graph(&self) -> &Self::G {
         &self.nw.g
     }
