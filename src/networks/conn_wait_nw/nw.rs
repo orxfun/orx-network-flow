@@ -1,5 +1,5 @@
 use crate::graphs::core::GraphCore;
-use crate::graphs::visualization::dot::NodeSettings;
+use crate::graphs::visualization::dot::VertexSettings;
 use crate::networks::conn_wait_nw::visualization::dot::ConnWaitDot;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::{Problem, Variant};
@@ -31,7 +31,7 @@ where
         &self.g
     }
 
-    pub fn as_dot_graph(&'a self, transport: Option<NodeSettings>) -> ConnWaitDot<'a, V> {
+    pub fn as_dot_graph(&'a self, transport: Option<VertexSettings>) -> ConnWaitDot<'a, V> {
         ConnWaitDot::new(self, transport)
     }
 }

@@ -1,4 +1,4 @@
-use crate::graphs::visualization::dot::{DotGraph, NodeSettings, NodeShape};
+use crate::graphs::visualization::dot::{DotGraph, VertexSettings, VertexShape};
 use crate::graphs::{Edge, Graph, VIdx, Vertex};
 use crate::networks::TrNw;
 use crate::transports::Transport;
@@ -8,13 +8,13 @@ use alloc::{format, string::String};
 pub struct DotTrNw<'a, V: Variant> {
     p: &'a Problem<V>,
     nw: &'a TrNw<V>,
-    node_settings: NodeSettings,
+    node_settings: VertexSettings,
 }
 
 impl<'a, V: Variant> DotTrNw<'a, V> {
-    pub fn new(p: &'a Problem<V>, nw: &'a TrNw<V>, node_settings: Option<NodeSettings>) -> Self {
-        let node_settings = node_settings.unwrap_or(NodeSettings {
-            shape: Some(NodeShape::Rect),
+    pub fn new(p: &'a Problem<V>, nw: &'a TrNw<V>, node_settings: Option<VertexSettings>) -> Self {
+        let node_settings = node_settings.unwrap_or(VertexSettings {
+            shape: Some(VertexShape::Rect),
             ..Default::default()
         });
         Self {
@@ -33,7 +33,7 @@ impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
         dot_vertex_label(self.p, v, t)
     }
 
-    fn vertex_settings(&self, _: VIdx) -> &NodeSettings {
+    fn vertex_settings(&self, _: VIdx) -> &VertexSettings {
         &self.node_settings
     }
 

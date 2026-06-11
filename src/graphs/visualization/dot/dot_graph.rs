@@ -1,5 +1,5 @@
 use crate::graphs::{Edge, Graph};
-use crate::graphs::{VIdx, visualization::dot::NodeSettings};
+use crate::graphs::{VIdx, visualization::dot::VertexSettings};
 use alloc::format;
 use alloc::string::String;
 use core::fmt::Display;
@@ -19,7 +19,7 @@ pub trait DotGraph {
         Option::<String>::None
     }
 
-    fn vertex_settings(&self, v: VIdx) -> &NodeSettings;
+    fn vertex_settings(&self, v: VIdx) -> &VertexSettings;
 
     fn graph(&self) -> &Self::G;
 

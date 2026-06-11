@@ -1,4 +1,4 @@
-use crate::graphs::visualization::dot::{DotGraph, NodeSettings, NodeShape, NodeStyle};
+use crate::graphs::visualization::dot::{DotGraph, VertexSettings, VertexShape, VertexStyle};
 use crate::graphs::{Edge, Graph, VIdx, Vertex};
 use crate::networks::com_by_od_st_nw::{nw::ComOdStNw, vertex_data::ComOdStDv};
 use crate::networks::transport_nw::visualization::dot::dot_vertex_label;
@@ -9,34 +9,34 @@ use alloc::{format, string::ToString};
 pub struct DotComOdStNw<'a, V: Variant> {
     p: &'a Problem<V>,
     nw: &'a ComOdStNw<'a, V>,
-    transport_settings: NodeSettings,
-    source_settings: NodeSettings,
-    sink_settings: NodeSettings,
+    transport_settings: VertexSettings,
+    source_settings: VertexSettings,
+    sink_settings: VertexSettings,
 }
 
 impl<'a, V: Variant> DotComOdStNw<'a, V> {
     pub fn new(
         p: &'a Problem<V>,
         nw: &'a ComOdStNw<'a, V>,
-        transport_settings: Option<NodeSettings>,
-        source_settings: Option<NodeSettings>,
-        sink_settings: Option<NodeSettings>,
+        transport_settings: Option<VertexSettings>,
+        source_settings: Option<VertexSettings>,
+        sink_settings: Option<VertexSettings>,
     ) -> Self {
-        let transport_settings = transport_settings.unwrap_or(NodeSettings {
-            shape: Some(NodeShape::Rect),
+        let transport_settings = transport_settings.unwrap_or(VertexSettings {
+            shape: Some(VertexShape::Rect),
             ..Default::default()
         });
 
-        let source_settings = source_settings.unwrap_or(NodeSettings {
-            shape: Some(NodeShape::House),
-            style: Some(NodeStyle::Filled),
+        let source_settings = source_settings.unwrap_or(VertexSettings {
+            shape: Some(VertexShape::House),
+            style: Some(VertexStyle::Filled),
             fill_color: Some("lightgreen".to_string()),
             ..Default::default()
         });
 
-        let sink_settings = sink_settings.unwrap_or(NodeSettings {
-            shape: Some(NodeShape::InvHouse),
-            style: Some(NodeStyle::Filled),
+        let sink_settings = sink_settings.unwrap_or(VertexSettings {
+            shape: Some(VertexShape::InvHouse),
+            style: Some(VertexStyle::Filled),
             fill_color: Some("tomato".to_string()),
             ..Default::default()
         });
@@ -93,7 +93,7 @@ impl<'a, V: Variant> DotGraph for DotComOdStNw<'a, V> {
         self.nw
     }
 
-    fn vertex_settings(&self, v: VIdx) -> &NodeSettings {
+    fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
         match self.nw.vertex(v).data() {
             ComOdStDv::Transport(_) => &self.transport_settings,
             ComOdStDv::OriSt(_, _) => &self.source_settings,

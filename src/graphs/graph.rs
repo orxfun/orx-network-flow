@@ -1,6 +1,6 @@
 use crate::graphs::{
     EIdx, Edge, VIdx, Vertex,
-    visualization::dot::{DotGraphBasic, NodeSettings},
+    visualization::dot::{DotGraphBasic, VertexSettings},
 };
 
 pub trait Graph {
@@ -42,7 +42,7 @@ pub trait Graph {
 
     // visualization
 
-    fn as_basic_dot_graph(&self, custom_settings: Option<NodeSettings>) -> DotGraphBasic<'_, Self>
+    fn as_basic_dot_graph(&self, custom_settings: Option<VertexSettings>) -> DotGraphBasic<'_, Self>
     where
         Self: Sized,
     {

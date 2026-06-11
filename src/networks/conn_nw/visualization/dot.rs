@@ -1,30 +1,30 @@
 use crate::Variant;
-use crate::graphs::visualization::dot::{DotGraph, NodeSettings, NodeShape, NodeStyle};
+use crate::graphs::visualization::dot::{DotGraph, VertexSettings, VertexShape, VertexStyle};
 use crate::graphs::{Graph, VIdx, Vertex};
 use crate::networks::conn_nw::nw::{ConnNw, ConnNwGr};
 use crate::networks::conn_nw::vertex_data::ConnNwVertex;
 use alloc::{format, string::String};
 
-fn default_dt_ori_settings() -> NodeSettings {
-    NodeSettings {
-        shape: Some(NodeShape::Rect),
-        style: Some(NodeStyle::Filled),
+fn default_dt_ori_settings() -> VertexSettings {
+    VertexSettings {
+        shape: Some(VertexShape::Rect),
+        style: Some(VertexStyle::Filled),
         fill_color: Some(String::from("lightgreen")),
     }
 }
 
-fn default_at_des_settings() -> NodeSettings {
-    NodeSettings {
-        shape: Some(NodeShape::Rect),
-        style: Some(NodeStyle::Filled),
+fn default_at_des_settings() -> VertexSettings {
+    VertexSettings {
+        shape: Some(VertexShape::Rect),
+        style: Some(VertexStyle::Filled),
         fill_color: Some(String::from("tomato")),
     }
 }
 
 pub struct DotConnNw<'a, V: Variant> {
     nw: &'a ConnNw<'a, V>,
-    dt_ori_settings: NodeSettings,
-    at_des_settings: NodeSettings,
+    dt_ori_settings: VertexSettings,
+    at_des_settings: VertexSettings,
 }
 
 impl<'a, V> DotConnNw<'a, V>
@@ -33,8 +33,8 @@ where
 {
     pub fn new(
         nw: &'a ConnNw<'a, V>,
-        dt_ori_settings: Option<NodeSettings>,
-        at_des_settings: Option<NodeSettings>,
+        dt_ori_settings: Option<VertexSettings>,
+        at_des_settings: Option<VertexSettings>,
     ) -> Self {
         Self {
             nw,
@@ -64,7 +64,7 @@ where
         }
     }
 
-    fn vertex_settings(&self, v: VIdx) -> &NodeSettings {
+    fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
         match self.graph().vertex(v).data() {
             ConnNwVertex::St(_) => &self.dt_ori_settings,
             ConnNwVertex::AtDes(_) => &self.at_des_settings,

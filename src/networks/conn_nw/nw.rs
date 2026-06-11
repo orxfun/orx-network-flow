@@ -1,6 +1,6 @@
 use crate::graphs::VIdx;
 use crate::graphs::core::GraphCoreBuilder;
-use crate::graphs::{core::GraphCore, visualization::dot::NodeSettings};
+use crate::graphs::{core::GraphCore, visualization::dot::VertexSettings};
 use crate::networks::conn_nw::vertex_data::ConnNwVertex;
 use crate::networks::conn_nw::visualization::dot::DotConnNw;
 use crate::space_time::SpaceTime;
@@ -28,8 +28,8 @@ where
 
     pub fn as_dot_graph(
         &'a self,
-        dt_ori_settings: Option<NodeSettings>,
-        at_des_settings: Option<NodeSettings>,
+        dt_ori_settings: Option<VertexSettings>,
+        at_des_settings: Option<VertexSettings>,
     ) -> DotConnNw<'a, V> {
         DotConnNw::new(self, dt_ori_settings, at_des_settings)
     }
