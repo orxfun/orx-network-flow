@@ -4,6 +4,7 @@
 // pub use core::CoreNw;
 mod com_by_od_st_nw;
 mod conn_nw;
+mod conn_wait_nw;
 mod transport_nw;
 
 pub use com_by_od_st_nw::ComOdStNw;
