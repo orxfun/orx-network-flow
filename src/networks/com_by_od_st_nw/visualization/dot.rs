@@ -87,6 +87,10 @@ impl<'a, V: Variant> DotGraph for DotComOdStNw<'a, V> {
         })
     }
 
+    fn graph(&self) -> &impl Graph {
+        self.nw
+    }
+
     fn vertex_settings(&self, v: VIdx) -> &NodeSettings {
         match self.nw.vertex(v).data() {
             ComOdStDv::Transport(_) => &self.transport_settings,

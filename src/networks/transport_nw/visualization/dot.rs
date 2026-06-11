@@ -35,6 +35,10 @@ impl<'a, V: Variant> DotGraph for DotTrNw<'a, V> {
         &self.node_settings
     }
 
+    fn graph(&self) -> &impl Graph {
+        self.nw
+    }
+
     fn vertices(&self) -> impl Iterator<Item = VIdx> {
         self.nw.vertex_indices()
     }

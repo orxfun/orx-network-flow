@@ -1,10 +1,10 @@
 use crate::graphs::visualization::dot::{DotGraph, NodeSettings};
-use crate::graphs::{Edge, Graph, VIdx};
+use crate::graphs::{Graph, VIdx};
 use alloc::string::ToString;
 use core::fmt::Display;
 
 pub struct DotGraphBasic<'a, G: Graph> {
-    graph: &'a G,
+    g: &'a G,
     settings: NodeSettings,
 }
 
@@ -13,8 +13,8 @@ impl<'a, G: Graph> DotGraphBasic<'a, G> {
         DotGraphBasic::new_with_settings(graph, Default::default())
     }
 
-    pub fn new_with_settings(graph: &'a G, settings: NodeSettings) -> Self {
-        DotGraphBasic { graph, settings }
+    pub fn new_with_settings(g: &'a G, settings: NodeSettings) -> Self {
+        DotGraphBasic { g, settings }
     }
 }
 
@@ -27,11 +27,7 @@ impl<'a, G: Graph> DotGraph for DotGraphBasic<'a, G> {
         &self.settings
     }
 
-    fn vertices(&self) -> impl Iterator<Item = VIdx> {
-        self.graph.vertex_indices()
-    }
-
-    fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)> {
-        self.graph.edges().map(|e| (e.tail(), e.head()))
+    fn graph(&self) -> &impl Graph {
+        self.g
     }
 }

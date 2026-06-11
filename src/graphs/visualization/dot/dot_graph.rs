@@ -1,3 +1,4 @@
+use crate::graphs::{Edge, Graph};
 use crate::graphs::{VIdx, visualization::dot::NodeSettings};
 use alloc::format;
 use alloc::string::String;
@@ -18,9 +19,15 @@ pub trait DotGraph {
 
     fn vertex_settings(&self, v: VIdx) -> &NodeSettings;
 
-    fn vertices(&self) -> impl Iterator<Item = VIdx>;
+    fn graph(&self) -> &impl Graph;
 
-    fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)>;
+    fn vertices(&self) -> impl Iterator<Item = VIdx> {
+        self.graph().vertex_indices()
+    }
+
+    fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)> {
+        self.graph().edges().map(|e| (e.tail(), e.head()))
+    }
 
     fn dot_string(&self) -> String {
         let mut dot = String::from("digraph G {\n");

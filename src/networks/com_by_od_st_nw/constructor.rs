@@ -55,3 +55,11 @@ fn add_source_sink_vertices<V: Variant>(
     let sink = ComOdStDv::DesSt(*od_st, total_amount);
     b.vertex(sink);
 }
+
+fn add_ori_st_vertices<V: Variant>(
+    b: &mut GraphExtendedBuilder<'_, TrNw<V>, ComOdStDv<V>, ComOdStDe<V>>,
+    od_st: &SpaceTimeOd,
+    group: &IdxMapSubset<'_, V::K, CommodityData<V>, Commodity>,
+) {
+    //
+}
