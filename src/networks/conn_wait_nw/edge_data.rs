@@ -1,1 +1,4 @@
-pub enum ConnWaitEdge {}
+pub enum ConnWaitEdge {
+    Wait,
+    Transport,
+}

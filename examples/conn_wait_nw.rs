@@ -1,5 +1,5 @@
 use orx_network_flow::graphs::visualization::dot::DotGraph;
-use orx_network_flow::{GeographicalConnectivity, ProblemBuilder, Variant};
+use orx_network_flow::{ProblemBuilder, Variant};
 
 #[derive(Clone, Copy)]
 struct MyVariant;
@@ -84,26 +84,6 @@ fn main() {
     transport("CVG", "AMS", 4, 8);
     transport("CVG", "AMS", 7, 11);
     transport("CVG", "AMS", 10, 14);
-
-    // settings
-
-    let geo_conn = GeographicalConnectivity {
-        near_ac_km: 500.0,
-        far_via_b_km: 900.0,
-        min_detour_ratio: 1.8,
-        min_excess_km: 700.0,
-        epsilon_ac_km: 50.0,
-    };
-    builder
-        .spatial_connectivity()
-        .with_geographical_connectivity(geo_conn)
-        .ban_connection(&"AMS".to_string(), &"BRU".to_string(), &"SIN".to_string());
-    builder.temporal_connectivity().global(2i64, 1000i64);
-
-    builder.max_waiting().global(1000i64);
-
-    builder.max_earliness().global(1000i64);
-    builder.max_lateness().global(0i64);
 
     let problem = builder.finish();
 

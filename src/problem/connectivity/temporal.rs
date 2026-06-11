@@ -29,7 +29,7 @@ pub struct TemporalConnectivity {
 impl Default for TemporalConnectivity {
     fn default() -> Self {
         Self {
-            global_min_max_ct: [Time::zero(), Time::zero()],
+            global_min_max_ct: [Time::zero(), Time::inf()],
             local_min_max_ct: Default::default(),
         }
     }
