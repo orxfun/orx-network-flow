@@ -18,6 +18,7 @@ where
     p: &'a Problem<V>,
     g: ConnWaitGraph,
     ro_to_v: Map<SpaceTime, VIdx>,
+    dd_to_v: Map<SpaceTime, VIdx>,
 }
 
 impl<'a, V> ConnWaitNw<'a, V>
@@ -25,8 +26,13 @@ where
     V: Variant,
 {
     pub fn construct(p: &'a Problem<V>, settings: ConnWaitNwSettings) -> Self {
-        let g = super::construct::construct_graph(p, settings);
-        Self { p, g }
+        let output = super::construct::construct_graph(p, settings);
+        Self {
+            p,
+            g: output.graph,
+            ro_to_v: output.ro_to_v,
+            dd_to_v: output.dd_to_v,
+        }
     }
 
     pub fn p(&self) -> &Problem<V> {

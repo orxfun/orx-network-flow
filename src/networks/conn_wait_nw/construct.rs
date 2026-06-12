@@ -6,7 +6,13 @@ use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant};
 use core::iter::Peekable;
 
-pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> ConnWaitGraph {
+pub struct Output {
+    pub graph: ConnWaitGraph,
+    pub ro_to_v: Map<SpaceTime, VIdx>,
+    pub dd_to_v: Map<SpaceTime, VIdx>,
+}
+
+pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
     let mut builder = ConnWaitGraph::builder();
     let b = &mut builder;
 
@@ -133,7 +139,13 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
         }
     }
 
-    builder.finish()
+    let graph = builder.finish();
+
+    Output {
+        graph,
+        ro_to_v,
+        dd_to_v,
+    }
 }
 
 fn conn_t_dd<V: Variant>(
