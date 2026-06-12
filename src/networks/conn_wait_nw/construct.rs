@@ -1,3 +1,4 @@
+use crate::graphs::EdgeRange;
 use crate::graphs::{EIdx, VIdx, core::GraphCoreBuilder};
 use crate::networks::ConnWaitNwSettings;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex};
@@ -12,7 +13,7 @@ pub struct Output {
     pub ro_to_v: Map<SpaceTime, VIdx>,
     pub dd_to_v: Map<SpaceTime, VIdx>,
     pub transport_edges: VecTransport<Vec<EIdx>>,
-    // pub bypass_edges_range: Range<usize>,
+    pub bypass_edges_range: EdgeRange,
 }
 
 pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
@@ -137,6 +138,7 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
     }
 
     // edges: ro-dd bypass
+    let bypass_edges_range = EdgeRange::new(EIdx::from(b.e()), p.len_commodities());
     if settings.add_bypass_edges {
         for (c, com) in p.commodities.indices_values() {
             let ro = *ro_to_v.get(&com.origin()).expect("exists");
@@ -152,6 +154,7 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
         ro_to_v,
         dd_to_v,
         transport_edges,
+        bypass_edges_range,
     }
 }
 

@@ -42,8 +42,10 @@ macro_rules! impl_idx {
         pub struct $range(pub(super) $idx, pub(super) $idx);
 
         impl $range {
-            pub fn new(from: $idx, to: $idx) -> Self {
-                Self(from, to)
+            pub fn new(begin: $idx, len: usize) -> Self {
+                use crate::indices::IdxCore;
+                let end_exclusive = $idx::from(begin.into_inner() + len);
+                Self(begin, end_exclusive)
             }
         }
     };

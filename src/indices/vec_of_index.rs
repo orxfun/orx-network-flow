@@ -1,6 +1,7 @@
 #[macro_export]
 macro_rules! impl_vec_of_idx {
     ($idx:ident, $range:ident, $idx_vec:ident) => {
+        #[derive(Debug)]
         pub struct $idx_vec<T>(pub alloc::vec::Vec<T>);
 
         impl<T> core::ops::Index<$idx> for $idx_vec<T> {

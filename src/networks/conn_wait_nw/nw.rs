@@ -1,3 +1,4 @@
+use crate::graphs::EdgeRange;
 use crate::graphs::{EIdx, VIdx, core::GraphCore};
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
@@ -20,6 +21,7 @@ where
     ro_to_v: Map<SpaceTime, VIdx>,
     dd_to_v: Map<SpaceTime, VIdx>,
     transport_edges: VecTransport<Vec<EIdx>>,
+    bypass_edges_range: EdgeRange,
 }
 
 impl<'a, V> ConnWaitNw<'a, V>
@@ -34,6 +36,7 @@ where
             ro_to_v: output.ro_to_v,
             dd_to_v: output.dd_to_v,
             transport_edges: output.transport_edges,
+            bypass_edges_range: output.bypass_edges_range,
         }
     }
 

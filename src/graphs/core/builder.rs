@@ -12,6 +12,10 @@ impl<Dv, De> GraphCoreBuilder<Dv, De> {
         Self(graph)
     }
 
+    pub fn e(&self) -> usize {
+        self.0.e()
+    }
+
     pub fn vertex(&mut self, data: Dv) -> VIdx {
         let idx = VIdx::from(self.0.v());
         let vertex = VertexCore::new(data);
