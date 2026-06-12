@@ -46,6 +46,10 @@ macro_rules! impl_vec_of_idx {
                 self.0.iter()
             }
 
+            pub fn enumerated_iter(&self) -> impl ExactSizeIterator<Item = ($idx, &T)> {
+                self.0.iter().enumerate().map(|(i, x)| ($idx::from(i), x))
+            }
+
             pub fn indices(&self) -> impl Iterator<Item = $idx> {
                 (0..self.0.len()).map($idx::from)
             }

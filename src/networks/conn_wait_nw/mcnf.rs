@@ -9,7 +9,7 @@ use good_lp::solvers::lp_solvers::{Cplex, Model};
 use good_lp::variable::UnsolvedProblem;
 use good_lp::{
     Constraint, Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
-    VariableDefinition,
+    VariableDefinition, constraint,
 };
 use lp_solvers::lp_format::{LpProblem, WriteToLpFileFormat};
 use lp_solvers::solvers::SolverProgram;
@@ -79,6 +79,7 @@ where
 
     let mut model = pr_vars.minimise(objective).using(cplex_solver());
     flow_balance::<_, LpSolver<Cplex>>(nw, &vars, &mut model, named);
+    capacity::<_, LpSolver<Cplex>>(nw, &vars, &mut model, named);
 
     let p = unsafe { lp_solvers_model_to_problem(&model) };
     println!("{}", p.display_lp());
@@ -112,14 +113,12 @@ where
     cost
 }
 
-fn flow_balance<V, S: Solver>(
+fn flow_balance<V: Variant, S: Solver>(
     nw: &ConnWaitNw<'_, V>,
     vars: &VecEdge<Variable>,
     model: &mut S::Model,
     named: bool,
-) where
-    V: Variant,
-{
+) {
     let (p, g) = (nw.p, &nw.g);
 
     for vertex in g.vertices() {
@@ -147,12 +146,13 @@ fn flow_balance<V, S: Solver>(
             ConnWaitVertex::Transport(_) => 0.0,
         };
 
-        let mut constraint = out_minus_in.eq(b);
+        let mut constraint = constraint!(out_minus_in == b);
+
         if named {
             let name = match vertex.data() {
                 ConnWaitVertex::ReadyOri(ro, _) => {
                     let ori = p.space_key(ro.space());
-                    format!("fb_enter")
+                    format!("fb_exit__{ori}_{}", ro.time())
                 }
                 ConnWaitVertex::DueDes(dd, _) => {
                     let des = p.space_key(dd.space());
@@ -163,6 +163,37 @@ fn flow_balance<V, S: Solver>(
                     format!("fb_tra__{}", t.var_str(p))
                 }
             };
+            constraint = constraint.set_name(name);
+        }
+
+        model.add_constraint(constraint);
+    }
+}
+
+fn capacity<V: Variant, S: Solver>(
+    nw: &ConnWaitNw<'_, V>,
+    vars: &VecEdge<Variable>,
+    model: &mut S::Model,
+    named: bool,
+) {
+    let (p, g) = (nw.p, &nw.g);
+
+    for (t, edges) in nw.transport_edges.enumerated_iter() {
+        if edges.is_empty() {
+            continue;
+        }
+
+        let capacity = p.transport_by_idx(t).capacity().into_f64();
+
+        let mut total_flow = Expression::default();
+        for &e in edges {
+            total_flow.add_mul(1, vars[e]);
+        }
+
+        let mut constraint = constraint!(total_flow <= capacity);
+
+        if named {
+            let name = format!("cap_{t}");
             constraint = constraint.set_name(name);
         }
 
