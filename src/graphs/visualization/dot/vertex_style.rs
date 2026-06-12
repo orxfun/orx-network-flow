@@ -1,7 +1,7 @@
 use core::fmt::Display;
 
 #[derive(Clone)]
-pub enum NodeStyle {
+pub enum VertexStyle {
     Filled,
     Invisible,
     Diagonals,
@@ -12,7 +12,7 @@ pub enum NodeStyle {
     Bold,
 }
 
-impl Display for NodeStyle {
+impl Display for VertexStyle {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let style = match self {
             Self::Filled => "filled",

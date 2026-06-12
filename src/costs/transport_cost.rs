@@ -1,7 +1,8 @@
 use crate::cost::Cost;
+use crate::utils::std_utils::Map;
 use crate::vehicle_types::VehicleType;
 use crate::{Problem, Variant};
-use crate::{commodities::Commodity, std_utils::Map, transports::Transport, vehicles::Vehicle};
+use crate::{commodities::Commodity, transports::Transport, vehicles::Vehicle};
 
 pub struct TransportCost<V: Variant> {
     global: V::C,

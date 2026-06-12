@@ -36,3 +36,11 @@ macro_rules! impl_idx {
         }
     };
 }
+
+impl IdxCore for usize {
+    fn into_inner(self) -> usize {
+        self
+    }
+}
+
+impl Idx for usize {}

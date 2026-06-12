@@ -1,4 +1,6 @@
-use crate::graphs::{VIdx, visualization::dot::NodeSettings};
+use crate::graphs::visualization::dot::edge_settings::EdgeSettings;
+use crate::graphs::{EIdx, Edge, Graph};
+use crate::graphs::{VIdx, visualization::dot::VertexSettings};
 use alloc::format;
 use alloc::string::String;
 use core::fmt::Display;
@@ -9,18 +11,33 @@ use std::process::Command;
 #[cfg(feature = "std")]
 use std::{io::Error, path::Path};
 
+const TEMP_EDGE: EdgeSettings = EdgeSettings { color: None };
+
 pub trait DotGraph {
+    type G: Graph;
+
     fn vertex_label(&self, v: VIdx) -> impl Display;
 
     fn vertex_tooltip(&self, _: VIdx) -> Option<impl Display> {
         Option::<String>::None
     }
 
-    fn vertex_settings(&self, v: VIdx) -> &NodeSettings;
+    fn vertex_settings(&self, v: VIdx) -> &VertexSettings;
 
-    fn vertices(&self) -> impl Iterator<Item = VIdx>;
+    fn edge_settings(&self, e: EIdx) -> &EdgeSettings;
 
-    fn edges(&self) -> impl Iterator<Item = (VIdx, VIdx)>;
+    fn graph(&self) -> &Self::G;
+
+    fn vertices(&self) -> impl Iterator<Item = VIdx> {
+        self.graph().vertex_indices()
+    }
+
+    fn edges(&self) -> impl Iterator<Item = (EIdx, VIdx, VIdx)> {
+        self.graph().edge_indices().map(|e| {
+            let edge = self.graph().edge(e);
+            (e, edge.tail(), edge.head())
+        })
+    }
 
     fn dot_string(&self) -> String {
         let mut dot = String::from("digraph G {\n");
@@ -41,8 +58,9 @@ pub trait DotGraph {
             dot.push('\n');
         }
 
-        for (tail, head) in self.edges() {
-            let edge = format!("    {} -> {};", tail, head);
+        for (e, tail, head) in self.edges() {
+            let settings = self.edge_settings(e);
+            let edge = format!("    {} -> {} [label=\"\" {settings}];", tail, head);
             dot.push_str(&edge);
             dot.push('\n');
         }

@@ -1,11 +1,13 @@
 mod dot_graph;
 mod dot_graph_basic;
-mod node_settings;
-mod node_shape;
-mod node_style;
+mod edge_settings;
+mod vertex_settings;
+mod vertex_shape;
+mod vertex_style;
 
 pub use dot_graph::DotGraph;
 pub use dot_graph_basic::DotGraphBasic;
-pub use node_settings::NodeSettings;
-pub use node_shape::NodeShape;
-pub use node_style::NodeStyle;
+pub use edge_settings::EdgeSettings;
+pub use vertex_settings::VertexSettings;
+pub use vertex_shape::VertexShape;
+pub use vertex_style::VertexStyle;

@@ -1,12 +1,12 @@
-use crate::commodities::{Commodities, Commodity, CommodityData};
+use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
 use crate::costs::Costs;
-use crate::networks::{TrNw, construct_tr_nw};
+use crate::networks::{ConnWaitNw, ConnWaitNwSettings};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, Spaces};
-use crate::std_utils::Map;
 use crate::time_bounds::TimeBounds;
 use crate::transports::{Transport, TransportData, Transports};
+use crate::utils::std_utils::Map;
 use crate::vehicle_types::{VehicleType, VehicleTypes};
 use crate::vehicles::{Vehicle, VehicleData, Vehicles};
 use alloc::vec::Vec;
@@ -24,6 +24,9 @@ pub struct Problem<V: Variant> {
     pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub ori_des_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
     pub des_ori_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
+    pub sorted_transport_origins: Vec<Space>,
+    pub sorted_commodity_origins: Vec<Space>,
+    pub sorted_commodity_destinations: Vec<Space>,
 }
 
 impl<V: Variant> Problem<V> {
@@ -104,9 +107,15 @@ impl<V: Variant> Problem<V> {
         self.vehicles.get_by_idx(t).expect("validated problem")
     }
 
+    // commodity grouping
+
+    pub fn commodities_by_od_st(&self) -> CommoditiesByOdSt<'_, V> {
+        CommoditiesByOdSt::create(self)
+    }
+
     // networks
 
-    pub fn construct_transport_nw(&self) -> TrNw<V> {
-        construct_tr_nw(self)
+    pub fn construct_wait_nw(&self, settings: ConnWaitNwSettings) -> ConnWaitNw<'_, V> {
+        ConnWaitNw::construct(self, settings)
     }
 }

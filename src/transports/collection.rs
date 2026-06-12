@@ -3,6 +3,7 @@ use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
 use crate::transports::{Transport, TransportData};
 use crate::vehicles::Vehicle;
+use core::ops::Deref;
 
 pub struct Transports<V: Variant> {
     map: IdxMap<V::T, TransportData<V>, Transport>,
@@ -44,12 +45,12 @@ impl<V: Variant> Transports<V> {
     pub fn get_ind_by_key(&self, key: &V::T) -> Option<Transport> {
         self.map.key_to_idx(key)
     }
+}
 
-    pub fn entries(&self) -> impl Iterator<Item = (Transport, &V::T, &TransportData<V>)> {
-        self.map.entries()
-    }
+impl<V: Variant> Deref for Transports<V> {
+    type Target = IdxMap<V::T, TransportData<V>, Transport>;
 
-    pub fn indices(&self) -> impl Iterator<Item = Transport> {
-        self.map.indices()
+    fn deref(&self) -> &Self::Target {
+        &self.map
     }
 }

@@ -1,7 +1,7 @@
 use core::fmt::Display;
 
 #[derive(Clone)]
-pub enum NodeShape {
+pub enum VertexShape {
     Box,
     Ellipse,
     Circle,
@@ -57,7 +57,7 @@ pub enum NodeShape {
     Lpromoter,
 }
 
-impl Display for NodeShape {
+impl Display for VertexShape {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let shape = match self {
             Self::Box => "box",

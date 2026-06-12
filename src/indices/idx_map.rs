@@ -1,6 +1,5 @@
-use crate::indices::IdxCore;
-use crate::indices::index::Idx;
-use crate::std_utils::{Map, MapKey};
+use crate::indices::{Idx, IdxCore};
+use crate::utils::std_utils::{Map, MapKey};
 use alloc::vec::Vec;
 use core::fmt::Debug;
 use core::marker::PhantomData;
@@ -80,6 +79,14 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
         self.index_and_data.get(idx).map(|x| &x.1)
     }
 
+    pub fn value_unchecked(&self, idx: I) -> &V
+    where
+        I: IdxCore,
+    {
+        let idx = idx.into_inner();
+        &self.index_and_data[idx].1
+    }
+
     pub fn key(&self, idx: I) -> Option<&K>
     where
         I: IdxCore,
@@ -106,6 +113,17 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
 
     pub fn indices(&self) -> impl Iterator<Item = I> {
         (0..self.len()).map(I::from)
+    }
+
+    pub fn values(&self) -> impl Iterator<Item = &V> {
+        self.index_and_data.iter().map(|x| &x.1)
+    }
+
+    pub fn indices_values(&self) -> impl Iterator<Item = (I, &V)> {
+        self.index_and_data
+            .iter()
+            .enumerate()
+            .map(|(i, x)| (I::from(i), &x.1))
     }
 
     pub fn index_and_data(&self) -> &[(K, V)] {

@@ -1,4 +1,5 @@
-use crate::{Problem, Variant, commodities::Commodity, spaces::Space, std_utils::Map, time::Time};
+use crate::utils::std_utils::Map;
+use crate::{Problem, Variant, commodities::Commodity, spaces::Space, time::Time};
 
 pub struct DepartureBounds {
     global: Time,

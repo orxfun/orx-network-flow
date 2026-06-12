@@ -1,23 +1,9 @@
 use crate::graphs::VIdx;
 use crate::graphs::core::{GraphCore, GraphCoreBuilder};
-use crate::graphs::visualization::dot::NodeSettings;
-use crate::networks::transport_nw::visualization::dot::DotTrNw;
-use crate::networks::transport_nw::{edge_data::TrDe, vertex_data::TrDv};
+use crate::networks::transport_nw::{edge_data::TrDe, nw::TrNw, vertex_data::TrDv};
 use crate::transports::Transport;
 use crate::{IdxCore, Problem, Variant};
 use core::iter::Peekable;
-
-pub type TrNw<V> = GraphCore<TrDv, TrDe<V>>;
-
-impl<V: Variant> GraphCore<TrDv, TrDe<V>> {
-    pub fn as_dot_graph<'a>(
-        &'a self,
-        p: &'a Problem<V>,
-        node_settings: Option<NodeSettings>,
-    ) -> DotTrNw<'a, V> {
-        DotTrNw::new(p, self, node_settings)
-    }
-}
 
 pub fn construct_tr_nw<V: Variant>(p: &Problem<V>) -> TrNw<V> {
     let mut builder = GraphCore::builder();
@@ -112,7 +98,7 @@ fn find_head_for_tail<V: Variant>(
     tail: Transport,
 ) -> Option<Transport> {
     // TODO: minor speed improvement possible by caching at of tail
-    let feasible = |head: Transport| p.connectivity.can_connect(p, tail, head);
+    let feasible = |head: Transport| p.connectivity.can_connect_temporally(p, tail, head);
 
     if !feasible(curr_head) {
         // none of the further heads can be connected to tail

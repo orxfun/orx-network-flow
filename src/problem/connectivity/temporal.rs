@@ -1,4 +1,4 @@
-use crate::{Problem, Variant, spaces::Space, std_utils::Map, time::Time};
+use crate::{Problem, Variant, spaces::Space, time::Time, utils::std_utils::Map};
 
 #[derive(derive_new::new)]
 pub struct TemporalConnectivityBuilder<'a, V: Variant> {
@@ -29,7 +29,7 @@ pub struct TemporalConnectivity {
 impl Default for TemporalConnectivity {
     fn default() -> Self {
         Self {
-            global_min_max_ct: [Time::zero(), Time::zero()],
+            global_min_max_ct: [Time::zero(), Time::inf()],
             local_min_max_ct: Default::default(),
         }
     }
