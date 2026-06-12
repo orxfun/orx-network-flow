@@ -29,7 +29,7 @@ where
     V: Variant,
 {
     pub fn construct(p: &'a Problem<V>, settings: ConnWaitNwSettings) -> Self {
-        let output = super::construct::construct_graph(p, settings);
+        let output = super::construct::construct(p, settings);
         Self {
             p,
             g: output.graph,

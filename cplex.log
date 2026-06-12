@@ -232,3 +232,421 @@ Deterministic time = 0.00 ticks  (0.70 ticks/sec)
 
 
 Solution written to file '/tmp/.tmpG9xxrm.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:06:40 2026
+
+Warning, line 9: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 10: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 12: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 13: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 14: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 15: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 16: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 17: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 20: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 21: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 23: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 24: Name 'exitBRUAMSBRU' does not exist.
+Warning, line 25: Name 'exitBRUAMSBRU2' does not exist.
+Warning, line 26: Name 'exitBRUAMSBRU3' does not exist.
+Warning, line 27: Name 'exitCVGBRUCVG' does not exist.
+Warning, line 28: Name 'exitCVGBRUCVG2' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemrxHrmv.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpq6DnAr.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:06:50 2026
+
+Warning, line 9: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 10: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 12: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 13: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 14: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 15: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 16: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 17: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 20: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 21: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 23: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 24: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 25: Name 'exitAMSCVGAMS2' does not exist.
+Warning, line 26: Name 'exitAMSCVGAMS3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS4' does not exist.
+Warning, line 28: Name 'exitCVGBRUCVG' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemp1rbWO.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpn1g0TK.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:19:02 2026
+
+
+Problem '/tmp/good_lp_problemsrY9VY.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.01 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (5.54 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpQ0QeQd.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:19:43 2026
+
+
+Problem '/tmp/good_lp_problemTz4CzJ.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (33.59 ticks/sec)
+
+
+Solution written to file '/tmp/.tmp94F882.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:20 2026
+
+
+Problem '/tmp/good_lp_problemA4OAEb.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (33.56 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpG9Mstu.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:29 2026
+
+
+Problem '/tmp/good_lp_problemg6Gx94.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 4 (0)
+Deterministic time = 0.03 ticks  (34.18 ticks/sec)
+
+
+Solution written to file '/tmp/.tmp2l8r4l.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:30 2026
+
+
+Problem '/tmp/good_lp_problemJdpcAy.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 4 (0)
+Deterministic time = 0.03 ticks  (34.17 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpESCfYh.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:31 2026
+
+
+Problem '/tmp/good_lp_problemyIfJzB.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 5 (0)
+Deterministic time = 0.03 ticks  (34.76 ticks/sec)
+
+
+Solution written to file '/tmp/.tmptQ46Bd.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:35 2026
+
+
+Problem '/tmp/good_lp_problem9SkOkL.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (33.59 ticks/sec)
+
+
+Solution written to file '/tmp/.tmprxLsVe.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:44 2026
+
+
+Problem '/tmp/good_lp_problemlSJaer.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (33.56 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpkhLVyl.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:45 2026
+
+
+Problem '/tmp/good_lp_problemvl3jfn.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (33.59 ticks/sec)
+
+
+Solution written to file '/tmp/.tmppPAE7Z.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:45 2026
+
+
+Problem '/tmp/good_lp_problemiE3QRC.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 4 (0)
+Deterministic time = 0.03 ticks  (34.53 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpJwSBjs.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:55 2026
+
+Warning, line 9: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 10: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 11: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 12: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 13: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 14: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 15: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 16: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 17: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 19: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 20: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 21: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 23: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 24: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 25: Name 'exitAMSCVGAMS2' does not exist.
+Warning, line 26: Name 'exitAMSCVGAMS3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS4' does not exist.
+Warning, line 28: Name 'exitBRUAMSBRU' does not exist.
+9 name warnings not printed.
+
+Problem '/tmp/good_lp_problemcjzst9.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+No LP presolve or aggregator reductions.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.03 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpXtVEvd.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:56 2026
+
+Warning, line 9: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 10: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 12: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 13: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 14: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 15: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 16: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 17: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 19: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 20: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 21: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 23: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 24: Name 'exitBRUAMSBRU' does not exist.
+Warning, line 25: Name 'exitBRUAMSBRU2' does not exist.
+Warning, line 26: Name 'exitBRUAMSBRU3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 28: Name 'exitAMSCVGAMS2' does not exist.
+9 name warnings not printed.
+
+Problem '/tmp/good_lp_problemUI20sQ.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+No LP presolve or aggregator reductions.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.03 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpn59uft.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:59 2026
+
+
+Problem '/tmp/good_lp_problemw2o5iZ.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 4 (0)
+Deterministic time = 0.03 ticks  (34.57 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpGfUkA3.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 18:20:59 2026
+
+
+Problem '/tmp/good_lp_problemXBh0iY.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 2 rows and 10 columns.
+Aggregator did 7 substitutions.
+Reduced LP has 7 rows, 12 columns, and 24 nonzeros.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 2 (0)
+Deterministic time = 0.03 ticks  (33.59 ticks/sec)
+
+
+Solution written to file '/tmp/.tmppobA7z.sol'.

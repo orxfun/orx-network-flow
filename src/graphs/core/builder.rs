@@ -23,6 +23,10 @@ impl<Dv, De> GraphCoreBuilder<Dv, De> {
         idx
     }
 
+    pub fn vertex_data_mut(&mut self, v: VIdx) -> &mut Dv {
+        self.0.vertices[v].data_mut()
+    }
+
     pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) -> EIdx {
         let idx = EIdx::from(self.0.e());
         self.0.add_edge(tail, head, data);

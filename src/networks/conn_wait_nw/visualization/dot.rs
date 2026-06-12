@@ -99,11 +99,11 @@ where
                     data.destination().time()
                 )
             }
-            ConnWaitVertex::ReadyOri(ro) => {
+            ConnWaitVertex::ReadyOri(ro, _) => {
                 let ori = p.space_key(ro.space());
                 format!("{}\n{}-{}", v, ori, ro.time())
             }
-            ConnWaitVertex::DueDes(ro) => {
+            ConnWaitVertex::DueDes(ro, _) => {
                 let des = p.space_key(ro.space());
                 format!("{}\n{}-{}", v, des, ro.time())
             }
@@ -114,8 +114,8 @@ where
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
         match self.graph().vertex(v).data() {
             ConnWaitVertex::Transport(_) => &self.settings.transport,
-            ConnWaitVertex::ReadyOri(_) => &self.settings.ready_ori,
-            ConnWaitVertex::DueDes(_) => &self.settings.due_des,
+            ConnWaitVertex::ReadyOri(_, _) => &self.settings.ready_ori,
+            ConnWaitVertex::DueDes(_, _) => &self.settings.due_des,
             _ => todo!("vertex settings"),
         }
     }

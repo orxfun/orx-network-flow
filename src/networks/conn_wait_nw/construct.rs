@@ -5,7 +5,7 @@ use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex}
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 use core::iter::Peekable;
 
 pub struct Output {
@@ -16,7 +16,7 @@ pub struct Output {
     pub bypass_edges_range: EdgeRange,
 }
 
-pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
+pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
     let mut builder = ConnWaitGraph::builder();
     let b = &mut builder;
     let mut transport_edges: VecTransport<_> =
@@ -41,9 +41,12 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
                 sorted_ready_set.insert(com.origin().time());
 
                 let ro = com.origin();
-                if !ro_to_v.contains_key(&ro) {
-                    let v = b.vertex(ConnWaitVertex::ReadyOri(ro));
-                    ro_to_v.insert(ro, v);
+                match ro_to_v.get(&ro) {
+                    Some(&v) => b.vertex_data_mut(v).push_ro_commodity(c).expect("ro"),
+                    None => {
+                        let v = b.vertex(ConnWaitVertex::ReadyOri(ro, vec![c]));
+                        ro_to_v.insert(ro, v);
+                    }
                 }
             }
         }
@@ -62,10 +65,13 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
                 let sorted_due_set = des_to_sorted_due.entry(*des).or_default();
                 sorted_due_set.insert(com.destination().time());
 
-                let ro = com.destination();
-                if !dd_to_v.contains_key(&ro) {
-                    let v = b.vertex(ConnWaitVertex::DueDes(ro));
-                    dd_to_v.insert(ro, v);
+                let dd = com.destination();
+                match dd_to_v.get(&dd) {
+                    Some(&v) => b.vertex_data_mut(v).push_dd_commodity(c).expect("dd"),
+                    None => {
+                        let v = b.vertex(ConnWaitVertex::DueDes(dd, vec![c]));
+                        dd_to_v.insert(dd, v);
+                    }
                 }
             }
         }
