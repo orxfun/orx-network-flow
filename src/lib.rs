@@ -42,5 +42,5 @@ pub(crate) use commodities::{Commodities, Commodity, CommodityData};
 pub(crate) use indices::{IdxMap, IdxMapSubset};
 pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
 pub(crate) use time::Time;
-pub(crate) use transports::{Transport, TransportData, Transports};
+pub(crate) use transports::{Transport, TransportData, Transports, VecTransport};
 pub(crate) use vehicles::Vehicle;

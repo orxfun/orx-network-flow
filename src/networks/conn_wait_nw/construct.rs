@@ -1,20 +1,25 @@
-use crate::graphs::{VIdx, core::GraphCoreBuilder};
+use crate::graphs::{EIdx, VIdx, core::GraphCoreBuilder};
 use crate::networks::ConnWaitNwSettings;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex};
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
-use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant};
+use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
+use alloc::vec::Vec;
 use core::iter::Peekable;
 
 pub struct Output {
     pub graph: ConnWaitGraph,
     pub ro_to_v: Map<SpaceTime, VIdx>,
     pub dd_to_v: Map<SpaceTime, VIdx>,
+    pub transport_edges: VecTransport<Vec<EIdx>>,
 }
 
 pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
     let mut builder = ConnWaitGraph::builder();
     let b = &mut builder;
+    let mut transport_edges: VecTransport<_> =
+        (0..p.len_transports()).map(|_| Vec::new()).collect();
+    let t_edges = &mut transport_edges;
 
     // vertices: transport
     for t in p.transports.indices() {
@@ -89,7 +94,7 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
                         true => {
                             let tails_rev = tail_sorted_transports.iter().copied().rev();
                             let heads_rev = head_sorted_transports.iter().copied().rev().peekable();
-                            conn_t_t(p, b, tails_rev, heads_rev);
+                            conn_t_t(p, b, t_edges, tails_rev, heads_rev);
                         }
                     }
                 }
@@ -125,7 +130,7 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
                 };
                 let tails = sorted_transports.iter().copied();
                 let heads = sorted_due.iter().map(map_head);
-                conn_t_dd(p, b, tails, heads);
+                conn_t_dd(p, b, t_edges, tails, heads);
             }
         }
     }
@@ -145,33 +150,7 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings)
         graph,
         ro_to_v,
         dd_to_v,
-    }
-}
-
-fn conn_t_dd<V: Variant>(
-    p: &Problem<V>,
-    b: &mut GraphCoreBuilder<ConnWaitVertex, ConnWaitEdge>,
-    mut tails: impl Iterator<Item = Transport>,
-    mut heads: impl Iterator<Item = (Time, VIdx)>,
-) -> Option<()> {
-    let (mut due, mut head_v) = heads.next()?;
-    let mut tail = tails.next()?;
-
-    loop {
-        let at = p.transport_by_idx(tail).destination().time();
-        match at <= due {
-            true => {
-                // connect transport, and move to the next transport
-                // due & head can still be used by the next transport
-                b.edge(ConnWaitEdge::Exit, t_into_v(tail), head_v);
-                tail = tails.next()?;
-            }
-            false => {
-                // couldn't connect transport, move to the next due & head
-                // keep the transport as tail
-                (due, head_v) = heads.next()?;
-            }
-        }
+        transport_edges,
     }
 }
 
@@ -182,6 +161,7 @@ fn t_into_v(t: Transport) -> VIdx {
 fn conn_t_t<V: Variant>(
     p: &Problem<V>,
     b: &mut GraphCoreBuilder<ConnWaitVertex, ConnWaitEdge>,
+    t_edges: &mut VecTransport<Vec<EIdx>>,
     mut tails_rev: impl Iterator<Item = Transport>,
     mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
 ) -> Option<()> {
@@ -195,7 +175,8 @@ fn conn_t_t<V: Variant>(
 
         match conn_t_t_find_head_for_tail(p, &mut heads_rev, curr_head, tail) {
             Some(head) => {
-                b.edge(ConnWaitEdge::Connect, t_into_v(tail), t_into_v(head));
+                let e = b.edge(ConnWaitEdge::Connect, t_into_v(tail), t_into_v(head));
+                t_edges[tail].push(e);
 
                 // same head can be assigned to prior tails
                 curr_head = head;
@@ -290,6 +271,35 @@ fn conn_ro_t_find_head_for_tail<V: Variant>(
             }
             // curr_head is the earliest transport and can connect to tail
             None => return Some(curr_head),
+        }
+    }
+}
+
+fn conn_t_dd<V: Variant>(
+    p: &Problem<V>,
+    b: &mut GraphCoreBuilder<ConnWaitVertex, ConnWaitEdge>,
+    t_edges: &mut VecTransport<Vec<EIdx>>,
+    mut tails: impl Iterator<Item = Transport>,
+    mut heads: impl Iterator<Item = (Time, VIdx)>,
+) -> Option<()> {
+    let (mut due, mut head_v) = heads.next()?;
+    let mut tail = tails.next()?;
+
+    loop {
+        let at = p.transport_by_idx(tail).destination().time();
+        match at <= due {
+            true => {
+                // connect transport, and move to the next transport
+                // due & head can still be used by the next transport
+                let e = b.edge(ConnWaitEdge::Exit, t_into_v(tail), head_v);
+                t_edges[tail].push(e);
+                tail = tails.next()?;
+            }
+            false => {
+                // couldn't connect transport, move to the next due & head
+                // keep the transport as tail
+                (due, head_v) = heads.next()?;
+            }
         }
     }
 }
