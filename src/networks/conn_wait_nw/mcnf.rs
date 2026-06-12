@@ -1,6 +1,100 @@
-use crate::Variant;
-use crate::networks::ConnWaitNw;
+use std::dbg;
 
-pub fn solve<V: Variant>(nw: &ConnWaitNw<'_, V>) {
-    //
+use crate::cost::Cost;
+use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
+use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
+use crate::{Transport, TransportData, Variant};
+use alloc::{format, string::ToString};
+use good_lp::solvers::lp_solvers::Cplex;
+use good_lp::{
+    Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
+    VariableDefinition,
+};
+
+pub fn cplex_solver() -> LpSolver<Cplex> {
+    good_lp::LpSolver(Cplex::with_command(
+        "/usr/local/cplex/bin/x86-64_linux/cplex".to_string(),
+    ))
+}
+
+pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool)
+where
+    V: Variant,
+{
+    let (p, g) = (nw.p, &nw.g);
+    let t_str = |t: &TransportData<V>| t.var_str(p);
+    let mut pr_vars = ProblemVariables::new();
+
+    let mut vars = VecEdge::new();
+
+    for e in g.edges() {
+        let mut var = VariableDefinition::new().min(0);
+
+        if named {
+            let [i, j] = [e.tail(), e.head()].map(|x| g.vertex(x));
+            let [tail, head] = [i.data(), j.data()];
+            match e.data() {
+                ConnWaitEdge::Enter => {
+                    let ro = tail.get_ro().expect("ro");
+                    let ori = p.space_key(ro.space());
+                    let t = p.transport_by_idx(head.get_t().expect("t"));
+                    var = var.name(format!("enter__{ori}_{}__{}", ro.time(), t_str(t)));
+                }
+                ConnWaitEdge::Connect => {
+                    let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
+                    let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
+                    var = var.name(format!("con__{}__{}", t_str(t1), t_str(t2)));
+                }
+                ConnWaitEdge::Wait => {
+                    let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
+                    let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
+                    var = var.name(format!("wait__{}__{}", t_str(t1), t_str(t2)));
+                }
+                ConnWaitEdge::Exit => {
+                    let dd = head.get_dd().expect("dd");
+                    let des = p.space_key(dd.space());
+                    let t = p.transport_by_idx(tail.get_t().expect("t"));
+                    var = var.name(format!("exit__{des}_{}__{}", dd.time(), t_str(t)));
+                }
+                ConnWaitEdge::Bypass(c) => {
+                    let com = p.commodity_by_idx(*c);
+                    var = var.name(format!("bypass__{}", com.var_str(p)));
+                }
+            }
+        }
+
+        vars.push(pr_vars.add(var));
+    }
+
+    let objective = objective(nw, &mut vars);
+
+    let model = pr_vars.minimise(objective).using(cplex_solver());
+
+    let solution = model.solve().expect("Failed to solve");
+
+    let a = &solution;
+
+    let b = solution.value(vars[EIdx::from(0)]);
+    dbg!(b);
+
+    let b = solution.value(vars[EIdx::from(1)]);
+    dbg!(b);
+}
+
+fn objective<V>(nw: &ConnWaitNw<'_, V>, vars: &mut VecEdge<Variable>) -> Expression
+where
+    V: Variant,
+{
+    let (p, g) = (nw.p, &nw.g);
+    let mut cost = Expression::default();
+
+    let bypass_edges_data = g.edges_slice(nw.bypass_edges_range);
+    let bypass_edge_indices = nw.bypass_edges_range.iter();
+    for (e, edge) in bypass_edge_indices.zip(bypass_edges_data) {
+        let c = edge.data().get_bypass_c().expect("bypass");
+        let coef = p.costs.lost_revenue.cost(c);
+        cost.add_mul(coef.into_f64(), vars[e]);
+    }
+
+    cost
 }

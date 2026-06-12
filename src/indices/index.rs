@@ -47,6 +47,11 @@ macro_rules! impl_idx {
                 let end_exclusive = $idx::from(begin.into_inner() + len);
                 Self(begin, end_exclusive)
             }
+
+            pub fn iter(self) -> impl Iterator<Item = $idx> {
+                use crate::indices::IdxCore;
+                (self.0.into_inner()..self.1.into_inner()).map($idx::from)
+            }
         }
     };
 }

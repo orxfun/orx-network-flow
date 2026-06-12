@@ -1,4 +1,5 @@
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
+use crate::networks::conn_wait_nw::mcnf::solve;
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::utils::std_utils::Map;
@@ -15,12 +16,12 @@ pub struct ConnWaitNw<'a, V>
 where
     V: Variant,
 {
-    p: &'a Problem<V>,
-    g: ConnWaitGraph,
-    ro_to_v: Map<SpaceTime, VIdx>,
-    dd_to_v: Map<SpaceTime, VIdx>,
-    transport_edges: VecTransport<Vec<EIdx>>,
-    bypass_edges_range: EdgeRange,
+    pub(super) p: &'a Problem<V>,
+    pub(super) g: ConnWaitGraph,
+    pub(super) ro_to_v: Map<SpaceTime, VIdx>,
+    pub(super) dd_to_v: Map<SpaceTime, VIdx>,
+    pub(super) transport_edges: VecTransport<Vec<EIdx>>,
+    pub(super) bypass_edges_range: EdgeRange,
 }
 
 impl<'a, V> ConnWaitNw<'a, V>
@@ -39,15 +40,11 @@ where
         }
     }
 
-    pub fn p(&self) -> &Problem<V> {
-        self.p
-    }
-
-    pub fn g(&self) -> &ConnWaitGraph {
-        &self.g
-    }
-
     pub fn as_dot_graph(&'a self, settings: Option<ConnWaitDotSettings>) -> ConnWaitDot<'a, V> {
         ConnWaitDot::new(self, settings)
+    }
+
+    pub fn solve(&self, named: bool) {
+        solve(self, named);
     }
 }

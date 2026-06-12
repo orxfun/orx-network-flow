@@ -1,4 +1,5 @@
-use crate::{SpaceTime, Variant};
+use crate::{Problem, SpaceTime, Variant};
+use alloc::{format, string::String};
 
 #[derive(Debug)]
 pub struct CommodityData<V: Variant> {
@@ -22,5 +23,11 @@ impl<V: Variant> CommodityData<V> {
 
     pub fn amount(&self) -> V::F {
         self.amount
+    }
+
+    pub(crate) fn var_str(&self, p: &Problem<V>) -> String {
+        let [ori, des] = [self.ori, self.des].map(|x| p.space_key(x.space()));
+        let [rt, due] = [self.ori.time(), self.des.time()];
+        format!("{}_{}_{}_{}", ori, des, rt, due)
     }
 }

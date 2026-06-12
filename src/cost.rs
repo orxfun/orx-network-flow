@@ -7,9 +7,15 @@ pub trait Cost:
     fn zero() -> Self {
         Self::default()
     }
+
+    fn into_f64(self) -> f64;
 }
 
-impl Cost for i64 {}
+impl Cost for i64 {
+    fn into_f64(self) -> f64 {
+        self as f64
+    }
+}
 
 impl Mul<Time> for i64 {
     type Output = Self;

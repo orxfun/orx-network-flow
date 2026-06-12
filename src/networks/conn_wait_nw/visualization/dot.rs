@@ -75,7 +75,7 @@ where
     }
 
     fn space(&self, space: Space) -> &V::S {
-        self.nw.p().space_key(space)
+        self.nw.p.space_key(space)
     }
 }
 
@@ -86,7 +86,7 @@ where
     type G = ConnWaitGraph;
 
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
-        let p = self.nw.p();
+        let p = self.nw.p;
         match self.graph().vertex(v).data() {
             ConnWaitVertex::Transport(t) => {
                 let data = p.transport_by_idx(*t);
@@ -131,6 +131,6 @@ where
     }
 
     fn graph(&self) -> &Self::G {
-        self.nw.g()
+        &self.nw.g
     }
 }

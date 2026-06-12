@@ -96,4 +96,6 @@ fn main() {
     let dot = nw.as_dot_graph(None);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
+
+    nw.solve(true);
 }

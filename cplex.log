@@ -1,0 +1,234 @@
+
+Log started (V22.1.0.0) Fri Jun 12 17:38:11 2026
+
+Warning, line 9: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 10: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 12: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 13: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 14: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 15: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 16: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 17: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 20: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 21: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 23: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 24: Name 'exitCVGBRUCVG' does not exist.
+Warning, line 25: Name 'exitCVGBRUCVG2' does not exist.
+Warning, line 26: Name 'exitCVGBRUCVG3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 28: Name 'exitAMSCVGAMS2' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemTnqclA.lp' read.
+Read time = 0.01 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.01 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.13 ticks/sec)
+
+
+Solution written to file '/tmp/.tmplJEy0G.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 17:38:55 2026
+
+Warning, line 9: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 10: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 12: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 13: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 14: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 15: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 16: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 17: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 20: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 21: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 23: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 24: Name 'exitBRUAMSBRU' does not exist.
+Warning, line 25: Name 'exitBRUAMSBRU2' does not exist.
+Warning, line 26: Name 'exitBRUAMSBRU3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 28: Name 'exitAMSCVGAMS2' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemqBAZLP.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmp8722iF.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 17:40:04 2026
+
+Warning, line 9: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 10: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 12: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 13: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 14: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 15: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 16: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 17: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 20: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 21: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 23: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 24: Name 'exitCVGBRUCVG' does not exist.
+Warning, line 25: Name 'exitCVGBRUCVG2' does not exist.
+Warning, line 26: Name 'exitCVGBRUCVG3' does not exist.
+Warning, line 27: Name 'exitBRUAMSBRU' does not exist.
+Warning, line 28: Name 'exitBRUAMSBRU2' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemldj7BM.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmppqefOL.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 17:40:17 2026
+
+Warning, line 9: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 10: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 12: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 13: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 14: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 15: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 16: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 17: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 20: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 21: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 23: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 24: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 25: Name 'exitAMSCVGAMS2' does not exist.
+Warning, line 26: Name 'exitAMSCVGAMS3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS4' does not exist.
+Warning, line 28: Name 'exitBRUAMSBRU' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemBw0ErH.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpNME0PV.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 17:40:45 2026
+
+Warning, line 9: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 10: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 12: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 13: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 14: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 15: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 16: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 17: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 20: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 21: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 23: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 24: Name 'exitBRUAMSBRU' does not exist.
+Warning, line 25: Name 'exitBRUAMSBRU2' does not exist.
+Warning, line 26: Name 'exitBRUAMSBRU3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 28: Name 'exitAMSCVGAMS2' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemraQFOb.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpIpf4yO.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 17:40:58 2026
+
+Warning, line 9: Name 'waitCVGAMSCVGAMS' does not exist.
+Warning, line 10: Name 'waitCVGAMSCVGAMS2' does not exist.
+Warning, line 11: Name 'waitCVGAMSCVGAMS3' does not exist.
+Warning, line 12: Name 'waitAMSBRUAMSBRU' does not exist.
+Warning, line 13: Name 'waitAMSBRUAMSBRU2' does not exist.
+Warning, line 14: Name 'waitBRUCVGBRUCVG' does not exist.
+Warning, line 15: Name 'waitBRUCVGBRUCVG2' does not exist.
+Warning, line 16: Name 'conCVGAMSAMSBRU' does not exist.
+Warning, line 17: Name 'conAMSBRUBRUCVG' does not exist.
+Warning, line 18: Name 'conAMSBRUBRUCVG2' does not exist.
+Warning, line 19: Name 'conAMSBRUBRUCVG3' does not exist.
+Warning, line 20: Name 'conBRUCVGCVGAMS' does not exist.
+Warning, line 21: Name 'enterAMSAMSBRU' does not exist.
+Warning, line 22: Name 'enterAMSAMSBRU2' does not exist.
+Warning, line 23: Name 'enterCVGCVGAMS' does not exist.
+Warning, line 24: Name 'exitAMSCVGAMS' does not exist.
+Warning, line 25: Name 'exitAMSCVGAMS2' does not exist.
+Warning, line 26: Name 'exitAMSCVGAMS3' does not exist.
+Warning, line 27: Name 'exitAMSCVGAMS4' does not exist.
+Warning, line 28: Name 'exitCVGBRUCVG' does not exist.
+5 name warnings not printed.
+
+Problem '/tmp/good_lp_problemibyWnY.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 4 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 0 (0)
+Deterministic time = 0.00 ticks  (0.70 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpG9xxrm.sol'.
