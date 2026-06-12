@@ -2,6 +2,7 @@ use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
 use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
+use crate::utils::math_model::lp_solvers_model_to_problem;
 use crate::{Transport, TransportData, Variant};
 use alloc::{format, string::ToString};
 use good_lp::solvers::lp_solvers::{Cplex, Model};
@@ -10,7 +11,9 @@ use good_lp::{
     Constraint, Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
     VariableDefinition,
 };
-use std::dbg;
+use lp_solvers::lp_format::{LpProblem, WriteToLpFileFormat};
+use lp_solvers::solvers::SolverProgram;
+use std::{dbg, println};
 
 pub fn cplex_solver() -> LpSolver<Cplex> {
     good_lp::LpSolver(Cplex::with_command(
@@ -71,6 +74,9 @@ where
 
     let mut model = pr_vars.minimise(objective).using(cplex_solver());
     flow_balance::<_, LpSolver<Cplex>>(nw, &vars, &mut model, named);
+
+    let p = unsafe { lp_solvers_model_to_problem(&model) };
+    println!("{}", p.display_lp());
 
     let solution = model.solve().expect("Failed to solve");
 

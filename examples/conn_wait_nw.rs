@@ -53,8 +53,8 @@ fn main() {
 
     commodity("AMS", "BRU", 0, 20);
     commodity("AMS", "CVG", 3, 20);
-    commodity("CVG", "AMS", 0, 20);
-    commodity("CVG", "BRU", 0, 20);
+    // commodity("CVG", "AMS", 0, 20);
+    // commodity("CVG", "BRU", 0, 20);
 
     // transports
     let mut t_idx = 0;
@@ -75,16 +75,16 @@ fn main() {
 
     transport("AMS", "BRU", 1, 2);
     transport("AMS", "BRU", 4, 5);
-    transport("AMS", "BRU", 7, 8);
+    // transport("AMS", "BRU", 7, 8);
 
-    transport("BRU", "CVG", 1, 6);
+    // transport("BRU", "CVG", 1, 6);
     transport("BRU", "CVG", 7, 12);
     transport("BRU", "CVG", 13, 18);
 
-    transport("CVG", "AMS", 1, 5);
-    transport("CVG", "AMS", 4, 8);
-    transport("CVG", "AMS", 7, 11);
-    transport("CVG", "AMS", 10, 14);
+    // transport("CVG", "AMS", 1, 5);
+    // transport("CVG", "AMS", 4, 8);
+    // transport("CVG", "AMS", 7, 11);
+    // transport("CVG", "AMS", 10, 14);
 
     let problem = builder.finish();
 
