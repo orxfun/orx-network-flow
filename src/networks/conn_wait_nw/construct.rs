@@ -12,6 +12,7 @@ pub struct Output {
     pub ro_to_v: Map<SpaceTime, VIdx>,
     pub dd_to_v: Map<SpaceTime, VIdx>,
     pub transport_edges: VecTransport<Vec<EIdx>>,
+    // pub bypass_edges_range: Range<usize>,
 }
 
 pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {

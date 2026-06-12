@@ -1,8 +1,9 @@
-use crate::graphs::{VIdx,EIdx,core::GraphCore};
+use crate::graphs::{EIdx, VIdx, core::GraphCore};
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::utils::std_utils::Map;
-use crate::{Problem, SpaceTime, Variant,VecTransport,};use alloc::vec::Vec
+use crate::{Problem, SpaceTime, Variant, VecTransport};
+use alloc::vec::Vec;
 
 pub struct ConnWaitNwSettings {
     pub add_bypass_edges: bool,

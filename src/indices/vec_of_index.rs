@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! impl_vec_of_idx {
-    ($idx:ident, $idx_vec:ident) => {
-        pub struct $idx_vec<T>(alloc::vec::Vec<T>);
+    ($idx:ident, $range:ident, $idx_vec:ident) => {
+        pub struct $idx_vec<T>(pub alloc::vec::Vec<T>);
 
         impl<T> core::ops::Index<$idx> for $idx_vec<T> {
             type Output = T;
@@ -47,6 +47,12 @@ macro_rules! impl_vec_of_idx {
 
             pub fn indices(&self) -> impl Iterator<Item = $idx> {
                 (0..self.0.len()).map($idx::from)
+            }
+
+            pub fn slice(&self, range: $range) -> &[T] {
+                use crate::indices::IdxCore;
+                let range = range.0.into_inner()..range.1.into_inner();
+                &self.0[range]
             }
         }
 

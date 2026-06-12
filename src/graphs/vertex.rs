@@ -1,7 +1,7 @@
 use crate::{graphs::EIdx, impl_idx, impl_vec_of_idx};
 
-impl_idx!(VIdx);
-impl_vec_of_idx!(VIdx, VecVertex);
+impl_idx!(VIdx, VertexRange);
+impl_vec_of_idx!(VIdx, VertexRange, VecVertex);
 
 pub trait Vertex {
     type Data;
