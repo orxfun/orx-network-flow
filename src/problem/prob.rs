@@ -1,7 +1,8 @@
 use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
 use crate::costs::Costs;
 use crate::networks::{
-    ComOdStNw, ConnNw, ConnWaitNw, TrNw, construct_com_by_od_st_nw, construct_tr_nw,
+    ComOdStNw, ConnNw, ConnWaitNw, ConnWaitNwSettings, TrNw, construct_com_by_od_st_nw,
+    construct_tr_nw,
 };
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
@@ -117,8 +118,8 @@ impl<V: Variant> Problem<V> {
 
     // networks
 
-    pub fn construct_wait_nw(&self) -> ConnWaitNw<'_, V> {
-        ConnWaitNw::construct(self)
+    pub fn construct_wait_nw(&self, settings: ConnWaitNwSettings) -> ConnWaitNw<'_, V> {
+        ConnWaitNw::construct(self, settings)
     }
 
     pub fn construct_transport_nw(&self) -> TrNw<V> {

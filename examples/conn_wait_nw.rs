@@ -1,4 +1,5 @@
 use orx_network_flow::graphs::visualization::dot::DotGraph;
+use orx_network_flow::networks::ConnWaitNwSettings;
 use orx_network_flow::{ProblemBuilder, Variant};
 
 #[derive(Clone, Copy)]
@@ -87,7 +88,10 @@ fn main() {
 
     let problem = builder.finish();
 
-    let nw = problem.construct_wait_nw();
+    let settings = ConnWaitNwSettings {
+        add_bypass_edges: true,
+    };
+    let nw = problem.construct_wait_nw(settings);
 
     let dot = nw.as_dot_graph(None);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")

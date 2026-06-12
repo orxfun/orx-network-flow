@@ -1,8 +1,11 @@
 use crate::graphs::core::GraphCore;
-use crate::graphs::visualization::dot::{EdgeSettings, VertexSettings};
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::{Problem, Variant};
+
+pub struct ConnWaitNwSettings {
+    pub add_bypass_edges: bool,
+}
 
 pub type ConnWaitGraph = GraphCore<ConnWaitVertex, ConnWaitEdge>;
 
@@ -18,8 +21,8 @@ impl<'a, V> ConnWaitNw<'a, V>
 where
     V: Variant,
 {
-    pub fn construct(p: &'a Problem<V>) -> Self {
-        let g = super::construct::construct_graph(p);
+    pub fn construct(p: &'a Problem<V>, settings: ConnWaitNwSettings) -> Self {
+        let g = super::construct::construct_graph(p, settings);
         Self { p, g }
     }
 

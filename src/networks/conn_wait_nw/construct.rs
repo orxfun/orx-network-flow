@@ -1,5 +1,6 @@
 use crate::graphs::VIdx;
 use crate::graphs::core::GraphCoreBuilder;
+use crate::networks::ConnWaitNwSettings;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex};
 use crate::space_time::SpaceTime;
 use crate::spaces::Space;
@@ -10,7 +11,7 @@ use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Variant};
 use core::iter::Peekable;
 
-pub fn construct_graph<V: Variant>(p: &Problem<V>) -> ConnWaitGraph {
+pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> ConnWaitGraph {
     let mut builder = ConnWaitGraph::builder();
     let b = &mut builder;
 
@@ -128,11 +129,13 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>) -> ConnWaitGraph {
         }
     }
 
-    // edges: ro-dd un-transported
-    for (c, com) in p.commodities.indices_values() {
-        let ro = *ro_to_v.get(&com.origin()).expect("exists");
-        let dd = *dd_to_v.get(&com.destination()).expect("exists");
-        b.edge(ConnWaitEdge::Bypass(c), ro, dd);
+    // edges: ro-dd bypass
+    if settings.add_bypass_edges {
+        for (c, com) in p.commodities.indices_values() {
+            let ro = *ro_to_v.get(&com.origin()).expect("exists");
+            let dd = *dd_to_v.get(&com.destination()).expect("exists");
+            b.edge(ConnWaitEdge::Bypass(c), ro, dd);
+        }
     }
 
     builder.finish()
