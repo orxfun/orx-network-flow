@@ -1,4 +1,4 @@
-use crate::{Variant, space_time::SpaceTime, spaces::Space, time::Time, vehicles::Vehicle};
+use crate::{Space, SpaceTime, Time, Variant, vehicles::Vehicle};
 
 pub struct TransportData<V: Variant> {
     vehicle: Vehicle,

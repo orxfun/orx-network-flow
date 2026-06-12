@@ -25,7 +25,6 @@ pub mod graphs;
 mod indices;
 pub mod networks;
 mod problem;
-mod space_time;
 mod spaces;
 mod time;
 mod time_bounds;
@@ -38,3 +37,10 @@ pub use indices::{Idx, IdxCore};
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
+
+pub(crate) use commodities::{Commodities, Commodity, CommodityData};
+pub(crate) use indices::{IdxMap, IdxMapSubset};
+pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
+pub(crate) use time::Time;
+pub(crate) use transports::{Transport, TransportData, Transports};
+pub(crate) use vehicles::Vehicle;

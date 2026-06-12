@@ -1,4 +1,4 @@
-use crate::{Variant, space_time::SpaceTime};
+use crate::{SpaceTime, Variant};
 
 #[derive(Debug)]
 pub struct CommodityData<V: Variant> {

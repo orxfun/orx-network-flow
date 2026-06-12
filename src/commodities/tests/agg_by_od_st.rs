@@ -1,6 +1,5 @@
 use crate::commodities::CommoditiesByOdSt;
-use crate::space_time::{SpaceTime, SpaceTimeOd};
-use crate::{Problem, ProblemBuilder, Variant};
+use crate::{Problem, ProblemBuilder, SpaceTime, SpaceTimeOd, Variant};
 use alloc::vec;
 use alloc::vec::Vec;
 

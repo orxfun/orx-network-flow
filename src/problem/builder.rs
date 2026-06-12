@@ -1,16 +1,11 @@
-use crate::commodities::Commodity;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
-use crate::problem::Problem;
 use crate::problem::connectivity::{
     SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
-use crate::problem::variant::Variant;
-use crate::space_time::SpaceTime;
-use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
-use crate::time::Time;
+use crate::spaces::{Coordinate, Geocode, Location, SpaceData};
 use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
-use crate::transports::Transport;
+use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant};
 use core::marker::PhantomData;
 
 pub trait ProblemBuilderState {}

@@ -1,4 +1,4 @@
-use crate::{space_time::SpaceTime, transports::Transport};
+use crate::{SpaceTime, Transport};
 
 pub enum ConnWaitVertex {
     Transport(Transport),

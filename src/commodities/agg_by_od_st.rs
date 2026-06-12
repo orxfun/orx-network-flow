@@ -1,6 +1,5 @@
-use crate::commodities::{Commodity, CommodityData};
-use crate::{Problem, Variant};
-use crate::{indices::IdxMapSubset, space_time::SpaceTimeOd, utils::std_utils::Map};
+use crate::utils::std_utils::Map;
+use crate::{Commodity, CommodityData, IdxMapSubset, Problem, SpaceTimeOd, Variant};
 
 pub struct CommoditiesByOdSt<'a, V: Variant> {
     od_commodities: Map<SpaceTimeOd, IdxMapSubset<'a, V::K, CommodityData<V>, Commodity>>,

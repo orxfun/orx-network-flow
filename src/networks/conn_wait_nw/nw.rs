@@ -1,7 +1,9 @@
+use crate::graphs::VIdx;
 use crate::graphs::core::GraphCore;
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
-use crate::{Problem, Variant};
+use crate::utils::std_utils::Map;
+use crate::{Problem, SpaceTime, Variant};
 
 pub struct ConnWaitNwSettings {
     pub add_bypass_edges: bool,
@@ -15,6 +17,7 @@ where
 {
     p: &'a Problem<V>,
     g: ConnWaitGraph,
+    ro_to_v: Map<SpaceTime, VIdx>,
 }
 
 impl<'a, V> ConnWaitNw<'a, V>

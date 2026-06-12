@@ -1,14 +1,9 @@
-use crate::graphs::VIdx;
-use crate::graphs::core::GraphCoreBuilder;
+use crate::graphs::{VIdx, core::GraphCoreBuilder};
 use crate::networks::ConnWaitNwSettings;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex};
-use crate::space_time::SpaceTime;
-use crate::spaces::Space;
-use crate::time::Time;
-use crate::transports::Transport;
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
-use crate::{IdxCore, Problem, Variant};
+use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant};
 use core::iter::Peekable;
 
 pub fn construct_graph<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> ConnWaitGraph {
