@@ -34,6 +34,11 @@ where
     for e in g.edges() {
         let mut var = VariableDefinition::new().min(0);
 
+        if let ConnWaitEdge::Bypass(c) = e.data() {
+            let amount = p.commodity_by_idx(*c).amount().into_f64();
+            var = var.max(amount);
+        }
+
         if named {
             let [i, j] = [e.tail(), e.head()].map(|x| g.vertex(x));
             let [tail, head] = [i.data(), j.data()];
