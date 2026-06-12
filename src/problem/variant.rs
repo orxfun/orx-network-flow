@@ -1,4 +1,4 @@
-use crate::{cost::Cost, flow_units::FlowUnit, std_utils::MapKey};
+use crate::{cost::Cost, flow_units::FlowUnit, utils::std_utils::MapKey};
 
 pub trait Variant: Clone + Copy {
     /// Space key

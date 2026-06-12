@@ -1,7 +1,7 @@
 use crate::cost::Cost;
 use crate::time::Time;
 use crate::{Problem, Variant};
-use crate::{commodities::Commodity, spaces::Space, std_utils::Map, transports::Transport};
+use crate::{commodities::Commodity, spaces::Space, transports::Transport, utils::std_utils::Map};
 
 pub struct LatenessCost<V: Variant> {
     global: V::C,

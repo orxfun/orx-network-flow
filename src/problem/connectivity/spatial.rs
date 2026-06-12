@@ -1,5 +1,5 @@
 use crate::spaces::{Coordinate, Geocode, Location, Space};
-use crate::{Problem, Variant, std_utils::Set};
+use crate::{Problem, Variant, utils::std_utils::Set};
 
 #[derive(derive_new::new)]
 pub struct SpatialConnectivityBuilder<'a, V: Variant> {

@@ -27,10 +27,10 @@ pub mod networks;
 mod problem;
 mod space_time;
 mod spaces;
-mod std_utils;
 mod time;
 mod time_bounds;
 mod transports;
+mod utils;
 mod vehicle_types;
 mod vehicles;
 

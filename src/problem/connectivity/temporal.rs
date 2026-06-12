@@ -1,4 +1,4 @@
-use crate::{Problem, Variant, spaces::Space, std_utils::Map, time::Time};
+use crate::{Problem, Variant, spaces::Space, time::Time, utils::std_utils::Map};
 
 #[derive(derive_new::new)]
 pub struct TemporalConnectivityBuilder<'a, V: Variant> {

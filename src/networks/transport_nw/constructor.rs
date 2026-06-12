@@ -98,7 +98,7 @@ fn find_head_for_tail<V: Variant>(
     tail: Transport,
 ) -> Option<Transport> {
     // TODO: minor speed improvement possible by caching at of tail
-    let feasible = |head: Transport| p.connectivity.can_connect(p, tail, head);
+    let feasible = |head: Transport| p.connectivity.can_connect_temporally(p, tail, head);
 
     if !feasible(curr_head) {
         // none of the further heads can be connected to tail

@@ -41,6 +41,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
                 ori_des_sorted_transports: Default::default(),
                 des_ori_sorted_transports: Default::default(),
                 sorted_transport_origins: Default::default(),
+                sorted_commodity_origins: Default::default(),
+                sorted_commodity_destinations: Default::default(),
             },
             PhantomData,
         )
@@ -151,6 +153,15 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         self.0.sorted_transport_origins =
             self.0.ori_des_sorted_transports.keys().copied().collect();
         self.0.sorted_transport_origins.sort();
+
+        // sorted commodity origins & destinations
+
+        self.0.sorted_commodity_origins = self.0.ori_sorted_commodities.keys().copied().collect();
+        self.0.sorted_commodity_origins.sort();
+
+        self.0.sorted_commodity_destinations =
+            self.0.des_sorted_commodities.keys().copied().collect();
+        self.0.sorted_commodity_destinations.sort();
 
         // finish
 

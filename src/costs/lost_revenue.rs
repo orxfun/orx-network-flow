@@ -1,4 +1,4 @@
-use crate::{Variant, commodities::Commodity, cost::Cost, std_utils::Map};
+use crate::{Variant, commodities::Commodity, cost::Cost, utils::std_utils::Map};
 
 pub struct LostRevenue<V: Variant> {
     global: V::C,

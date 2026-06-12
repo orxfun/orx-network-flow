@@ -51,7 +51,7 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 0, 20);
-    commodity("AMS", "CVG", 0, 20);
+    commodity("AMS", "CVG", 3, 20);
     commodity("CVG", "AMS", 0, 20);
     commodity("CVG", "BRU", 0, 20);
 
@@ -89,7 +89,7 @@ fn main() {
 
     let nw = problem.construct_wait_nw();
 
-    let dot = nw.as_dot_graph(None, None, None);
+    let dot = nw.as_dot_graph(None);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 }

@@ -1,5 +1,5 @@
 use crate::indices::{Idx, IdxCore, IdxMap};
-use crate::std_utils::MapKey;
+use crate::utils::std_utils::MapKey;
 use alloc::vec::Vec;
 
 pub struct IdxMapSubset<'a, K: MapKey, V, I: Idx> {

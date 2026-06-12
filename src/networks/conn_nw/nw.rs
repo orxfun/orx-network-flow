@@ -5,8 +5,8 @@ use crate::networks::conn_nw::vertex_data::ConnNwVertex;
 use crate::networks::conn_nw::visualization::dot::DotConnNw;
 use crate::space_time::SpaceTime;
 use crate::spaces::Space;
-use crate::std_utils::{Map, Set};
 use crate::time::Time;
+use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Variant};
 use alloc::vec::Vec;
 
