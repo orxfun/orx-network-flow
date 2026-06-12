@@ -64,7 +64,7 @@ where
                     let dd = head.get_dd().expect("dd").0;
                     let des = p.space_key(dd.space());
                     let t = p.transport_by_idx(tail.get_t().expect("t"));
-                    format!("exit__{des}_{}__{}", dd.time(), t_str(t))
+                    format!("exit__{}__{des}_{}", t_str(t), dd.time())
                 }
                 ConnWaitEdge::Bypass(c) => {
                     let com = p.commodity_by_idx(*c);
@@ -91,16 +91,12 @@ where
 
     let solution = model.solve().expect("Failed to solve");
 
+    let name_width = var_names.iter().map(|name| name.len()).max().unwrap_or(0);
     for (e, &var) in vars.enumerated_iter() {
         let value = solution.value(var);
-        let name = &var_names[e];
-        println!("{name}\t\t{value}");
-    }
-
-    for x in vars.iter() {
-        let b = solution.value(*x);
-        if b > 0.0 {
-            dbg!(b);
+        if value > 1e-5 {
+            let name = &var_names[e];
+            println!("{name:<name_width$}  {value}");
         }
     }
 }
