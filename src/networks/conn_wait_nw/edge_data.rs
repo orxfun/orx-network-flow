@@ -1,9 +1,9 @@
-use crate::{commodities::Commodity, transports::Transport};
+use crate::commodities::Commodity;
 
 pub enum ConnWaitEdge {
     Wait,
-    Connect(Transport),
+    Connect,
     Enter,
-    Exit(Transport),
+    Exit,
     Bypass(Commodity),
 }

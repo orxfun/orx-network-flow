@@ -123,9 +123,9 @@ where
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {
         match self.graph().edge(e).data() {
             ConnWaitEdge::Wait => &self.settings.wait,
-            ConnWaitEdge::Connect(_) => &self.settings.connect,
+            ConnWaitEdge::Connect => &self.settings.connect,
             ConnWaitEdge::Enter => &self.settings.enter,
-            ConnWaitEdge::Exit(_) => &self.settings.exit,
+            ConnWaitEdge::Exit => &self.settings.exit,
             ConnWaitEdge::Bypass(_) => &self.settings.bypass,
         }
     }
