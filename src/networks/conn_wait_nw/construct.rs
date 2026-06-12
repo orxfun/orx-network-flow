@@ -8,7 +8,6 @@ use crate::transports::Transport;
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Variant};
-use alloc::vec::Vec;
 use core::iter::Peekable;
 
 pub fn construct_graph<V: Variant>(p: &Problem<V>) -> ConnWaitGraph {
@@ -129,6 +128,13 @@ pub fn construct_graph<V: Variant>(p: &Problem<V>) -> ConnWaitGraph {
         }
     }
 
+    // edges: ro-dd un-transported
+    for (c, com) in p.commodities.indices_values() {
+        let ro = *ro_to_v.get(&com.origin()).expect("exists");
+        let dd = *dd_to_v.get(&com.destination()).expect("exists");
+        b.edge(ConnWaitEdge::Bypass(c), ro, dd);
+    }
+
     builder.finish()
 }
 
@@ -147,7 +153,7 @@ fn conn_t_dd<V: Variant>(
             true => {
                 // connect transport, and move to the next transport
                 // due & head can still be used by the next transport
-                b.edge(ConnWaitEdge::Exit, t_into_v(tail), head_v);
+                b.edge(ConnWaitEdge::Exit(tail), t_into_v(tail), head_v);
                 tail = tails.next()?;
             }
             false => {
@@ -179,7 +185,7 @@ fn conn_t_t<V: Variant>(
 
         match conn_t_t_find_head_for_tail(p, &mut heads_rev, curr_head, tail) {
             Some(head) => {
-                b.edge(ConnWaitEdge::Connect, t_into_v(tail), t_into_v(head));
+                b.edge(ConnWaitEdge::Connect(tail), t_into_v(tail), t_into_v(head));
 
                 // same head can be assigned to prior tails
                 curr_head = head;

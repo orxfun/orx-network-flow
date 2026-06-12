@@ -15,6 +15,7 @@ pub struct ConnWaitDotSettings {
     connect: EdgeSettings,
     enter: EdgeSettings,
     exit: EdgeSettings,
+    bypass: EdgeSettings,
 }
 
 impl Default for ConnWaitDotSettings {
@@ -46,6 +47,9 @@ impl Default for ConnWaitDotSettings {
             },
             exit: EdgeSettings {
                 color: Some(String::from("darkgreen")),
+            },
+            bypass: EdgeSettings {
+                color: Some(String::from("orange")),
             },
         }
     }
@@ -119,9 +123,10 @@ where
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {
         match self.graph().edge(e).data() {
             ConnWaitEdge::Wait => &self.settings.wait,
-            ConnWaitEdge::Connect => &self.settings.connect,
+            ConnWaitEdge::Connect(_) => &self.settings.connect,
             ConnWaitEdge::Enter => &self.settings.enter,
-            ConnWaitEdge::Exit => &self.settings.exit,
+            ConnWaitEdge::Exit(_) => &self.settings.exit,
+            ConnWaitEdge::Bypass(_) => &self.settings.bypass,
         }
     }
 

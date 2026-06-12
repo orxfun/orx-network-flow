@@ -2,6 +2,7 @@ use crate::Variant;
 use crate::commodities::{Commodity, CommodityData};
 use crate::indices::IdxMap;
 use crate::space_time::SpaceTime;
+use core::ops::Deref;
 
 pub struct Commodities<V: Variant> {
     pub(super) idx_map: IdxMap<V::K, CommodityData<V>, Commodity>,
@@ -21,10 +22,6 @@ impl<V: Variant> Commodities<V> {
         self.idx_map.push_or_update(key, data)
     }
 
-    pub fn len(&self) -> usize {
-        self.idx_map.len()
-    }
-
     pub fn get_by_key(&self, key: &V::K) -> Option<&CommodityData<V>> {
         self.idx_map.value_by_key(key)
     }
@@ -40,12 +37,12 @@ impl<V: Variant> Commodities<V> {
     pub fn get_by_idx(&self, idx: Commodity) -> Option<&CommodityData<V>> {
         self.idx_map.value(idx)
     }
+}
 
-    pub fn entries(&self) -> impl Iterator<Item = (Commodity, &V::K, &CommodityData<V>)> {
-        self.idx_map.entries()
-    }
+impl<V: Variant> Deref for Commodities<V> {
+    type Target = IdxMap<V::K, CommodityData<V>, Commodity>;
 
-    pub fn indices(&self) -> impl Iterator<Item = Commodity> {
-        self.idx_map.indices()
+    fn deref(&self) -> &Self::Target {
+        &self.idx_map
     }
 }
