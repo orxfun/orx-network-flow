@@ -11,7 +11,7 @@ use good_lp::{
     Constraint, Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
     VariableDefinition, constraint,
 };
-use lp_solvers::lp_format::{LpProblem, WriteToLpFileFormat};
+use lp_solvers::lp_format::{AsVariable, LpProblem, WriteToLpFileFormat};
 use lp_solvers::solvers::SolverProgram;
 use std::{dbg, println};
 
@@ -30,6 +30,7 @@ where
     let mut pr_vars = ProblemVariables::new();
 
     let mut vars = VecEdge::new();
+    let mut var_names = VecEdge::new();
 
     for e in g.edges() {
         let mut var = VariableDefinition::new().min(0);
@@ -42,34 +43,37 @@ where
         if named {
             let [i, j] = [e.tail(), e.head()].map(|x| g.vertex(x));
             let [tail, head] = [i.data(), j.data()];
-            match e.data() {
+            let name = match e.data() {
                 ConnWaitEdge::Enter => {
                     let ro = tail.get_ro().expect("ro").0;
                     let ori = p.space_key(ro.space());
                     let t = p.transport_by_idx(head.get_t().expect("t"));
-                    var = var.name(format!("enter__{ori}_{}__{}", ro.time(), t_str(t)));
+                    format!("enter__{ori}_{}__{}", ro.time(), t_str(t))
                 }
                 ConnWaitEdge::Connect => {
                     let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
                     let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
-                    var = var.name(format!("con__{}__{}", t_str(t1), t_str(t2)));
+                    format!("con__{}__{}", t_str(t1), t_str(t2))
                 }
                 ConnWaitEdge::Wait => {
                     let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
                     let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
-                    var = var.name(format!("wait__{}__{}", t_str(t1), t_str(t2)));
+                    format!("wait__{}__{}", t_str(t1), t_str(t2))
                 }
                 ConnWaitEdge::Exit => {
                     let dd = head.get_dd().expect("dd").0;
                     let des = p.space_key(dd.space());
                     let t = p.transport_by_idx(tail.get_t().expect("t"));
-                    var = var.name(format!("exit__{des}_{}__{}", dd.time(), t_str(t)));
+                    format!("exit__{des}_{}__{}", dd.time(), t_str(t))
                 }
                 ConnWaitEdge::Bypass(c) => {
                     let com = p.commodity_by_idx(*c);
-                    var = var.name(format!("bypass__{}", com.var_str(p)));
+                    format!("bypass__{}", com.var_str(p))
                 }
-            }
+            };
+
+            var = var.name(&name);
+            var_names.push(name);
         }
 
         vars.push(pr_vars.add(var));
@@ -86,6 +90,12 @@ where
     unsafe { lp_solvers_model_to_lp_file(&model, "target/model.lp") }.unwrap();
 
     let solution = model.solve().expect("Failed to solve");
+
+    for (e, &var) in vars.enumerated_iter() {
+        let value = solution.value(var);
+        let name = &var_names[e];
+        println!("{name}\t\t{value}");
+    }
 
     for x in vars.iter() {
         let b = solution.value(*x);
@@ -176,14 +186,12 @@ fn capacity<V: Variant, S: Solver>(
     model: &mut S::Model,
     named: bool,
 ) {
-    let (p, g) = (nw.p, &nw.g);
-
     for (t, edges) in nw.transport_edges.enumerated_iter() {
         if edges.is_empty() {
             continue;
         }
 
-        let capacity = p.transport_by_idx(t).capacity().into_f64();
+        let capacity = nw.p.transport_by_idx(t).capacity().into_f64();
 
         let mut total_flow = Expression::default();
         for &e in edges {

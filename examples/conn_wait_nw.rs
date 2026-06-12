@@ -61,7 +61,7 @@ fn main() {
             dt,
             des.to_string(),
             at,
-            1000,
+            10,
         );
         *t += 1;
     };
