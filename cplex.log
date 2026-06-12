@@ -152,3 +152,48 @@ Deterministic time = 0.02 ticks  (16.62 ticks/sec)
 
 
 Solution written to file '/tmp/.tmpNVKuD0.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 22:52:49 2026
+
+
+Problem '/tmp/good_lp_problemSbg44t.lp' read.
+Read time = 0.01 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 2 columns.
+Aggregator did 3 substitutions.
+Reduced LP has 5 rows, 7 columns, and 14 nonzeros.
+Presolve time = 0.00 sec. (0.01 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual infeasibility =             0.000000
+
+Dual simplex - Optimal:  Objective = -3.0000000000e+02
+Solution time =    0.01 sec.  Iterations = 1 (1)
+Deterministic time = 0.02 ticks  (2.86 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpc1R359.sol'.
+
+Log started (V22.1.0.0) Fri Jun 12 22:53:22 2026
+
+
+Problem '/tmp/good_lp_problemdp4oHr.lp' read.
+Read time = 0.00 sec. (0.00 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 2 columns.
+Aggregator did 3 substitutions.
+Reduced LP has 5 rows, 7 columns, and 14 nonzeros.
+Presolve time = 0.00 sec. (0.01 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+
+Dual simplex - Optimal:  Objective =  0.0000000000e+00
+Solution time =    0.00 sec.  Iterations = 5 (0)
+Deterministic time = 0.02 ticks  (5.54 ticks/sec)
+
+
+Solution written to file '/tmp/.tmpNfHnxU.sol'.

@@ -28,13 +28,6 @@ impl Variant for MyVariant {
 fn main() {
     let builder: ProblemBuilder<MyVariant, _> = ProblemBuilder::new();
 
-    // let mut builder = builder.with_basic_spaces([
-    //     "AMS".to_string(),
-    //     "BRU".to_string(),
-    //     "SIN".to_string(),
-    //     "EMA".to_string(),
-    // ]);
-
     let mut builder = builder.with_geographic_spaces([
         ("AMS".to_string(), 52.308_613, 4.763_889),
         ("BRU".to_string(), 50.901_389, 4.484_444),
@@ -85,6 +78,10 @@ fn main() {
     // transport("CVG", "AMS", 4, 8);
     // transport("CVG", "AMS", 7, 11);
     // transport("CVG", "AMS", 10, 14);
+
+    let mut lost_revenue_cost = builder.lost_revenue_cost();
+    lost_revenue_cost.commodity_specific(&0, 1);
+    lost_revenue_cost.commodity_specific(&1, 2);
 
     let problem = builder.finish();
 

@@ -1,4 +1,4 @@
-use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
+use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, LostRevenueBuilder, TransportCost};
 use crate::problem::connectivity::{
     SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
@@ -264,8 +264,9 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         &mut self.0.costs.lateness
     }
 
-    pub fn lost_revenue_cost(&mut self) -> &mut LostRevenue<V> {
-        &mut self.0.costs.lost_revenue
+    pub fn lost_revenue_cost<'a>(&'a mut self) -> LostRevenueBuilder<'a, V> {
+        let lost_revenue = unsafe { &mut *(&mut self.0.costs.lost_revenue as *mut LostRevenue<_>) };
+        LostRevenueBuilder::new(&self.0, lost_revenue)
     }
 
     pub fn transport_cost(&mut self) -> &mut TransportCost<V> {
