@@ -147,7 +147,7 @@ fn flow_balance<V, S: Solver>(
             let name = match vertex.data() {
                 ConnWaitVertex::ReadyOri(ro, _) => {
                     let ori = p.space_key(ro.space());
-                    format!("fb_enter__{ori}_{}", ro.time())
+                    format!("fb_enter")
                 }
                 ConnWaitVertex::DueDes(dd, _) => {
                     let des = p.space_key(dd.space());
