@@ -1,5 +1,4 @@
-use crate::graphs::EdgeRange;
-use crate::graphs::{EIdx, VIdx, core::GraphCore};
+use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::utils::std_utils::Map;

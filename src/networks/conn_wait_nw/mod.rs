@@ -2,6 +2,7 @@ pub mod visualization;
 
 mod construct;
 mod edge_data;
+mod mcnf;
 mod nw;
 mod vertex_data;
 
