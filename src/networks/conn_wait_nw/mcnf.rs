@@ -2,7 +2,7 @@ use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
 use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
-use crate::utils::math_model::lp_solvers_model_to_problem;
+use crate::utils::math_model::{lp_solvers_model_to_lp_file, lp_solvers_model_to_problem};
 use crate::{Transport, TransportData, Variant};
 use alloc::{format, string::ToString};
 use good_lp::solvers::lp_solvers::{Cplex, Model};
@@ -77,6 +77,7 @@ where
 
     let p = unsafe { lp_solvers_model_to_problem(&model) };
     println!("{}", p.display_lp());
+    unsafe { lp_solvers_model_to_lp_file(&model, "target/model.lp") }.unwrap();
 
     let solution = model.solve().expect("Failed to solve");
 
@@ -150,7 +151,7 @@ fn flow_balance<V, S: Solver>(
                 }
                 ConnWaitVertex::DueDes(dd, _) => {
                     let des = p.space_key(dd.space());
-                    format!("fb_enter__{des}_{}", dd.time())
+                    format!("fb_exit__{des}_{}", dd.time())
                 }
                 ConnWaitVertex::Transport(t) => {
                     let t = p.transport_by_idx(*t);
