@@ -3,7 +3,7 @@ use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDot
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::networks::conn_wait_nw::{mcnf::solve, output::Output};
 use crate::utils::std_utils::Map;
-use crate::{Problem, SpaceTime, Variant, VecTransport};
+use crate::{Commodity, IdxCore, Problem, SpaceTime, Variant, VecTransport};
 use alloc::vec::Vec;
 
 pub struct ConnWaitNwSettings {
@@ -24,6 +24,17 @@ where
     pub(super) bypass_edges_range: EdgeRange,
 }
 
+// helpers
+impl<'a, V> ConnWaitNw<'a, V>
+where
+    V: Variant,
+{
+    pub(super) fn bypass_edge_of(&self, c: Commodity) -> EIdx {
+        EIdx::from(self.bypass_edges_range.begin().into_inner() + c.into_inner())
+    }
+}
+
+// api
 impl<'a, V> ConnWaitNw<'a, V>
 where
     V: Variant,
