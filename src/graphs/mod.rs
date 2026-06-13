@@ -7,7 +7,7 @@ mod graph_mut;
 mod vertex;
 pub mod visualization;
 
-pub use edge::{EIdx, Edge, VecEdge};
+pub use edge::{EIdx, Edge, EdgeRange, VecEdge};
 pub use graph::Graph;
 pub use graph_mut::GraphMut;
 pub use vertex::{VIdx, VecVertex, Vertex};

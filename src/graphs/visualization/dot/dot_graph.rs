@@ -1,8 +1,6 @@
-use crate::graphs::visualization::dot::edge_settings::EdgeSettings;
-use crate::graphs::{EIdx, Edge, Graph};
-use crate::graphs::{VIdx, visualization::dot::VertexSettings};
-use alloc::format;
-use alloc::string::String;
+use crate::graphs::visualization::dot::{EdgeSettings, VertexSettings};
+use crate::graphs::{EIdx, Edge, Graph, VIdx};
+use alloc::{format, string::String};
 use core::fmt::Display;
 #[cfg(feature = "std")]
 use std::fs;
@@ -10,8 +8,6 @@ use std::fs;
 use std::process::Command;
 #[cfg(feature = "std")]
 use std::{io::Error, path::Path};
-
-const TEMP_EDGE: EdgeSettings = EdgeSettings { color: None };
 
 pub trait DotGraph {
     type G: Graph;
@@ -23,6 +19,12 @@ pub trait DotGraph {
     }
 
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings;
+
+    fn edge_label(&self, e: EIdx) -> impl Display;
+
+    fn edge_tooltip(&self, _: EIdx) -> Option<impl Display> {
+        Option::<String>::None
+    }
 
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings;
 
@@ -44,8 +46,8 @@ pub trait DotGraph {
 
         for v in self.vertices() {
             let label = self.vertex_label(v);
-            let settings = self.vertex_settings(v);
             let tooltip = self.vertex_tooltip(v);
+            let settings = self.vertex_settings(v);
 
             let vertex = match tooltip {
                 Some(tooltip) => {
@@ -59,8 +61,18 @@ pub trait DotGraph {
         }
 
         for (e, tail, head) in self.edges() {
+            let label = self.edge_label(e);
+            let tooltip = self.edge_tooltip(e);
             let settings = self.edge_settings(e);
-            let edge = format!("    {} -> {} [label=\"\" {settings}];", tail, head);
+            let edge = match tooltip {
+                Some(tooltip) => {
+                    format!(
+                        "    {} -> {} [label=\"{label}\" {settings} tooltip=\"{tooltip}\"];",
+                        tail, head
+                    )
+                }
+                None => format!("    {} -> {} [label=\"{label}\" {settings}];", tail, head),
+            };
             dot.push_str(&edge);
             dot.push('\n');
         }
@@ -82,6 +94,8 @@ pub trait DotGraph {
         dot_path: impl AsRef<Path> + Clone,
         svg_path: impl AsRef<Path>,
     ) -> Result<(), Error> {
+        use crate::graphs::visualization::dot::edge_label_fix::fix_edge_labels_in_svg;
+
         self.create_dot_file(dot_path.clone())?;
 
         let dot_path = dot_path
@@ -99,6 +113,8 @@ pub trait DotGraph {
         Command::new("dot")
             .args(["-Tsvg", dot_path, "-o", svg_path])
             .status()?;
+
+        fix_edge_labels_in_svg(svg_path)?;
 
         Ok(())
     }

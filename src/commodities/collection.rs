@@ -1,7 +1,4 @@
-use crate::Variant;
-use crate::commodities::{Commodity, CommodityData};
-use crate::indices::IdxMap;
-use crate::space_time::SpaceTime;
+use crate::{Commodity, CommodityData, IdxMap, SpaceTime, Variant};
 use core::ops::Deref;
 
 pub struct Commodities<V: Variant> {

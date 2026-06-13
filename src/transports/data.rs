@@ -1,4 +1,5 @@
-use crate::{Variant, space_time::SpaceTime, spaces::Space, time::Time, vehicles::Vehicle};
+use crate::{Problem, Space, SpaceTime, Time, Variant, vehicles::Vehicle};
+use alloc::{format, string::String};
 
 pub struct TransportData<V: Variant> {
     vehicle: Vehicle,
@@ -39,5 +40,11 @@ impl<V: Variant> TransportData<V> {
 
     pub fn dt_at(&self) -> [Time; 2] {
         [self.ori.time(), self.des.time()]
+    }
+
+    pub(crate) fn var_str(&self, p: &Problem<V>) -> String {
+        let [ori, des] = [self.ori, self.des].map(|x| p.space_key(x.space()));
+        let [rt, due] = [self.ori.time(), self.des.time()];
+        format!("{}_{}_{}_{}", ori, des, rt, due)
     }
 }

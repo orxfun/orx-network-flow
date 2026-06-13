@@ -1,16 +1,11 @@
-use crate::commodities::Commodity;
-use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, TransportCost};
-use crate::problem::Problem;
+use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, LostRevenueBuilder, TransportCost};
 use crate::problem::connectivity::{
     SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
-use crate::problem::variant::Variant;
-use crate::space_time::SpaceTime;
-use crate::spaces::{Coordinate, Geocode, Location, Space, SpaceData};
-use crate::time::Time;
+use crate::spaces::{Coordinate, Geocode, Location, SpaceData};
 use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
-use crate::transports::Transport;
+use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant};
 use core::marker::PhantomData;
 
 pub trait ProblemBuilderState {}
@@ -269,8 +264,9 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         &mut self.0.costs.lateness
     }
 
-    pub fn lost_revenue_cost(&mut self) -> &mut LostRevenue<V> {
-        &mut self.0.costs.lost_revenue
+    pub fn lost_revenue_cost<'a>(&'a mut self) -> LostRevenueBuilder<'a, V> {
+        let lost_revenue = unsafe { &mut *(&mut self.0.costs.lost_revenue as *mut LostRevenue<_>) };
+        LostRevenueBuilder::new(&self.0, lost_revenue)
     }
 
     pub fn transport_cost(&mut self) -> &mut TransportCost<V> {

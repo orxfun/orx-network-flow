@@ -40,6 +40,14 @@ pub trait Graph {
     where
         Self: 'a;
 
+    fn enumerated_vertices(&self) -> impl Iterator<Item = (VIdx, Self::V<'_>)> {
+        self.vertices().enumerate().map(|(i, v)| (VIdx::from(i), v))
+    }
+
+    fn enumerated_edges(&self) -> impl Iterator<Item = (EIdx, Self::E<'_>)> {
+        self.edges().enumerate().map(|(i, e)| (EIdx::from(i), e))
+    }
+
     // visualization
 
     fn as_basic_dot_graph(&self, custom_settings: Option<VertexSettings>) -> DotGraphBasic<'_, Self>

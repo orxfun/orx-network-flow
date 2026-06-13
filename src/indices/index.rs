@@ -11,7 +11,9 @@ pub trait IdxCore {
 
 #[macro_export]
 macro_rules! impl_idx {
-    ($idx:ident) => {
+    ($idx:ident, $range:ident) => {
+        // idx
+
         #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $idx(usize);
 
@@ -32,6 +34,23 @@ macro_rules! impl_idx {
         impl core::fmt::Display for $idx {
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
                 write!(f, "{}", self.0)
+            }
+        }
+
+        // range
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+        pub struct $range(pub(super) $idx, pub(super) $idx);
+
+        impl $range {
+            pub fn new(begin: $idx, len: usize) -> Self {
+                use crate::indices::IdxCore;
+                let end_exclusive = $idx::from(begin.into_inner() + len);
+                Self(begin, end_exclusive)
+            }
+
+            pub fn iter(self) -> impl Iterator<Item = $idx> {
+                use crate::indices::IdxCore;
+                (self.0.into_inner()..self.1.into_inner()).map($idx::from)
             }
         }
     };

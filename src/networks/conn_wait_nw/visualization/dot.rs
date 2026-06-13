@@ -1,11 +1,15 @@
-use crate::Variant;
+use crate::flow_units::FlowUnit;
 use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
-use crate::graphs::{EIdx, Edge, Graph, VIdx, Vertex};
+use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
-use crate::spaces::Space;
-use alloc::{format, string::String};
+use crate::utils::math_model::FlowsByEdges;
+use crate::{Commodity, CommodityData, Problem, Space, SpaceTime, Variant};
+use alloc::string::{String, ToString};
+use alloc::{format, vec::Vec};
+use good_lp::Solution;
+use orx_iterable::{Collection, Iterable};
 
 pub struct ConnWaitDotSettings {
     transport: VertexSettings,
@@ -61,6 +65,7 @@ where
 {
     nw: &'a ConnWaitNw<'a, V>,
     settings: ConnWaitDotSettings,
+    flows: Option<VecEdge<f64>>,
 }
 
 impl<'a, V> ConnWaitDot<'a, V>
@@ -71,11 +76,19 @@ where
         Self {
             nw,
             settings: settings.unwrap_or_default(),
+            flows: None,
         }
     }
 
+    pub fn with_flows(mut self, solution: &FlowsByEdges) -> Self {
+        let vars = solution.vars.iter();
+        let flows = vars.map(|&x| solution.solution.value(x)).collect();
+        self.flows = Some(flows);
+        self
+    }
+
     fn space(&self, space: Space) -> &V::S {
-        self.nw.p().space_key(space)
+        self.nw.p.space_key(space)
     }
 }
 
@@ -86,7 +99,7 @@ where
     type G = ConnWaitGraph;
 
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
-        let p = self.nw.p();
+        let p = self.nw.p;
         match self.graph().vertex(v).data() {
             ConnWaitVertex::Transport(t) => {
                 let data = p.transport_by_idx(*t);
@@ -99,38 +112,130 @@ where
                     data.destination().time()
                 )
             }
-            ConnWaitVertex::ReadyOri(ro) => {
+            ConnWaitVertex::ReadyOri(ro, commodities) => {
+                let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
+                let total_amount = FlowUnit::sum(amounts);
                 let ori = p.space_key(ro.space());
-                format!("{}\n{}-{}", v, ori, ro.time())
+                format!("{}\n{}-{}\n+{total_amount}", v, ori, ro.time())
             }
-            ConnWaitVertex::DueDes(ro) => {
+            ConnWaitVertex::DueDes(ro, commodities) => {
+                let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
+                let total_amount = FlowUnit::sum(amounts);
                 let des = p.space_key(ro.space());
-                format!("{}\n{}-{}", v, des, ro.time())
+                format!("{}\n{}-{}\n-{total_amount}", v, des, ro.time())
             }
-            _ => format!("{v}"),
         }
+    }
+
+    fn vertex_tooltip(&self, v: VIdx) -> Option<impl core::fmt::Display> {
+        Some({
+            let p = self.nw.p;
+            let com_str = |(c, x): (Commodity, &CommodityData<V>)| com_str(p, c, x);
+
+            match self.graph().vertex(v).data() {
+                ConnWaitVertex::Transport(t) => {
+                    let capacity = p.transport_by_idx(*t).capacity();
+                    format!("transport capacity = {capacity}")
+                }
+                ConnWaitVertex::ReadyOri(_, commodities) => {
+                    let num_commodities = commodities.len();
+                    let commodities = commodities.as_iterable();
+                    let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
+                    let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
+                    let commodities: Vec<_> = commodities.iter().map(com_str).collect();
+                    let commodities = commodities.join("\n");
+                    format!(
+                        "Source vertex per origin & ready\n{num_commodities} commodities\ntotal amount entering = {total_amount}\n\n{commodities}"
+                    )
+                }
+                ConnWaitVertex::DueDes(_, commodities) => {
+                    let num_commodities = commodities.len();
+                    let commodities = commodities.as_iterable();
+                    let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
+                    let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
+                    let commodities: Vec<_> = commodities.iter().map(com_str).collect();
+                    let commodities = commodities.join("\n");
+                    format!(
+                        "Sink vertex per destination & due time\n{num_commodities} commodities\ntotal amount leaving = {total_amount}\n\n{commodities}"
+                    )
+                }
+            }
+        })
     }
 
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
         match self.graph().vertex(v).data() {
             ConnWaitVertex::Transport(_) => &self.settings.transport,
-            ConnWaitVertex::ReadyOri(_) => &self.settings.ready_ori,
-            ConnWaitVertex::DueDes(_) => &self.settings.due_des,
+            ConnWaitVertex::ReadyOri(_, _) => &self.settings.ready_ori,
+            ConnWaitVertex::DueDes(_, _) => &self.settings.due_des,
             _ => todo!("vertex settings"),
         }
+    }
+
+    fn edge_label(&self, e: EIdx) -> impl core::fmt::Display {
+        match &self.flows {
+            Some(flows) => flows[e].to_string(),
+            None => String::new(),
+        }
+    }
+
+    fn edge_tooltip(&self, e: EIdx) -> Option<impl core::fmt::Display> {
+        let p = self.nw.p;
+        let edge = self.graph().edge(e);
+        let space = |st: SpaceTime| self.nw.p.space_key(st.space());
+
+        Some(match edge.data() {
+            ConnWaitEdge::Wait => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t = p.transport_by_idx(t);
+                let [o, d] = [space(t.origin()), space(t.destination())];
+                format!("Waiting edge at {o} among {o}-{d} transports")
+            }
+            ConnWaitEdge::Connect => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t = p.transport_by_idx(t);
+                let [o, d] = [space(t.origin()), space(t.destination())];
+                let [dt, at] = [t.origin().time(), t.destination().time()];
+                format!("Transport edge using capacity of\n{o}-{d} at {dt}-{at}")
+            }
+            ConnWaitEdge::Enter => format!("Entering transport network"),
+            ConnWaitEdge::Exit => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t = p.transport_by_idx(t);
+                let [o, d] = [space(t.origin()), space(t.destination())];
+                let [dt, at] = [t.origin().time(), t.destination().time()];
+                format!("Transport edge using capacity of\n{o}-{d} at {dt}-{at}")
+            }
+            ConnWaitEdge::Bypass(c) => {
+                let com = p.commodity_by_idx(*c);
+                let com_str = com_str(p, *c, &com);
+                format!("Bypass edge with lost revenue cost\n{com_str}")
+            }
+        })
     }
 
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {
         match self.graph().edge(e).data() {
             ConnWaitEdge::Wait => &self.settings.wait,
-            ConnWaitEdge::Connect(_) => &self.settings.connect,
+            ConnWaitEdge::Connect => &self.settings.connect,
             ConnWaitEdge::Enter => &self.settings.enter,
-            ConnWaitEdge::Exit(_) => &self.settings.exit,
+            ConnWaitEdge::Exit => &self.settings.exit,
             ConnWaitEdge::Bypass(_) => &self.settings.bypass,
         }
     }
 
     fn graph(&self) -> &Self::G {
-        self.nw.g()
+        &self.nw.g
     }
+}
+
+fn com_str<V: Variant>(p: &Problem<V>, c: Commodity, data: &CommodityData<V>) -> String {
+    let s = |s: Space| p.space_key(s);
+    format!(
+        "commodity {}-{} | amount={} | revenue={}",
+        s(data.origin().space()),
+        s(data.destination().space()),
+        data.amount(),
+        p.costs.lost_revenue.cost(c)
+    )
 }

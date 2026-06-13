@@ -12,11 +12,19 @@ impl<Dv, De> GraphCoreBuilder<Dv, De> {
         Self(graph)
     }
 
+    pub fn e(&self) -> usize {
+        self.0.e()
+    }
+
     pub fn vertex(&mut self, data: Dv) -> VIdx {
         let idx = VIdx::from(self.0.v());
         let vertex = VertexCore::new(data);
         self.0.vertices.push(vertex);
         idx
+    }
+
+    pub fn vertex_data_mut(&mut self, v: VIdx) -> &mut Dv {
+        self.0.vertices[v].data_mut()
     }
 
     pub fn edge(&mut self, data: De, tail: VIdx, head: VIdx) -> EIdx {

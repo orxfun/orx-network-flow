@@ -1,8 +1,4 @@
-use crate::Variant;
-use crate::indices::IdxMap;
-use crate::space_time::SpaceTime;
-use crate::transports::{Transport, TransportData};
-use crate::vehicles::Vehicle;
+use crate::{IdxMap, SpaceTime, Transport, TransportData, Variant, Vehicle};
 use core::ops::Deref;
 
 pub struct Transports<V: Variant> {

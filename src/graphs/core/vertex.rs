@@ -7,8 +7,8 @@ pub struct VertexCore<Dv> {
     data: Dv,
 }
 
-impl<V> VertexCore<V> {
-    pub fn new(data: V) -> Self {
+impl<Dv> VertexCore<Dv> {
+    pub fn new(data: Dv) -> Self {
         Self {
             data,
             out_edges: Vec::new(),
@@ -22,6 +22,10 @@ impl<V> VertexCore<V> {
 
     pub fn add_in_edge(&mut self, edges_idx: EIdx) {
         self.in_edges.push(edges_idx);
+    }
+
+    pub(super) fn data_mut(&mut self) -> &mut Dv {
+        &mut self.data
     }
 }
 
