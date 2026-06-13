@@ -112,13 +112,17 @@ where
                     data.destination().time()
                 )
             }
-            ConnWaitVertex::ReadyOri(ro, _) => {
+            ConnWaitVertex::ReadyOri(ro, commodities) => {
+                let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
+                let total_amount = FlowUnit::sum(amounts);
                 let ori = p.space_key(ro.space());
-                format!("{}\n{}-{}", v, ori, ro.time())
+                format!("{}\n{}-{}\n+{total_amount}", v, ori, ro.time())
             }
-            ConnWaitVertex::DueDes(ro, _) => {
+            ConnWaitVertex::DueDes(ro, commodities) => {
+                let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
+                let total_amount = FlowUnit::sum(amounts);
                 let des = p.space_key(ro.space());
-                format!("{}\n{}-{}", v, des, ro.time())
+                format!("{}\n{}-{}\n-{total_amount}", v, des, ro.time())
             }
         }
     }
