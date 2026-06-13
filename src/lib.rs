@@ -38,6 +38,7 @@ pub use indices::{Idx, IdxCore};
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
+pub use solution::Solution;
 
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
 pub(crate) use indices::{IdxMap, IdxMapSubset};
