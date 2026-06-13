@@ -5,7 +5,9 @@ use crate::graphs::visualization::dot::{
 use crate::graphs::{EIdx, Edge, Graph, VIdx, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
 use crate::spaces::Space;
-use alloc::{format, string::String};
+use crate::utils::math_model::FlowsByEdges;
+use alloc::{format, string::String, vec::Vec};
+use good_lp::Solution;
 
 pub struct ConnWaitDotSettings {
     transport: VertexSettings,
@@ -61,6 +63,7 @@ where
 {
     nw: &'a ConnWaitNw<'a, V>,
     settings: ConnWaitDotSettings,
+    flows: Option<Vec<f64>>,
 }
 
 impl<'a, V> ConnWaitDot<'a, V>
@@ -71,7 +74,15 @@ where
         Self {
             nw,
             settings: settings.unwrap_or_default(),
+            flows: None,
         }
+    }
+
+    pub fn with_flows(mut self, solution: &FlowsByEdges) -> Self {
+        let vars = solution.vars.iter();
+        let flows = vars.map(|&x| solution.solution.value(x)).collect();
+        self.flows = Some(flows);
+        self
     }
 
     fn space(&self, space: Space) -> &V::S {

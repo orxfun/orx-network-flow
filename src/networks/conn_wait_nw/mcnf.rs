@@ -1,19 +1,19 @@
 use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
-use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
+use crate::graphs::{Edge, Graph, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
-use crate::utils::math_model::{lp_solvers_model_to_lp_file, lp_solvers_model_to_problem};
-use crate::{Transport, TransportData, Variant};
+use crate::utils::math_model::{
+    FlowsByEdges, lp_solvers_model_to_lp_file, lp_solvers_model_to_problem,
+};
+use crate::{TransportData, Variant};
 use alloc::{format, string::ToString};
-use good_lp::solvers::lp_solvers::{Cplex, Model};
-use good_lp::variable::UnsolvedProblem;
+use good_lp::solvers::lp_solvers::Cplex;
 use good_lp::{
-    Constraint, Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
+    Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
     VariableDefinition, constraint,
 };
-use lp_solvers::lp_format::{AsVariable, LpProblem, WriteToLpFileFormat};
-use lp_solvers::solvers::SolverProgram;
-use std::{dbg, println};
+use lp_solvers::lp_format::LpProblem;
+use std::println;
 
 pub fn cplex_solver() -> LpSolver<Cplex> {
     good_lp::LpSolver(Cplex::with_command(
@@ -21,7 +21,7 @@ pub fn cplex_solver() -> LpSolver<Cplex> {
     ))
 }
 
-pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool)
+pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool) -> FlowsByEdges
 where
     V: Variant,
 {
@@ -99,6 +99,8 @@ where
             println!("{name:<name_width$}  {value}");
         }
     }
+
+    FlowsByEdges { solution, vars }
 }
 
 fn objective<V>(nw: &ConnWaitNw<'_, V>, vars: &VecEdge<Variable>) -> Expression
