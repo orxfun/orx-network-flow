@@ -1,17 +1,15 @@
-use std::string::ToString;
-
 use crate::flow_units::FlowUnit;
 use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
-use crate::spaces::Space;
 use crate::utils::math_model::FlowsByEdges;
-use crate::{Commodity, CommodityData, SpaceTime, Variant};
-use alloc::{format, string::String, vec::Vec};
+use crate::{Commodity, CommodityData, Problem, Space, SpaceTime, Variant};
+use alloc::string::{String, ToString};
+use alloc::{format, vec::Vec};
 use good_lp::Solution;
-use orx_iterable::{Collection, IntoCloningIterable, Iterable};
+use orx_iterable::{Collection, Iterable};
 
 pub struct ConnWaitDotSettings {
     transport: VertexSettings,
@@ -128,16 +126,7 @@ where
     fn vertex_tooltip(&self, v: VIdx) -> Option<impl core::fmt::Display> {
         Some({
             let p = self.nw.p;
-            let s = |s: Space| p.space_key(s);
-            let com_str = |(c, x): (Commodity, &CommodityData<V>)| {
-                format!(
-                    "commodity {}-{} | amount={} | revenue={}",
-                    s(x.origin().space()),
-                    s(x.destination().space()),
-                    x.amount(),
-                    p.costs.lost_revenue.cost(c)
-                )
-            };
+            let com_str = |(c, x): (Commodity, &CommodityData<V>)| com_str(p, c, x);
 
             match self.graph().vertex(v).data() {
                 ConnWaitVertex::Transport(t) => {
@@ -187,20 +176,37 @@ where
     }
 
     fn edge_tooltip(&self, e: EIdx) -> Option<impl core::fmt::Display> {
+        let p = self.nw.p;
         let edge = self.graph().edge(e);
         let space = |st: SpaceTime| self.nw.p.space_key(st.space());
 
         Some(match edge.data() {
             ConnWaitEdge::Wait => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
-                let t = self.nw.p.transport_by_idx(t);
+                let t = p.transport_by_idx(t);
                 let [o, d] = [space(t.origin()), space(t.destination())];
-                format!("Waiting edge at {o} among {o}-{d} flights")
+                format!("Waiting edge at {o} among {o}-{d} transports")
             }
-            ConnWaitEdge::Connect => format!(""),
-            ConnWaitEdge::Enter => format!(""),
-            ConnWaitEdge::Exit => format!(""),
-            ConnWaitEdge::Bypass(_) => format!(""),
+            ConnWaitEdge::Connect => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t = p.transport_by_idx(t);
+                let [o, d] = [space(t.origin()), space(t.destination())];
+                let [dt, at] = [t.origin().time(), t.destination().time()];
+                format!("Transport edge using capacity of\n{o}-{d} at {dt}-{at}")
+            }
+            ConnWaitEdge::Enter => format!("Entering transport network"),
+            ConnWaitEdge::Exit => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t = p.transport_by_idx(t);
+                let [o, d] = [space(t.origin()), space(t.destination())];
+                let [dt, at] = [t.origin().time(), t.destination().time()];
+                format!("Transport edge using capacity of\n{o}-{d} at {dt}-{at}")
+            }
+            ConnWaitEdge::Bypass(c) => {
+                let com = p.commodity_by_idx(*c);
+                let com_str = com_str(p, *c, &com);
+                format!("Bypass edge with lost revenue cost\n{com_str}")
+            }
         })
     }
 
@@ -217,4 +223,15 @@ where
     fn graph(&self) -> &Self::G {
         &self.nw.g
     }
+}
+
+fn com_str<V: Variant>(p: &Problem<V>, c: Commodity, data: &CommodityData<V>) -> String {
+    let s = |s: Space| p.space_key(s);
+    format!(
+        "commodity {}-{} | amount={} | revenue={}",
+        s(data.origin().space()),
+        s(data.destination().space()),
+        data.amount(),
+        p.costs.lost_revenue.cost(c)
+    )
 }

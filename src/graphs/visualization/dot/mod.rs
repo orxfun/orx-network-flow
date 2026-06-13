@@ -1,5 +1,6 @@
 mod dot_graph;
 mod dot_graph_basic;
+mod edge_label_fix;
 mod edge_settings;
 mod vertex_settings;
 mod vertex_shape;

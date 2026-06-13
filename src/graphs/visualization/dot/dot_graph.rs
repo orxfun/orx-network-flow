@@ -1,8 +1,6 @@
-use crate::graphs::visualization::dot::edge_settings::EdgeSettings;
-use crate::graphs::{EIdx, Edge, Graph};
-use crate::graphs::{VIdx, visualization::dot::VertexSettings};
-use alloc::format;
-use alloc::string::String;
+use crate::graphs::visualization::dot::{EdgeSettings, VertexSettings};
+use crate::graphs::{EIdx, Edge, Graph, VIdx};
+use alloc::{format, string::String};
 use core::fmt::Display;
 #[cfg(feature = "std")]
 use std::fs;
@@ -96,6 +94,8 @@ pub trait DotGraph {
         dot_path: impl AsRef<Path> + Clone,
         svg_path: impl AsRef<Path>,
     ) -> Result<(), Error> {
+        use crate::graphs::visualization::dot::edge_label_fix::fix_edge_labels_in_svg;
+
         self.create_dot_file(dot_path.clone())?;
 
         let dot_path = dot_path
@@ -113,6 +113,8 @@ pub trait DotGraph {
         Command::new("dot")
             .args(["-Tsvg", dot_path, "-o", svg_path])
             .status()?;
+
+        fix_edge_labels_in_svg(svg_path)?;
 
         Ok(())
     }
