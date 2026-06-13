@@ -51,7 +51,8 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
         let (ro, dd) = (c.origin(), c.destination());
         match (nw.ro_to_v.get(&ro), nw.dd_to_v.get(&dd)) {
             (Some(&s), Some(&t)) => {
-                shortest_path::<V>(&g, &mut heap, &mut visited, &mut pred, s, t);
+                let found = shortest_path::<V>(&g, &mut heap, &mut visited, &mut pred, s, t);
+                assert!(found);
                 build_transport_path(p.len_transports(), &mut pred, &mut path, s, t);
             }
             _ => unreachable!(),
@@ -81,7 +82,7 @@ fn shortest_path<V: Variant>(
     pred: &mut VecVertex<VIdx>,
     s: VIdx,
     t: VIdx,
-) {
+) -> bool {
     heap.clear();
     visited.iter_mut().for_each(|x| *x = false);
 
@@ -89,12 +90,20 @@ fn shortest_path<V: Variant>(
 
     while let Some((v, cost)) = heap.pop() {
         match v == t {
-            true => return,
+            true => return true,
             false => {
                 let vertex = g.vertex(v);
                 let out_indices = vertex.out_edges();
                 let with_cap = out_indices.map(|e| g.edge(e)).filter(is_edge_open::<V>);
                 let not_visited = with_cap.filter(|e| !visited[e.head()]);
+
+                let myo_edges: Vec<_> = vertex
+                    .out_edges()
+                    .map(|e| g.edge(e))
+                    .filter(is_edge_open::<V>)
+                    .filter(|e| !visited[e.head()])
+                    .collect();
+
                 for edge in not_visited {
                     match heap.try_decrease_key_or_push(&edge.head(), cost + edge.data().time) {
                         ResTryDecreaseKeyOrPush::Decreased | ResTryDecreaseKeyOrPush::Pushed => {
@@ -108,6 +117,8 @@ fn shortest_path<V: Variant>(
             }
         }
     }
+
+    false
 }
 
 fn build_transport_path(
