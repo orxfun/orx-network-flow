@@ -42,6 +42,10 @@ impl<V: Variant> TransportData<V> {
         [self.ori.time(), self.des.time()]
     }
 
+    pub fn duration(&self) -> Time {
+        self.des.time() - self.ori.time()
+    }
+
     pub(crate) fn var_str(&self, p: &Problem<V>) -> String {
         let [ori, des] = [self.ori, self.des].map(|x| p.space_key(x.space()));
         let [rt, due] = [self.ori.time(), self.des.time()];
