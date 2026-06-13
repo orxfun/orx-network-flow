@@ -8,4 +8,8 @@ impl FlowUnit for u64 {
     fn from_f64(value: f64) -> Self {
         value as u64
     }
+
+    fn inf() -> Self {
+        Self::MAX
+    }
 }

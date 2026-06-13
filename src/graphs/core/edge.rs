@@ -15,6 +15,11 @@ impl<De> EdgeCore<De> {
             data,
         }
     }
+
+    // TODO: to be moved to EdgeMut
+    pub fn data_mut(&mut self) -> &mut De {
+        &mut self.data
+    }
 }
 
 impl<E> Edge for &EdgeCore<E> {

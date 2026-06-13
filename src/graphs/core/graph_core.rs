@@ -15,6 +15,11 @@ impl<Dv, De> GraphCore<Dv, De> {
         self.edges.slice(range)
     }
 
+    // TODO: to be moved to GraphMut
+    pub fn edge_data_mut(&mut self, e: EIdx) -> &mut De {
+        self.edges[e].data_mut()
+    }
+
     // transform
 
     pub fn map<V, E, Fv, Fe>(&self, fv: Fv, fe: Fe) -> GraphCore<V, E>

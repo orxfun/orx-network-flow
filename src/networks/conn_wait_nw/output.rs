@@ -41,21 +41,29 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
     };
     let map_edge = |e: EIdx, x: &ConnWaitEdge| EdgeData::new(edge_cost(e, x), edge_flow(e, x));
 
-    let g = g.map(|_, _| (), map_edge);
+    let mut g = g.map(|_, _| (), map_edge);
     let mut heap = BinaryHeapOfIndices::with_index_bound(g.v());
     let mut visited = VecVertex::new_filled(g.v(), false);
-    let mut pred = VecVertex::new_filled(g.v(), VIdx::from(0));
+    let mut pred = VecVertex::new_filled(g.v(), (EIdx::from(0), VIdx::from(0)));
     let mut path = Vec::new();
+    let len_c = p.len_transports();
 
     for c in p.commodities.values() {
         let (ro, dd) = (c.origin(), c.destination());
-        match (nw.ro_to_v.get(&ro), nw.dd_to_v.get(&dd)) {
-            (Some(&s), Some(&t)) => {
-                let found = shortest_path::<V>(&g, &mut heap, &mut visited, &mut pred, s, t);
-                assert!(found);
-                build_transport_path(p.len_transports(), &mut pred, &mut path, s, t);
+        loop {
+            match (nw.ro_to_v.get(&ro), nw.dd_to_v.get(&dd)) {
+                (Some(&s), Some(&t)) => {
+                    let found = shortest_path::<V>(&g, &mut heap, &mut visited, &mut pred, s, t);
+                    match found {
+                        false => break,
+                        true => {
+                            let flow = build_transport_path(&g, len_c, &mut pred, &mut path, s, t);
+                            decrement_path_flow(&mut g, &mut pred, s, t, flow);
+                        }
+                    }
+                }
+                _ => unreachable!(),
             }
-            _ => unreachable!(),
         }
     }
 
@@ -79,7 +87,7 @@ fn shortest_path<V: Variant>(
     g: &GrSp<V>,
     heap: &mut Heap,
     visited: &mut VecVertex<bool>,
-    pred: &mut VecVertex<VIdx>,
+    pred: &mut VecVertex<(EIdx, VIdx)>,
     s: VIdx,
     t: VIdx,
 ) -> bool {
@@ -93,21 +101,21 @@ fn shortest_path<V: Variant>(
             true => return true,
             false => {
                 let vertex = g.vertex(v);
-                let out_indices = vertex.out_edges();
-                let with_cap = out_indices.map(|e| g.edge(e)).filter(is_edge_open::<V>);
-                let not_visited = with_cap.filter(|e| !visited[e.head()]);
+                let not_visited = vertex
+                    .out_edges()
+                    .map(|e| (e, g.edge(e)))
+                    .filter(|(_, edge)| !visited[edge.head()] && edge.data().flow.is_pos());
 
                 let myo_edges: Vec<_> = vertex
                     .out_edges()
-                    .map(|e| g.edge(e))
-                    .filter(is_edge_open::<V>)
-                    .filter(|e| !visited[e.head()])
+                    .map(|e| (e, g.edge(e)))
+                    .filter(|(_, edge)| !visited[edge.head()] && edge.data().flow.is_pos())
                     .collect();
 
-                for edge in not_visited {
+                for (e, edge) in not_visited {
                     match heap.try_decrease_key_or_push(&edge.head(), cost + edge.data().time) {
                         ResTryDecreaseKeyOrPush::Decreased | ResTryDecreaseKeyOrPush::Pushed => {
-                            pred[edge.head()] = v;
+                            pred[edge.head()] = (e, v);
                         }
                         ResTryDecreaseKeyOrPush::Unchanged => {}
                     }
@@ -121,13 +129,16 @@ fn shortest_path<V: Variant>(
     false
 }
 
-fn build_transport_path(
+fn build_transport_path<V: Variant>(
+    g: &GrSp<V>,
     len_transports: usize,
-    pred: &mut VecVertex<VIdx>,
+    pred: &mut VecVertex<(EIdx, VIdx)>,
     path: &mut Vec<Transport>,
     s: VIdx,
     t: VIdx,
-) {
+) -> V::F {
+    let mut max_flow = FlowUnit::inf();
+
     let v_to_t = |v: VIdx| match v.into_inner() < len_transports {
         true => Some(Transport::from(v.into_inner())),
         false => None,
@@ -140,10 +151,32 @@ fn build_transport_path(
         if let Some(t) = v_to_t(curr) {
             path.push(t);
         }
-        curr = pred[curr];
+        curr = pred[curr].1;
+
+        let flow = g.edge(pred[curr].0).data().flow;
+        if flow < max_flow {
+            max_flow = flow;
+        }
     }
 
     if let Some(t) = v_to_t(curr) {
         path.push(t);
+    }
+
+    max_flow
+}
+
+fn decrement_path_flow<V: Variant>(
+    g: &mut GrSp<V>,
+    pred: &mut VecVertex<(EIdx, VIdx)>,
+    s: VIdx,
+    t: VIdx,
+    flow: V::F,
+) {
+    let mut curr = t;
+    while curr != s {
+        let e = pred[curr].0;
+        g.edge_data_mut(e).flow -= flow;
+        curr = pred[curr].1;
     }
 }

@@ -1,12 +1,23 @@
 use core::fmt::{Debug, Display};
-use core::ops::Add;
+use core::ops::{Add, AddAssign, Sub, SubAssign};
 
 pub trait FlowUnit:
-    Default + Debug + Clone + Copy + PartialOrd + Add<Output = Self> + Display
+    Default
+    + Debug
+    + Clone
+    + Copy
+    + PartialOrd
+    + Add<Output = Self>
+    + Sub<Output = Self>
+    + AddAssign
+    + SubAssign
+    + Display
 {
     fn into_f64(self) -> f64;
 
     fn from_f64(value: f64) -> Self;
+
+    fn inf() -> Self;
 
     #[inline(always)]
     fn zero() -> Self {
