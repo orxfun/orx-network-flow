@@ -93,8 +93,8 @@ fn main() {
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 
-    let flows_by_edges = nw.solve(true);
-    let dot = dot.with_flows(&flows_by_edges);
+    let output = nw.solve(true);
+    let dot = dot.with_flows(&output.edge_flows);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 }

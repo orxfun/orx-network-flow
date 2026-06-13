@@ -1,8 +1,7 @@
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
-use crate::networks::conn_wait_nw::mcnf::solve;
 use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
-use crate::utils::math_model::FlowsByEdges;
+use crate::networks::conn_wait_nw::{mcnf::solve, output::Output};
 use crate::utils::std_utils::Map;
 use crate::{Problem, SpaceTime, Variant, VecTransport};
 use alloc::vec::Vec;
@@ -45,7 +44,7 @@ where
         ConnWaitDot::new(self, settings)
     }
 
-    pub fn solve(&self, named: bool) -> FlowsByEdges {
+    pub fn solve(&self, named: bool) -> Output<V> {
         solve(self, named)
     }
 }
