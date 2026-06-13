@@ -120,6 +120,10 @@ where
         }
     }
 
+    fn edge_label(&self, _: EIdx) -> impl core::fmt::Display {
+        String::new()
+    }
+
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {
         match self.graph().edge(e).data() {
             ConnWaitEdge::Wait => &self.settings.wait,

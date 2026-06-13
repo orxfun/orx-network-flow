@@ -1,7 +1,7 @@
 use crate::graphs::visualization::dot::edge_settings::EdgeSettings;
 use crate::graphs::visualization::dot::{DotGraph, VertexSettings};
 use crate::graphs::{EIdx, Graph, VIdx};
-use alloc::string::ToString;
+use alloc::string::{String, ToString};
 use core::fmt::Display;
 
 pub struct DotGraphBasic<'a, G: Graph> {
@@ -29,6 +29,10 @@ impl<'a, G: Graph> DotGraph for DotGraphBasic<'a, G> {
 
     fn vertex_settings(&self, _: VIdx) -> &VertexSettings {
         &self.vertex
+    }
+
+    fn edge_label(&self, _: EIdx) -> impl Display {
+        String::new()
     }
 
     fn edge_settings(&self, _: EIdx) -> &EdgeSettings {

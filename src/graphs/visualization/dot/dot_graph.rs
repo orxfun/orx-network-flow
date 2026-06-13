@@ -24,6 +24,12 @@ pub trait DotGraph {
 
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings;
 
+    fn edge_label(&self, e: EIdx) -> impl Display;
+
+    fn edge_tooltip(&self, _: EIdx) -> Option<impl Display> {
+        Option::<String>::None
+    }
+
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings;
 
     fn graph(&self) -> &Self::G;
@@ -44,8 +50,8 @@ pub trait DotGraph {
 
         for v in self.vertices() {
             let label = self.vertex_label(v);
-            let settings = self.vertex_settings(v);
             let tooltip = self.vertex_tooltip(v);
+            let settings = self.vertex_settings(v);
 
             let vertex = match tooltip {
                 Some(tooltip) => {
@@ -59,8 +65,18 @@ pub trait DotGraph {
         }
 
         for (e, tail, head) in self.edges() {
+            let label = self.edge_label(e);
+            let tooltip = self.edge_tooltip(e);
             let settings = self.edge_settings(e);
-            let edge = format!("    {} -> {} [label=\"\" {settings}];", tail, head);
+            let edge = match tooltip {
+                Some(tooltip) => {
+                    format!(
+                        "    {} -> {} [label=\"{label}\" {settings} tooltip=\"{tooltip}\"];",
+                        tail, head
+                    )
+                }
+                None => format!("    {} -> {} [label=\"{label}\" {settings}];", tail, head),
+            };
             dot.push_str(&edge);
             dot.push('\n');
         }
