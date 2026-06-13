@@ -1,5 +1,5 @@
 use crate::graphs::core::{EdgeCore, GraphCoreBuilder, VertexCore};
-use crate::graphs::{Edge, EdgeRange, VecEdge, VecVertex, Vertex};
+use crate::graphs::{EIdx, Edge, EdgeRange, VIdx, VecEdge, VecVertex, Vertex};
 
 pub struct GraphCore<Dv, De> {
     pub(super) vertices: VecVertex<VertexCore<Dv>>,
@@ -19,12 +19,17 @@ impl<Dv, De> GraphCore<Dv, De> {
 
     pub fn map<V, E, Fv, Fe>(&self, fv: Fv, fe: Fe) -> GraphCore<V, E>
     where
-        Fv: Fn(&Dv) -> V,
-        Fe: Fn(&De) -> E,
+        Fv: Fn(VIdx, &Dv) -> V,
+        Fe: Fn(EIdx, &De) -> E,
     {
-        let (vertices, edges) = (self.vertices.iter(), self.edges.iter());
-        let vertices = vertices.map(|v| v.with_data(fv(v.data()))).collect();
-        let edges = edges.map(|e| e.with_data(fe(e.data()))).collect();
+        let vertices = self.vertices.enumerated_iter();
+        let vertices = vertices
+            .map(|(v, x)| x.with_data(fv(v, x.data())))
+            .collect();
+
+        let edges = self.edges.enumerated_iter();
+        let edges = edges.map(|(e, x)| x.with_data(fe(e, x.data()))).collect();
+
         GraphCore { vertices, edges }
     }
 }
