@@ -23,6 +23,7 @@ serde = { version = "1", default-features = false, features = [
 serde_json = { version = "1", default-features = false, features = [
     "alloc",
 ], optional = true }
+orx-priority-queue = { version = "1.8.0", default-features = false }
 
 [features]
 default = ["std"]

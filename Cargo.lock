@@ -264,9 +264,16 @@ dependencies = [
  "lp-solvers",
  "num",
  "orx-iterable",
+ "orx-priority-queue",
  "serde",
  "serde_json",
 ]
+
+[[package]]
+name = "orx-priority-queue"
+version = "1.8.0"
+source = "sparse+https://artifactory.dhl.com/artifactory/api/cargo/cargo-remote/index/"
+checksum = "a89722d987db848624cf8fca21245d59cf6382b01b4ca79ae70261cea5747495"
 
 [[package]]
 name = "orx-self-or"

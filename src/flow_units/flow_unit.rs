@@ -8,6 +8,16 @@ pub trait FlowUnit:
 
     fn from_f64(value: f64) -> Self;
 
+    #[inline(always)]
+    fn zero() -> Self {
+        Default::default()
+    }
+
+    #[inline(always)]
+    fn is_pos(self) -> bool {
+        self > Self::zero()
+    }
+
     fn sum(values: impl IntoIterator<Item = Self>) -> Self {
         let mut sum = Default::default();
         for x in values {
