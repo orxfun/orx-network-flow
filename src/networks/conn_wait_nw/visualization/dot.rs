@@ -1,6 +1,6 @@
 use std::string::ToString;
 
-use crate::Variant;
+use crate::flow_units::FlowUnit;
 use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
@@ -8,8 +8,10 @@ use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
 use crate::spaces::Space;
 use crate::utils::math_model::FlowsByEdges;
-use alloc::{format, string::String};
+use crate::{Commodity, CommodityData, SpaceTime, Variant};
+use alloc::{format, string::String, vec::Vec};
 use good_lp::Solution;
+use orx_iterable::{Collection, IntoCloningIterable, Iterable};
 
 pub struct ConnWaitDotSettings {
     transport: VertexSettings,
@@ -120,8 +122,52 @@ where
                 let des = p.space_key(ro.space());
                 format!("{}\n{}-{}", v, des, ro.time())
             }
-            _ => format!("{v}"),
         }
+    }
+
+    fn vertex_tooltip(&self, v: VIdx) -> Option<impl core::fmt::Display> {
+        Some({
+            let p = self.nw.p;
+            let s = |s: Space| p.space_key(s);
+            let com_str = |(c, x): (Commodity, &CommodityData<V>)| {
+                format!(
+                    "commodity {}-{} | amount={} | revenue={}",
+                    s(x.origin().space()),
+                    s(x.destination().space()),
+                    x.amount(),
+                    p.costs.lost_revenue.cost(c)
+                )
+            };
+
+            match self.graph().vertex(v).data() {
+                ConnWaitVertex::Transport(t) => {
+                    let capacity = p.transport_by_idx(*t).capacity();
+                    format!("transport capacity = {capacity}")
+                }
+                ConnWaitVertex::ReadyOri(_, commodities) => {
+                    let num_commodities = commodities.len();
+                    let commodities = commodities.as_iterable();
+                    let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
+                    let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
+                    let commodities: Vec<_> = commodities.iter().map(com_str).collect();
+                    let commodities = commodities.join("\n");
+                    format!(
+                        "Source vertex per origin & ready\n{num_commodities} commodities\ntotal amount entering = {total_amount}\n\n{commodities}"
+                    )
+                }
+                ConnWaitVertex::DueDes(_, commodities) => {
+                    let num_commodities = commodities.len();
+                    let commodities = commodities.as_iterable();
+                    let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
+                    let total_amount = FlowUnit::sum(commodities.iter().map(|x| x.1.amount()));
+                    let commodities: Vec<_> = commodities.iter().map(com_str).collect();
+                    let commodities = commodities.join("\n");
+                    format!(
+                        "Sink vertex per destination & due time\n{num_commodities} commodities\ntotal amount leaving = {total_amount}\n\n{commodities}"
+                    )
+                }
+            }
+        })
     }
 
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
@@ -138,6 +184,24 @@ where
             Some(flows) => flows[e].to_string(),
             None => String::new(),
         }
+    }
+
+    fn edge_tooltip(&self, e: EIdx) -> Option<impl core::fmt::Display> {
+        let edge = self.graph().edge(e);
+        let space = |st: SpaceTime| self.nw.p.space_key(st.space());
+
+        Some(match edge.data() {
+            ConnWaitEdge::Wait => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t = self.nw.p.transport_by_idx(t);
+                let [o, d] = [space(t.origin()), space(t.destination())];
+                format!("Waiting edge at {o} among {o}-{d} flights")
+            }
+            ConnWaitEdge::Connect => format!(""),
+            ConnWaitEdge::Enter => format!(""),
+            ConnWaitEdge::Exit => format!(""),
+            ConnWaitEdge::Bypass(_) => format!(""),
+        })
     }
 
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {

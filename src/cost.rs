@@ -1,8 +1,18 @@
 use crate::time::Time;
-use core::ops::{Mul, Neg};
+use core::{
+    fmt::{Debug, Display},
+    ops::{Mul, Neg},
+};
 
 pub trait Cost:
-    Default + Clone + Copy + Neg<Output = Self> + Mul<Self, Output = Self> + Mul<Time, Output = Self>
+    Default
+    + Debug
+    + Display
+    + Clone
+    + Copy
+    + Neg<Output = Self>
+    + Mul<Self, Output = Self>
+    + Mul<Time, Output = Self>
 {
     fn zero() -> Self {
         Self::default()
