@@ -2,7 +2,7 @@ use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::networks::ConnWaitNwSettings;
 use orx_network_flow::{ProblemBuilder, Variant};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 struct MyVariant;
 
 impl Variant for MyVariant {

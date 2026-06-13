@@ -3,7 +3,7 @@ use crate::{Problem, ProblemBuilder, SpaceTime, SpaceTimeOd, Variant};
 use alloc::vec;
 use alloc::vec::Vec;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 struct TestVariant;
 
 impl Variant for TestVariant {
