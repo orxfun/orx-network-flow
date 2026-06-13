@@ -54,9 +54,7 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
     let mut count = 0;
 
     for (c, com) in p.commodities.indices_values() {
-        let bypass_e = nw.bypass_edge_of(c);
-        let bypassed = edge_flow(bypass_e, g_orig.edge(bypass_e).data());
-        let mut remaining = com.amount() - bypassed;
+        let mut remaining = com.amount() - edge_flows[nw.bypass_edge_of(c)];
 
         let (ro, dd) = (com.origin(), com.destination());
         let s = *nw.ro_to_v.get(&ro).expect("ro");
@@ -68,6 +66,7 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
                 false => break,
                 true => {
                     let flow = build_transport_path(&g, len_c, &mut pred, &mut path, s, t);
+                    debug_assert!(flow.is_pos());
                     decrement_path_flow(&mut g, &mut pred, s, t, flow);
                     remaining -= flow;
 
