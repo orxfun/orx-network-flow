@@ -16,6 +16,14 @@ impl<Dv> VertexCore<Dv> {
         }
     }
 
+    pub fn with_data<V>(&self, data: V) -> VertexCore<V> {
+        VertexCore {
+            out_edges: self.out_edges.clone(),
+            in_edges: self.in_edges.clone(),
+            data,
+        }
+    }
+
     pub fn add_out_edge(&mut self, edges_idx: EIdx) {
         self.out_edges.push(edges_idx);
     }

@@ -7,6 +7,16 @@ pub struct EdgeCore<De> {
     data: De,
 }
 
+impl<De> EdgeCore<De> {
+    pub fn with_data<E>(&self, data: E) -> EdgeCore<E> {
+        EdgeCore {
+            tail: self.tail,
+            head: self.head,
+            data,
+        }
+    }
+}
+
 impl<E> Edge for &EdgeCore<E> {
     type Data = E;
 
