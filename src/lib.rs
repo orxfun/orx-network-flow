@@ -25,6 +25,7 @@ pub mod graphs;
 mod indices;
 pub mod networks;
 mod problem;
+mod solution;
 mod spaces;
 mod time;
 mod time_bounds;
