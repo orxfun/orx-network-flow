@@ -1,10 +1,13 @@
 use crate::flow_units::FlowUnit;
 use crate::graphs::core::{EdgeCore, GraphCore};
-use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
+use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 use crate::networks::ConnWaitNw;
 use crate::networks::conn_wait_nw::ConnWaitEdge;
-use crate::{Solution, Time, Variant};
-use orx_priority_queue::{BinaryHeapOfIndices, PriorityQueue, PriorityQueueDecKey};
+use crate::{IdxCore, Solution, Time, Transport, Variant, VecTransport};
+use alloc::vec::Vec;
+use orx_priority_queue::{
+    BinaryHeapOfIndices, PriorityQueue, PriorityQueueDecKey, ResTryDecreaseKeyOrPush,
+};
 
 pub struct Output<V: Variant> {
     pub edge_flows: VecEdge<V::F>,
@@ -40,15 +43,18 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
 
     let g = g.map(|_, _| (), map_edge);
     let mut heap = BinaryHeapOfIndices::with_index_bound(g.v());
+    let mut visited = VecVertex::new_filled(g.v(), false);
+    let mut pred = VecVertex::new_filled(g.v(), VIdx::from(0));
+    let mut path = Vec::new();
 
     for c in p.commodities.values() {
         let (ro, dd) = (c.origin(), c.destination());
         match (nw.ro_to_v.get(&ro), nw.dd_to_v.get(&dd)) {
             (Some(&s), Some(&t)) => {
-                //
-                shortest_path::<V>(&g, &mut heap, s, t)
+                shortest_path::<V>(&g, &mut heap, &mut visited, &mut pred, s, t);
+                build_transport_path(p.len_transports(), &mut pred, &mut path, s, t);
             }
-            _ => todo!(),
+            _ => unreachable!(),
         }
     }
 
@@ -68,24 +74,65 @@ fn is_edge_open<V: Variant>(edge: &&EdgeCore<EdgeData<V>>) -> bool {
     edge.data().flow.is_pos()
 }
 
-fn shortest_path<V: Variant>(g: &GrSp<V>, heap: &mut Heap, s: VIdx, t: VIdx) {
+fn shortest_path<V: Variant>(
+    g: &GrSp<V>,
+    heap: &mut Heap,
+    visited: &mut VecVertex<bool>,
+    pred: &mut VecVertex<VIdx>,
+    s: VIdx,
+    t: VIdx,
+) {
     heap.clear();
+    visited.iter_mut().for_each(|x| *x = false);
+
     heap.push(s, Time::zero());
 
     while let Some((v, cost)) = heap.pop() {
         match v == t {
-            true => {
-                //
-                todo!()
-            }
+            true => return,
             false => {
                 let vertex = g.vertex(v);
                 let out_indices = vertex.out_edges();
-                let out_edges = out_indices.map(|e| g.edge(e)).filter(is_edge_open::<V>);
-                for edge in out_edges {
-                    heap.try_decrease_key_or_push(&edge.head(), cost + edge.data().time);
+                let with_cap = out_indices.map(|e| g.edge(e)).filter(is_edge_open::<V>);
+                let not_visited = with_cap.filter(|e| !visited[e.head()]);
+                for edge in not_visited {
+                    match heap.try_decrease_key_or_push(&edge.head(), cost + edge.data().time) {
+                        ResTryDecreaseKeyOrPush::Decreased | ResTryDecreaseKeyOrPush::Pushed => {
+                            pred[edge.head()] = v;
+                        }
+                        ResTryDecreaseKeyOrPush::Unchanged => {}
+                    }
                 }
+
+                visited[v] = true;
             }
         }
+    }
+}
+
+fn build_transport_path(
+    len_transports: usize,
+    pred: &mut VecVertex<VIdx>,
+    path: &mut Vec<Transport>,
+    s: VIdx,
+    t: VIdx,
+) {
+    let v_to_t = |v: VIdx| match v.into_inner() < len_transports {
+        true => Some(Transport::from(v.into_inner())),
+        false => None,
+    };
+
+    path.clear();
+
+    let mut curr = t;
+    while curr != s {
+        if let Some(t) = v_to_t(curr) {
+            path.push(t);
+        }
+        curr = pred[curr];
+    }
+
+    if let Some(t) = v_to_t(curr) {
+        path.push(t);
     }
 }

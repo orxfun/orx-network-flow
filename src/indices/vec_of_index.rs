@@ -50,6 +50,10 @@ macro_rules! impl_vec_of_idx {
                 self.0.iter().enumerate().map(|(i, x)| ($idx::from(i), x))
             }
 
+            pub fn iter_mut(&mut self) -> impl ExactSizeIterator<Item = &mut T> {
+                self.0.iter_mut()
+            }
+
             pub fn indices(&self) -> impl Iterator<Item = $idx> {
                 (0..self.0.len()).map($idx::from)
             }
