@@ -11,8 +11,6 @@ use std::process::Command;
 #[cfg(feature = "std")]
 use std::{io::Error, path::Path};
 
-const TEMP_EDGE: EdgeSettings = EdgeSettings { color: None };
-
 pub trait DotGraph {
     type G: Graph;
 
