@@ -31,6 +31,7 @@ fn main() {
     let mut builder = builder.with_geographic_spaces([
         ("AMS".to_string(), 52.308_613, 4.763_889),
         ("BRU".to_string(), 50.901_389, 4.484_444),
+        ("LEJ".to_string(), 51.25, 12.14),
         ("CVG".to_string(), 39.0488, -84.6678),
         ("SIN".to_string(), 1.350_189, 103.994_433),
         ("EMA".to_string(), 52.831_111, -1.328_056),
@@ -45,14 +46,14 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 0, 20);
-    commodity("AMS", "CVG", 3, 20);
-    // commodity("CVG", "AMS", 0, 20);
-    // commodity("CVG", "BRU", 0, 20);
+    commodity("LEJ", "CVG", 0, 20);
+    commodity("LEJ", "CVG", 0, 20);
+    commodity("AMS", "CVG", 0, 20);
 
     // transports
     let mut t_idx = 0;
     let t = &mut t_idx;
-    let mut transport = |ori: &str, des: &str, dt: i64, at: i64| {
+    let mut transport = |ori: &str, des: &str, dt: i64, at: i64, cap: u64| {
         builder.push_transport(
             *t,
             12,
@@ -61,27 +62,25 @@ fn main() {
             dt,
             des.to_string(),
             at,
-            10,
+            cap,
         );
         *t += 1;
     };
 
-    transport("AMS", "BRU", 1, 2);
-    transport("AMS", "BRU", 4, 5);
-    // transport("AMS", "BRU", 7, 8);
+    transport("AMS", "BRU", 1, 2, 10);
+    transport("AMS", "BRU", 4, 5, 10);
 
-    // transport("BRU", "CVG", 1, 6);
-    transport("BRU", "CVG", 7, 12);
-    transport("BRU", "CVG", 13, 18);
+    transport("LEJ", "BRU", 1, 2, 10);
+    transport("LEJ", "BRU", 4, 5, 10);
 
-    // transport("CVG", "AMS", 1, 5);
-    // transport("CVG", "AMS", 4, 8);
-    // transport("CVG", "AMS", 7, 11);
-    // transport("CVG", "AMS", 10, 14);
+    transport("BRU", "CVG", 7, 12, 10);
+    transport("BRU", "CVG", 13, 18, 10);
 
     let mut lost_revenue_cost = builder.lost_revenue_cost();
-    lost_revenue_cost.commodity_specific(&0, 1);
-    lost_revenue_cost.commodity_specific(&1, 2);
+    lost_revenue_cost.commodity_specific(&0, 1); // AMS-BRU
+    lost_revenue_cost.commodity_specific(&1, 3); // LEJ-CVG
+    lost_revenue_cost.commodity_specific(&2, 10); // LEJ-CVG-X
+    lost_revenue_cost.commodity_specific(&3, 2); // AMS-CVG
 
     let problem = builder.finish();
 

@@ -1,12 +1,14 @@
+use std::string::ToString;
+
 use crate::Variant;
 use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
-use crate::graphs::{EIdx, Edge, Graph, VIdx, Vertex};
+use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
 use crate::spaces::Space;
 use crate::utils::math_model::FlowsByEdges;
-use alloc::{format, string::String, vec::Vec};
+use alloc::{format, string::String};
 use good_lp::Solution;
 
 pub struct ConnWaitDotSettings {
@@ -63,7 +65,7 @@ where
 {
     nw: &'a ConnWaitNw<'a, V>,
     settings: ConnWaitDotSettings,
-    flows: Option<Vec<f64>>,
+    flows: Option<VecEdge<f64>>,
 }
 
 impl<'a, V> ConnWaitDot<'a, V>
@@ -131,8 +133,11 @@ where
         }
     }
 
-    fn edge_label(&self, _: EIdx) -> impl core::fmt::Display {
-        String::new()
+    fn edge_label(&self, e: EIdx) -> impl core::fmt::Display {
+        match &self.flows {
+            Some(flows) => flows[e].to_string(),
+            None => String::new(),
+        }
     }
 
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {
