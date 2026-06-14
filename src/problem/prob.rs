@@ -3,7 +3,7 @@ use crate::costs::Costs;
 use crate::networks::{ConnWaitNw, ConnWaitNwSettings};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
-use crate::spaces::{Space, SpaceData, Spaces};
+use crate::spaces::{Space, SpaceData, SpaceTime, Spaces};
 use crate::time_bounds::TimeBounds;
 use crate::transports::{Transport, TransportData, Transports};
 use crate::utils::std_utils::Map;
@@ -27,6 +27,8 @@ pub struct Problem<V: Variant> {
     pub sorted_transport_origins: Vec<Space>,
     pub sorted_commodity_origins: Vec<Space>,
     pub sorted_commodity_destinations: Vec<Space>,
+    pub sorted_ro_commodities: Vec<(SpaceTime, Vec<Commodity>)>,
+    pub sorted_dd_commodities: Vec<(SpaceTime, Vec<Commodity>)>,
 }
 
 impl<V: Variant> Problem<V> {
