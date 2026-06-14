@@ -4,11 +4,9 @@ use crate::graphs::visualization::dot::{
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
-use crate::utils::math_model::FlowsByEdges;
 use crate::{Commodity, CommodityData, Problem, Space, SpaceTime, Variant};
 use alloc::string::{String, ToString};
 use alloc::{format, vec::Vec};
-use good_lp::Solution;
 use orx_iterable::{Collection, Iterable};
 
 pub struct ConnWaitDotSettings {
@@ -65,7 +63,7 @@ where
 {
     nw: &'a ConnWaitNw<'a, V>,
     settings: ConnWaitDotSettings,
-    flows: Option<VecEdge<f64>>,
+    flows: Option<&'a VecEdge<V::F>>,
 }
 
 impl<'a, V> ConnWaitDot<'a, V>
@@ -80,9 +78,7 @@ where
         }
     }
 
-    pub fn with_flows(mut self, solution: &FlowsByEdges) -> Self {
-        let vars = solution.vars.iter();
-        let flows = vars.map(|&x| solution.solution.value(x)).collect();
+    pub fn with_flows(mut self, flows: &'a VecEdge<V::F>) -> Self {
         self.flows = Some(flows);
         self
     }

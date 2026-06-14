@@ -1,6 +1,7 @@
 use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};
+use crate::networks::conn_wait_nw::output::Output;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
 use crate::utils::math_model::{
     FlowsByEdges, lp_solvers_model_to_lp_file, lp_solvers_model_to_problem,
@@ -21,7 +22,7 @@ pub fn cplex_solver() -> LpSolver<Cplex> {
     ))
 }
 
-pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool) -> FlowsByEdges
+pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool) -> Output<V>
 where
     V: Variant,
 {
@@ -100,7 +101,9 @@ where
         }
     }
 
-    FlowsByEdges { solution, vars }
+    let var_to_flow = |x: &Variable| FlowUnit::from_f64(solution.value(*x));
+    let edge_flows = vars.iter().map(var_to_flow).collect();
+    Output::create(nw, edge_flows)
 }
 
 fn objective<V>(nw: &ConnWaitNw<'_, V>, vars: &VecEdge<Variable>) -> Expression

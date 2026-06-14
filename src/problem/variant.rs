@@ -1,6 +1,6 @@
 use crate::{cost::Cost, flow_units::FlowUnit, utils::std_utils::MapKey};
 
-pub trait Variant: Clone + Copy {
+pub trait Variant: Clone + Copy + Default {
     /// Space key
     type S: MapKey;
 

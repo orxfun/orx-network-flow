@@ -52,6 +52,10 @@ macro_rules! impl_idx {
                 use crate::indices::IdxCore;
                 (self.0.into_inner()..self.1.into_inner()).map($idx::from)
             }
+
+            pub fn begin(self) -> $idx {
+                self.0
+            }
         }
     };
 }

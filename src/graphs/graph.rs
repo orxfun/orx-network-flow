@@ -1,7 +1,5 @@
-use crate::graphs::{
-    EIdx, Edge, VIdx, Vertex,
-    visualization::dot::{DotGraphBasic, VertexSettings},
-};
+use crate::graphs::visualization::dot::{DotGraphBasic, VertexSettings};
+use crate::graphs::{EIdx, Edge, VIdx, Vertex};
 
 pub trait Graph {
     type Dv;

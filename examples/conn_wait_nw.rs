@@ -2,7 +2,7 @@ use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::networks::ConnWaitNwSettings;
 use orx_network_flow::{ProblemBuilder, Variant};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 struct MyVariant;
 
 impl Variant for MyVariant {
@@ -46,9 +46,11 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 0, 20);
-    commodity("LEJ", "CVG", 0, 20);
-    commodity("LEJ", "CVG", 0, 20);
     commodity("AMS", "CVG", 0, 20);
+    commodity("AMS", "LEJ", 0, 20);
+    commodity("AMS", "LEJ", 0, 20);
+    // commodity("LEJ", "CVG", 0, 20);
+    // commodity("AMS", "CVG", 0, 20);
 
     // transports
     let mut t_idx = 0;
@@ -69,12 +71,13 @@ fn main() {
 
     transport("AMS", "BRU", 1, 2, 10);
     transport("AMS", "BRU", 4, 5, 10);
+    transport("AMS", "LEJ", 4, 5, 10);
 
     transport("LEJ", "BRU", 1, 2, 10);
     transport("LEJ", "BRU", 4, 5, 10);
 
     transport("BRU", "CVG", 7, 12, 10);
-    transport("BRU", "CVG", 13, 18, 10);
+    // transport("BRU", "CVG", 13, 18, 10);
 
     let mut lost_revenue_cost = builder.lost_revenue_cost();
     lost_revenue_cost.commodity_specific(&0, 1); // AMS-BRU
@@ -93,8 +96,8 @@ fn main() {
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 
-    let flows_by_edges = nw.solve(true);
-    let dot = dot.with_flows(&flows_by_edges);
+    let output = nw.solve(true);
+    let dot = dot.with_flows(&output.edge_flows);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 }

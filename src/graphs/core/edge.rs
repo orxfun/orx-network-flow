@@ -7,6 +7,21 @@ pub struct EdgeCore<De> {
     data: De,
 }
 
+impl<De> EdgeCore<De> {
+    pub fn with_data<E>(&self, data: E) -> EdgeCore<E> {
+        EdgeCore {
+            tail: self.tail,
+            head: self.head,
+            data,
+        }
+    }
+
+    // TODO: to be moved to EdgeMut
+    pub fn data_mut(&mut self) -> &mut De {
+        &mut self.data
+    }
+}
+
 impl<E> Edge for &EdgeCore<E> {
     type Data = E;
 

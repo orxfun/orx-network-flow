@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! impl_vec_of_idx {
     ($idx:ident, $range:ident, $idx_vec:ident) => {
-        #[derive(Debug)]
+        #[derive(Debug, Clone)]
         pub struct $idx_vec<T>(pub alloc::vec::Vec<T>);
 
         impl<T> core::ops::Index<$idx> for $idx_vec<T> {
@@ -48,6 +48,10 @@ macro_rules! impl_vec_of_idx {
 
             pub fn enumerated_iter(&self) -> impl ExactSizeIterator<Item = ($idx, &T)> {
                 self.0.iter().enumerate().map(|(i, x)| ($idx::from(i), x))
+            }
+
+            pub fn iter_mut(&mut self) -> impl ExactSizeIterator<Item = &mut T> {
+                self.0.iter_mut()
             }
 
             pub fn indices(&self) -> impl Iterator<Item = $idx> {
