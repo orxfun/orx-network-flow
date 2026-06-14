@@ -1,5 +1,5 @@
 use super::{CommodityPaths, SolutionBuilder};
-use crate::{Commodity, Variant, VecTransport, commodities::VecCommodity};
+use crate::{Commodity, Problem, Variant, VecTransport, commodities::VecCommodity};
 use alloc::vec::Vec;
 
 #[derive(derive_new::new)]
@@ -9,8 +9,8 @@ pub struct Solution<V: Variant> {
 }
 
 impl<V: Variant> Solution<V> {
-    pub fn builder(len_commodities: usize) -> SolutionBuilder<V> {
-        SolutionBuilder::new(len_commodities)
+    pub fn builder(p: &Problem<V>) -> SolutionBuilder<'_, V> {
+        SolutionBuilder::new(p)
     }
 }
 
