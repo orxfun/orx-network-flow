@@ -36,6 +36,10 @@ where
     pub(crate) fn p(&self) -> &Problem<V> {
         self.p
     }
+
+    pub(crate) fn g(&self) -> &ConnWaitGraph {
+        &self.g
+    }
 }
 
 // api
