@@ -109,14 +109,14 @@ where
                 )
             }
             ConnWaitVertex::ReadyOri(ro) => {
-                let commodities = p.sorted_ro_commodities2.value_by_key_unc(ro);
+                let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
                 let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
                 let total_amount = FlowUnit::sum(amounts);
                 let ori = p.space_key(ro.space());
                 format!("{}\n{}-{}\n+{total_amount}", v, ori, ro.time())
             }
             ConnWaitVertex::DueDes(dd) => {
-                let commodities = p.sorted_dd_commodities2.value_by_key_unc(dd);
+                let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
                 let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
                 let total_amount = FlowUnit::sum(amounts);
                 let des = p.space_key(dd.space());
@@ -136,7 +136,7 @@ where
                     format!("transport capacity = {capacity}")
                 }
                 ConnWaitVertex::ReadyOri(ro) => {
-                    let commodities = p.sorted_ro_commodities2.value_by_key_unc(ro);
+                    let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
                     let num_commodities = commodities.len();
                     let commodities = commodities.as_iterable();
                     let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
@@ -148,7 +148,7 @@ where
                     )
                 }
                 ConnWaitVertex::DueDes(dd) => {
-                    let commodities = p.sorted_dd_commodities2.value_by_key_unc(dd);
+                    let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
                     let num_commodities = commodities.len();
                     let commodities = commodities.as_iterable();
                     let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));

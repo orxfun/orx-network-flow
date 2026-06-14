@@ -143,13 +143,13 @@ fn flow_balance<V: Variant, S: Solver>(
 
         let b = match vertex.data() {
             ConnWaitVertex::ReadyOri(ro) => {
-                let commodities = p.sorted_ro_commodities2.value_by_key_unc(ro);
+                let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
                 let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
                 let demand = commodities.map(|c| c.amount());
                 FlowUnit::sum(demand).into_f64()
             }
             ConnWaitVertex::DueDes(dd) => {
-                let commodities = p.sorted_dd_commodities2.value_by_key_unc(dd);
+                let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
                 let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
                 let demand = commodities.map(|c| c.amount());
                 -FlowUnit::sum(demand).into_f64()

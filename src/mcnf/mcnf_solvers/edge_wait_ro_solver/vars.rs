@@ -12,7 +12,7 @@ use good_lp::{
 use lp_solvers::lp_format::LpProblem;
 
 pub fn define_vars<V: Variant>(nw: &ConnWaitNw<'_, V>) {
-    //
+    let mut pr_vars = ProblemVariables::new();
 }
 
 fn define_vars_ro<V: Variant>(
@@ -20,7 +20,7 @@ fn define_vars_ro<V: Variant>(
     nw: &ConnWaitNw<'_, V>,
     pr_vars: &mut ProblemVariables,
     dummy: Variable,
-) {
+) -> VecEdge<Variable> {
     let named = cfg!(debug_assertions);
     let (p, g) = (nw.p(), &nw.g());
     let mut vars = VecEdge::new();
@@ -49,6 +49,8 @@ fn define_vars_ro<V: Variant>(
             false => vars.push(dummy),
         }
     }
+
+    vars
 }
 
 fn var_name<V: Variant>(
