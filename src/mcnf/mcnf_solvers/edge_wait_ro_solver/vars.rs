@@ -1,18 +1,26 @@
-use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
 use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};
 use crate::networks::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
-use crate::{Problem, SpaceTime, TransportData, Variant, problem};
-use alloc::{format, string::String};
-use good_lp::{
-    Expression, LpSolver, ProblemVariables, Solution, Solver, SolverModel, Variable,
-    VariableDefinition, constraint,
-};
-use lp_solvers::lp_format::LpProblem;
+use crate::{Problem, SpaceTime, TransportData, Variant};
+use alloc::{format, string::String, vec::Vec};
+use good_lp::{ProblemVariables, Variable, VariableDefinition};
 
-pub fn define_vars<V: Variant>(nw: &ConnWaitNw<'_, V>) {
+pub fn define_vars<V: Variant>(
+    nw: &ConnWaitNw<'_, V>,
+) -> (ProblemVariables, Vec<VecEdge<Variable>>) {
     let mut pr_vars = ProblemVariables::new();
+    let mut ro_vars = Vec::new();
+
+    let dummy = VariableDefinition::new().min(0).max(0);
+    let dummy = pr_vars.add(dummy);
+
+    for ro in nw.p().sorted_ro_commodities.keys() {
+        let vars = define_vars_ro(*ro, nw, &mut pr_vars, dummy);
+        ro_vars.push(vars);
+    }
+
+    (pr_vars, ro_vars)
 }
 
 fn define_vars_ro<V: Variant>(
