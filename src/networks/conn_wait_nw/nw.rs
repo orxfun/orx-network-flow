@@ -25,12 +25,16 @@ where
 }
 
 // helpers
-impl<'a, V> ConnWaitNw<'a, V>
+impl<V> ConnWaitNw<'_, V>
 where
     V: Variant,
 {
     pub(super) fn bypass_edge_of(&self, c: Commodity) -> EIdx {
         EIdx::from(self.bypass_edges_range.begin().into_inner() + c.into_inner())
+    }
+
+    pub(crate) fn p(&self) -> &Problem<V> {
+        self.p
     }
 }
 
