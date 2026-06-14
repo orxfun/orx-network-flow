@@ -6,9 +6,20 @@ use crate::{Problem, SpaceTime, TransportData, Variant};
 use alloc::{format, string::String, vec::Vec};
 use good_lp::{ProblemVariables, Variable, VariableDefinition};
 
-pub fn define_vars<V: Variant>(
-    nw: &ConnWaitNw<'_, V>,
-) -> (ProblemVariables, Vec<VecEdge<Variable>>) {
+pub struct RoVars<'a, V: Variant> {
+    p: &'a Problem<V>,
+    vars: Vec<VecEdge<Variable>>,
+}
+
+impl<V: Variant> RoVars<'_, V> {
+    pub fn vars_of(&self, ro: SpaceTime) -> &VecEdge<Variable> {
+        let p = self.p;
+        let ro_idx = p.sorted_ro_commodities.key_to_idx(&ro).expect("exists");
+        &self.vars[ro_idx]
+    }
+}
+
+pub fn define_vars<'a, V: Variant>(nw: &'a ConnWaitNw<'_, V>) -> (ProblemVariables, RoVars<'a, V>) {
     let mut pr_vars = ProblemVariables::new();
     let mut ro_vars = Vec::new();
 
@@ -19,6 +30,11 @@ pub fn define_vars<V: Variant>(
         let vars = define_vars_ro(*ro, nw, &mut pr_vars, dummy);
         ro_vars.push(vars);
     }
+
+    let ro_vars = RoVars {
+        p: nw.p(),
+        vars: ro_vars,
+    };
 
     (pr_vars, ro_vars)
 }

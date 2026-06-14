@@ -40,6 +40,10 @@ where
     pub(crate) fn g(&self) -> &ConnWaitGraph {
         &self.g
     }
+
+    pub(crate) fn bypass_edges_range(&self) -> EdgeRange {
+        self.bypass_edges_range
+    }
 }
 
 // api

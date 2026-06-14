@@ -63,6 +63,10 @@ macro_rules! impl_vec_of_idx {
                 let range = range.0.into_inner()..range.1.into_inner();
                 &self.0[range]
             }
+
+            pub fn as_slice(&self) -> &[T] {
+                &self.0
+            }
         }
 
         impl<T> FromIterator<T> for $idx_vec<T> {
