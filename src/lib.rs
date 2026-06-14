@@ -16,6 +16,7 @@ extern crate alloc;
 #[cfg(any(test, feature = "std"))]
 extern crate std;
 
+mod algorithm;
 mod commodities;
 mod common_ds;
 mod cost;
