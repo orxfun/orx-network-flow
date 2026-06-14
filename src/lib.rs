@@ -26,7 +26,7 @@ mod indices;
 mod mcnf;
 pub mod networks;
 mod problem;
-mod solution;
+mod solution_deprecated;
 mod spaces;
 mod time;
 mod time_bounds;
@@ -39,7 +39,7 @@ pub use indices::{Idx, IdxCore};
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
-pub use solution::Solution;
+pub use solution_deprecated::SolutionDeprecated;
 
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
 pub(crate) use indices::{IdxMap, IdxMapSubset};

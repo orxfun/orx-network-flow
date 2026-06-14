@@ -1,4 +1,4 @@
-use crate::{Variant, solution::Path};
+use crate::{Variant, solution_deprecated::Path};
 
 pub struct PathFlow<V: Variant> {
     path: Path,

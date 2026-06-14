@@ -6,7 +6,7 @@ use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 use crate::networks::ConnWaitNw;
 use crate::networks::conn_wait_nw::ConnWaitEdge;
-use crate::{IdxCore, Solution, Time, Transport, Variant};
+use crate::{IdxCore, SolutionDeprecated, Time, Transport, Variant};
 use alloc::vec::Vec;
 use orx_priority_queue::{
     BinaryHeapOfIndices, PriorityQueue, PriorityQueueDecKey, ResTryDecreaseKeyOrPush,
@@ -14,7 +14,7 @@ use orx_priority_queue::{
 
 pub struct Output<V: Variant> {
     pub edge_flows: VecEdge<V::F>,
-    pub solution: Solution<V>,
+    pub solution: SolutionDeprecated<V>,
 }
 
 impl<V: Variant> Output<V> {
@@ -27,9 +27,12 @@ impl<V: Variant> Output<V> {
     }
 }
 
-fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F>) -> Solution<V> {
+fn create_solution<V: Variant>(
+    nw: &ConnWaitNw<'_, V>,
+    edge_flows: &VecEdge<V::F>,
+) -> SolutionDeprecated<V> {
     let (p, g_orig) = (nw.p, &nw.g);
-    let mut builder = Solution::builder(p.len_commodities());
+    let mut builder = SolutionDeprecated::builder(p.len_commodities());
     let b = &mut builder;
 
     let tail = |e: EIdx| g_orig.vertex(g_orig.edge(e).tail());
