@@ -1,9 +1,9 @@
-use super::Solution;
+use super::McnfSol;
 use crate::{Problem, Variant};
 
 pub struct SolutionBuilder<'a, V: Variant> {
     p: &'a Problem<V>,
-    solution: Solution<V>,
+    solution: McnfSol<V>,
 }
 
 impl<'a, V: Variant> SolutionBuilder<'a, V> {
@@ -14,11 +14,11 @@ impl<'a, V: Variant> SolutionBuilder<'a, V> {
         let transport_loads = (0..p.len_transports())
             .map(|_| Default::default())
             .collect();
-        let solution = Solution::new(commodity_paths, transport_loads);
+        let solution = McnfSol::new(commodity_paths, transport_loads);
         Self { p, solution }
     }
 
-    pub fn finish(self) -> Solution<V> {
+    pub fn finish(self) -> McnfSol<V> {
         self.solution
     }
 

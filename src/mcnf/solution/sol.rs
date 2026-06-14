@@ -8,12 +8,12 @@ pub struct CommodityLoad<V: Variant> {
 }
 
 #[derive(derive_new::new)]
-pub struct Solution<V: Variant> {
+pub struct McnfSol<V: Variant> {
     commodity_paths: VecCommodity<CommodityPaths<V>>,
     transport_loads: VecTransport<Vec<CommodityLoad<V>>>,
 }
 
-impl<V: Variant> Solution<V> {
+impl<V: Variant> McnfSol<V> {
     pub fn builder(p: &Problem<V>) -> SolutionBuilder<'_, V> {
         SolutionBuilder::new(p)
     }
