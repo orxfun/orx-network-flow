@@ -71,6 +71,14 @@ impl<K: MapKey, V, I: Idx> IdxMap<K, V, I> {
         Some(&self.index_and_data[pos].1)
     }
 
+    pub fn value_by_key_unc(&self, key: &K) -> &V {
+        let pos = *self
+            .key_to_index
+            .get(key)
+            .expect("missing key in index map");
+        Some(&self.index_and_data[pos].1).expect("missing key in index map")
+    }
+
     pub fn value(&self, idx: I) -> Option<&V>
     where
         I: IdxCore,

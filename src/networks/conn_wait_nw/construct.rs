@@ -5,7 +5,7 @@ use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex}
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
-use alloc::{vec, vec::Vec};
+use alloc::vec::Vec;
 use core::iter::Peekable;
 
 pub struct Output {
@@ -41,12 +41,9 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
                 sorted_ready_set.insert(com.origin().time());
 
                 let ro = com.origin();
-                match ro_to_v.get(&ro) {
-                    Some(&v) => b.vertex_data_mut(v).push_ro_commodity(c).expect("ro"),
-                    None => {
-                        let v = b.vertex(ConnWaitVertex::ReadyOri(ro, vec![c]));
-                        ro_to_v.insert(ro, v);
-                    }
+                if !ro_to_v.contains_key(&ro) {
+                    let v = b.vertex(ConnWaitVertex::ReadyOri(ro));
+                    ro_to_v.insert(ro, v);
                 }
             }
         }
@@ -66,12 +63,9 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
                 sorted_due_set.insert(com.destination().time());
 
                 let dd = com.destination();
-                match dd_to_v.get(&dd) {
-                    Some(&v) => b.vertex_data_mut(v).push_dd_commodity(c).expect("dd"),
-                    None => {
-                        let v = b.vertex(ConnWaitVertex::DueDes(dd, vec![c]));
-                        dd_to_v.insert(dd, v);
-                    }
+                if !dd_to_v.contains_key(&dd) {
+                    let v = b.vertex(ConnWaitVertex::DueDes(dd));
+                    dd_to_v.insert(dd, v);
                 }
             }
         }

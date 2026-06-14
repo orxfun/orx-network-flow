@@ -3,9 +3,7 @@ use crate::flow_units::FlowUnit;
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};
 use crate::networks::conn_wait_nw::output::Output;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
-use crate::utils::math_model::{
-    FlowsByEdges, lp_solvers_model_to_lp_file, lp_solvers_model_to_problem,
-};
+use crate::utils::math_model::{lp_solvers_model_to_lp_file, lp_solvers_model_to_problem};
 use crate::{TransportData, Variant};
 use alloc::{format, string::ToString};
 use good_lp::solvers::lp_solvers::Cplex;
@@ -46,7 +44,7 @@ where
             let [tail, head] = [i.data(), j.data()];
             let name = match e.data() {
                 ConnWaitEdge::Enter => {
-                    let ro = tail.get_ro().expect("ro").0;
+                    let ro = tail.get_ro().expect("ro");
                     let ori = p.space_key(ro.space());
                     let t = p.transport_by_idx(head.get_t().expect("t"));
                     format!("enter__{ori}_{}__{}", ro.time(), t_str(t))
@@ -62,7 +60,7 @@ where
                     format!("wait__{}__{}", t_str(t1), t_str(t2))
                 }
                 ConnWaitEdge::Exit => {
-                    let dd = head.get_dd().expect("dd").0;
+                    let dd = head.get_dd().expect("dd");
                     let des = p.space_key(dd.space());
                     let t = p.transport_by_idx(tail.get_t().expect("t"));
                     format!("exit__{}__{des}_{}", t_str(t), dd.time())
@@ -144,12 +142,14 @@ fn flow_balance<V: Variant, S: Solver>(
         }
 
         let b = match vertex.data() {
-            ConnWaitVertex::ReadyOri(_, commodities) => {
+            ConnWaitVertex::ReadyOri(ro) => {
+                let commodities = p.sorted_ro_commodities2.value_by_key_unc(ro);
                 let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
                 let demand = commodities.map(|c| c.amount());
                 FlowUnit::sum(demand).into_f64()
             }
-            ConnWaitVertex::DueDes(_, commodities) => {
+            ConnWaitVertex::DueDes(dd) => {
+                let commodities = p.sorted_dd_commodities2.value_by_key_unc(dd);
                 let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
                 let demand = commodities.map(|c| c.amount());
                 -FlowUnit::sum(demand).into_f64()
@@ -161,11 +161,11 @@ fn flow_balance<V: Variant, S: Solver>(
 
         if named {
             let name = match vertex.data() {
-                ConnWaitVertex::ReadyOri(ro, _) => {
+                ConnWaitVertex::ReadyOri(ro) => {
                     let ori = p.space_key(ro.space());
                     format!("fb_exit__{ori}_{}", ro.time())
                 }
-                ConnWaitVertex::DueDes(dd, _) => {
+                ConnWaitVertex::DueDes(dd) => {
                     let des = p.space_key(dd.space());
                     format!("fb_exit__{des}_{}", dd.time())
                 }

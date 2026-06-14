@@ -108,17 +108,19 @@ where
                     data.destination().time()
                 )
             }
-            ConnWaitVertex::ReadyOri(ro, commodities) => {
+            ConnWaitVertex::ReadyOri(ro) => {
+                let commodities = p.sorted_ro_commodities2.value_by_key_unc(ro);
                 let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
                 let total_amount = FlowUnit::sum(amounts);
                 let ori = p.space_key(ro.space());
                 format!("{}\n{}-{}\n+{total_amount}", v, ori, ro.time())
             }
-            ConnWaitVertex::DueDes(ro, commodities) => {
+            ConnWaitVertex::DueDes(dd) => {
+                let commodities = p.sorted_dd_commodities2.value_by_key_unc(dd);
                 let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
                 let total_amount = FlowUnit::sum(amounts);
-                let des = p.space_key(ro.space());
-                format!("{}\n{}-{}\n-{total_amount}", v, des, ro.time())
+                let des = p.space_key(dd.space());
+                format!("{}\n{}-{}\n-{total_amount}", v, des, dd.time())
             }
         }
     }
@@ -133,7 +135,8 @@ where
                     let capacity = p.transport_by_idx(*t).capacity();
                     format!("transport capacity = {capacity}")
                 }
-                ConnWaitVertex::ReadyOri(_, commodities) => {
+                ConnWaitVertex::ReadyOri(ro) => {
+                    let commodities = p.sorted_ro_commodities2.value_by_key_unc(ro);
                     let num_commodities = commodities.len();
                     let commodities = commodities.as_iterable();
                     let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
@@ -144,7 +147,8 @@ where
                         "Source vertex per origin & ready\n{num_commodities} commodities\ntotal amount entering = {total_amount}\n\n{commodities}"
                     )
                 }
-                ConnWaitVertex::DueDes(_, commodities) => {
+                ConnWaitVertex::DueDes(dd) => {
+                    let commodities = p.sorted_dd_commodities2.value_by_key_unc(dd);
                     let num_commodities = commodities.len();
                     let commodities = commodities.as_iterable();
                     let commodities = commodities.mapped(|&c| (c, p.commodity_by_idx(c)));
@@ -162,8 +166,8 @@ where
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
         match self.graph().vertex(v).data() {
             ConnWaitVertex::Transport(_) => &self.settings.transport,
-            ConnWaitVertex::ReadyOri(_, _) => &self.settings.ready_ori,
-            ConnWaitVertex::DueDes(_, _) => &self.settings.due_des,
+            ConnWaitVertex::ReadyOri(_) => &self.settings.ready_ori,
+            ConnWaitVertex::DueDes(_) => &self.settings.due_des,
             _ => todo!("vertex settings"),
         }
     }

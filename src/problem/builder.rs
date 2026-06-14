@@ -42,6 +42,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
                 sorted_commodity_destinations: Default::default(),
                 sorted_ro_commodities: Default::default(),
                 sorted_dd_commodities: Default::default(),
+                sorted_ro_commodities2: Default::default(),
+                sorted_dd_commodities2: Default::default(),
             },
             PhantomData,
         )
@@ -169,17 +171,31 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             ro_commodities.entry(x.origin()).or_default().push(c);
             dd_commodities.entry(x.destination()).or_default().push(c);
         }
-        self.0.sorted_ro_commodities = ro_commodities.into_iter().collect();
+        self.0.sorted_ro_commodities = ro_commodities.clone().into_iter().collect();
         self.0.sorted_ro_commodities.sort();
         for (_, commodities) in &mut self.0.sorted_ro_commodities {
             commodities.sort();
         }
 
-        self.0.sorted_dd_commodities = dd_commodities.into_iter().collect();
+        self.0.sorted_dd_commodities = dd_commodities.clone().into_iter().collect();
         self.0.sorted_dd_commodities.sort();
         for (_, commodities) in &mut self.0.sorted_dd_commodities {
             commodities.sort();
         }
+
+        let mut ro_commodities: Vec<_> = ro_commodities.into_iter().collect();
+        ro_commodities.sort();
+        for (_, commodities) in &mut ro_commodities {
+            commodities.sort();
+        }
+        self.0.sorted_ro_commodities2 = ro_commodities.into_iter().collect();
+
+        let mut dd_commodities: Vec<_> = dd_commodities.into_iter().collect();
+        dd_commodities.sort();
+        for (_, commodities) in &mut dd_commodities {
+            commodities.sort();
+        }
+        self.0.sorted_dd_commodities2 = dd_commodities.into_iter().collect();
 
         // finish
 

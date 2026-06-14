@@ -1,3 +1,4 @@
+use crate::IdxMap;
 use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
 use crate::costs::Costs;
 use crate::networks::{ConnWaitNw, ConnWaitNwSettings};
@@ -29,6 +30,8 @@ pub struct Problem<V: Variant> {
     pub sorted_commodity_destinations: Vec<Space>,
     pub sorted_ro_commodities: Vec<(SpaceTime, Vec<Commodity>)>,
     pub sorted_dd_commodities: Vec<(SpaceTime, Vec<Commodity>)>,
+    pub sorted_ro_commodities2: IdxMap<SpaceTime, Vec<Commodity>, usize>,
+    pub sorted_dd_commodities2: IdxMap<SpaceTime, Vec<Commodity>, usize>,
 }
 
 impl<V: Variant> Problem<V> {
