@@ -6,7 +6,7 @@ use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 use crate::networks::ConnWaitNw;
 use crate::networks::conn_wait_nw::ConnWaitEdge;
-use crate::{IdxCore, Solution, Time, Transport, Variant, VecTransport};
+use crate::{IdxCore, Solution, Time, Transport, Variant};
 use alloc::vec::Vec;
 use orx_priority_queue::{
     BinaryHeapOfIndices, PriorityQueue, PriorityQueueDecKey, ResTryDecreaseKeyOrPush,

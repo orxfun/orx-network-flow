@@ -46,7 +46,9 @@ fn main() {
     };
 
     commodity("AMS", "BRU", 0, 20);
-    commodity("LEJ", "CVG", 0, 20);
+    commodity("AMS", "CVG", 0, 20);
+    commodity("AMS", "LEJ", 0, 20);
+    commodity("AMS", "LEJ", 0, 20);
     // commodity("LEJ", "CVG", 0, 20);
     // commodity("AMS", "CVG", 0, 20);
 
@@ -69,6 +71,7 @@ fn main() {
 
     transport("AMS", "BRU", 1, 2, 10);
     transport("AMS", "BRU", 4, 5, 10);
+    transport("AMS", "LEJ", 4, 5, 10);
 
     transport("LEJ", "BRU", 1, 2, 10);
     transport("LEJ", "BRU", 4, 5, 10);
@@ -79,8 +82,8 @@ fn main() {
     let mut lost_revenue_cost = builder.lost_revenue_cost();
     lost_revenue_cost.commodity_specific(&0, 1); // AMS-BRU
     lost_revenue_cost.commodity_specific(&1, 3); // LEJ-CVG
-    // lost_revenue_cost.commodity_specific(&2, 10); // LEJ-CVG-X
-    // lost_revenue_cost.commodity_specific(&3, 2); // AMS-CVG
+    lost_revenue_cost.commodity_specific(&2, 10); // LEJ-CVG-X
+    lost_revenue_cost.commodity_specific(&3, 2); // AMS-CVG
 
     let problem = builder.finish();
 
