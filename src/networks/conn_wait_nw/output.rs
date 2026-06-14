@@ -53,6 +53,7 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
 
     let mut count = 0;
 
+    println!("\n\nPATHS");
     for (c, com) in p.commodities.indices_values() {
         let mut remaining = com.amount() - edge_flows[nw.bypass_edge_of(c)];
 
