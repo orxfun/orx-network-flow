@@ -65,8 +65,12 @@ fn create_solution<V: Variant>(nw: &ConnWaitNw<'_, V>, edge_flows: &VecEdge<V::F
             match found {
                 false => break,
                 true => {
-                    let flow = build_transport_path(&g, len_c, &mut pred, &mut path, s, t);
-                    debug_assert!(flow.is_pos());
+                    let max_flow = build_transport_path(&g, len_c, &mut pred, &mut path, s, t);
+                    debug_assert!(max_flow.is_pos());
+                    let flow = match max_flow > remaining {
+                        true => remaining,
+                        false => max_flow,
+                    };
                     decrement_path_flow(&mut g, &mut pred, s, t, flow);
                     remaining -= flow;
 
@@ -169,9 +173,11 @@ fn build_transport_path<V: Variant>(
         if let Some(t) = v_to_t(curr) {
             path.push(t);
         }
-        curr = pred[curr].1;
+        let (pred_e, pred_v) = pred[curr];
+        curr = pred_v;
 
-        let flow = g.edge(pred[curr].0).data().flow;
+        let edge = g.edge(pred_e);
+        let flow = edge.data().flow;
         if flow < max_flow {
             max_flow = flow;
         }
