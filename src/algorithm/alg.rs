@@ -1,9 +1,11 @@
 pub trait Alg {
     type Params;
 
-    type Input;
+    type Input<'a>
+    where
+        Self: 'a;
 
     type Output;
 
-    fn run(&mut self, input: &Self::Input) -> Self::Output;
+    fn run<'a>(&'a mut self, input: Self::Input<'a>) -> Self::Output;
 }
