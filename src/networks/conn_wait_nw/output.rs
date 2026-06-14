@@ -208,6 +208,13 @@ fn decrement_path_flow<V: Variant>(
 
         let new = g.edge_data_mut(e).flow;
 
+        let edge = g.edge(e);
+        println!(
+            "{}-{}\t\told={old} | flow={flow} | new={new}",
+            edge.tail(),
+            edge.head()
+        );
+
         curr = pred[curr].1;
     }
 }
