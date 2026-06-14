@@ -23,6 +23,7 @@ mod costs;
 mod flow_units;
 pub mod graphs;
 mod indices;
+mod mcnf;
 pub mod networks;
 mod problem;
 mod solution;
