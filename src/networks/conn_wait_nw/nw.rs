@@ -3,7 +3,7 @@ use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDot
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
 use crate::networks::conn_wait_nw::{mcnf::solve, output::Output};
 use crate::utils::std_utils::Map;
-use crate::{Commodity, IdxCore, Problem, SpaceTime, Variant, VecTransport};
+use crate::{Commodity, IdxCore, Problem, SpaceTime, Transport, Variant, VecTransport};
 use alloc::vec::Vec;
 
 pub struct ConnWaitNwSettings {
@@ -43,6 +43,12 @@ where
 
     pub(crate) fn bypass_edges_range(&self) -> EdgeRange {
         self.bypass_edges_range
+    }
+
+    pub(crate) fn transport_edges(&self) -> impl Iterator<Item = (Transport, &[EIdx])> {
+        self.transport_edges
+            .enumerated_iter()
+            .map(|(a, b)| (a, b.as_slice()))
     }
 }
 
