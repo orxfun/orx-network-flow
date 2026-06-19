@@ -12,7 +12,7 @@ pub struct PathFlow<V: Variant> {
 }
 
 pub enum Path {
-    OneLeg(Transport),
+    OneLeg([Transport; 1]),
     TwoLegs([Transport; 2]),
     ThreeLegs([Transport; 3]),
     Long(Vec<Transport>),
@@ -30,7 +30,10 @@ impl Path {
     {
         let mut transports = transports.into_iter();
         match transports.len() {
-            1 => Self::OneLeg(transports.next().expect("len=1")),
+            1 => {
+                let i = transports.next().expect("len=1");
+                Self::OneLeg([i])
+            }
             2 => {
                 let i = transports.next().expect("len=2");
                 let j = transports.next().expect("len=2");
@@ -48,7 +51,7 @@ impl Path {
 
     pub fn nth(&self, n: usize) -> Option<Transport> {
         match (self, n) {
-            (Self::OneLeg(t), 0) => Some(*t),
+            (Self::OneLeg([t]), 0) => Some(*t),
             (Self::TwoLegs([t, _]), 0) => Some(*t),
             (Self::TwoLegs([_, t]), 1) => Some(*t),
             (Self::ThreeLegs([t, _, _]), 0) => Some(*t),
@@ -65,11 +68,30 @@ impl Path {
 
     pub fn last(&self) -> Option<Transport> {
         let n = match self {
-            Path::OneLeg(_) => 0,
-            Path::TwoLegs(_) => 1,
-            Path::ThreeLegs(_) => 2,
-            Path::Long(v) => v.len() - 1,
+            Self::OneLeg(_) => 0,
+            Self::TwoLegs(_) => 1,
+            Self::ThreeLegs(_) => 2,
+            Self::Long(v) => v.len() - 1,
         };
         self.nth(n)
+    }
+
+    pub fn as_slice(&self) -> &[Transport] {
+        match self {
+            Path::OneLeg(x) => x,
+            Path::TwoLegs(x) => x,
+            Path::ThreeLegs(x) => x,
+            Path::Long(x) => x,
+        }
+    }
+}
+
+impl<'a> IntoIterator for &'a Path {
+    type Item = Transport;
+
+    type IntoIter = core::iter::Copied<core::slice::Iter<'a, Transport>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.as_slice().iter().copied()
     }
 }
