@@ -1,5 +1,7 @@
 use crate::graphs::EIdx;
+use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::EdgeWaitRoMcnfParams;
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::disaggregate_greedy::disaggregate_ro_greedy;
+use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::params::DisaggregationStrategy;
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
 use crate::mcnf::solution::CommodityLoad;
 use crate::{FlowUnit, McnfSolution, Variant, VecTransport};
@@ -9,6 +11,7 @@ use good_lp::{Solution, Solver, SolverModel, Variable};
 
 pub fn create_solution<V: Variant, S: Solver>(
     nw: &ConnWaitNw<'_, V>,
+    params: &EdgeWaitRoMcnfParams,
     ro_vars: &RoVars<'_, V>,
     solution: &<S::Model as SolverModel>::Solution,
 ) -> McnfSolution<V> {
@@ -21,7 +24,11 @@ pub fn create_solution<V: Variant, S: Solver>(
     for (ro, vars) in ro_vars.iter() {
         let edge_flow = |e: EIdx| var_to_flow(&vars[e]);
 
-        disaggregate_ro_greedy(nw, ro, edge_flow, &mut transport_loads);
+        match params.disaggregation {
+            DisaggregationStrategy::Greedy => {
+                disaggregate_ro_greedy(nw, ro, edge_flow, &mut transport_loads)
+            }
+        }
     }
 
     let commodity_paths = VecCommodity::new_filled(p.len_commodities(), Default::default);

@@ -53,6 +53,6 @@ impl<'a, V: Variant, S: Solver> EdgeWaitRoMcnfSolver<'a, V, S> {
 
     pub fn solve(self) -> Result<McnfSolution<V>, String> {
         let solution = self.model.solve().map_err(|e| e.to_string());
-        solution.map(|x| create_solution::<_, S>(&self.nw, &self.ro_vars, &x))
+        solution.map(|x| create_solution::<_, S>(&self.nw, &self.params, &self.ro_vars, &x))
     }
 }
