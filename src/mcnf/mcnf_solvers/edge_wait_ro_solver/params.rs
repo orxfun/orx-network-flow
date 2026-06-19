@@ -1,3 +1,1 @@
-pub struct EdgeWaitRoMcnfParams {
-    //
-}
+pub struct EdgeWaitRoMcnfParams {}

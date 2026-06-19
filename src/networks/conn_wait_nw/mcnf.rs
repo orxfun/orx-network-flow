@@ -84,9 +84,10 @@ where
     flow_balance::<_, LpSolver<Cplex>>(nw, &vars, &mut model, named);
     capacity::<_, LpSolver<Cplex>>(nw, &vars, &mut model, named);
 
-    let p = unsafe { lp_solvers_model_to_problem(&model) };
+    let p = unsafe { lp_solvers_model_to_problem::<LpSolver<Cplex>>(&model) };
     println!("{}", p.display_lp());
-    unsafe { lp_solvers_model_to_lp_file(&model, "target/model.lp") }.unwrap();
+    unsafe { lp_solvers_model_to_lp_file::<LpSolver<Cplex>, _>(&model, "target/model.lp") }
+        .unwrap();
 
     let solution = model.solve().expect("Failed to solve");
 
