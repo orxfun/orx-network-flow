@@ -1,11 +1,6 @@
-use super::{CommodityPaths, SolutionBuilder};
-use crate::{Commodity, Problem, Variant, VecTransport, commodities::VecCommodity};
+use super::{CommodityLoad, CommodityPaths, SolutionBuilder};
+use crate::{Problem, Variant, VecTransport, commodities::VecCommodity};
 use alloc::vec::Vec;
-
-pub struct CommodityLoad<V: Variant> {
-    pub commodity: Commodity,
-    pub load: V::F,
-}
 
 #[derive(derive_new::new)]
 pub struct McnfSolution<V: Variant> {

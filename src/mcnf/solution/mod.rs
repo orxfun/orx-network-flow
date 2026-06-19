@@ -6,3 +6,4 @@ mod transport_load;
 pub use builder::SolutionBuilder;
 pub use com_paths::{CommodityPaths, Path, PathFlow};
 pub use sol::McnfSolution;
+pub use transport_load::CommodityLoad;
