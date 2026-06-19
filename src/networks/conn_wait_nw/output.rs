@@ -49,8 +49,8 @@ fn create_solution<V: Variant>(
 
     let mut g = g_orig.map(|_, _| (), map_edge);
     let mut heap = BinaryHeapOfIndices::with_index_bound(g.v());
-    let mut visited = VecVertex::new_filled(g.v(), false);
-    let mut pred = VecVertex::new_filled(g.v(), (EIdx::from(0), VIdx::from(0)));
+    let mut visited = VecVertex::new_filled(g.v(), || false);
+    let mut pred = VecVertex::new_filled(g.v(), || (EIdx::from(0), VIdx::from(0)));
     let mut path = Vec::new();
     let len_c = p.len_transports();
 

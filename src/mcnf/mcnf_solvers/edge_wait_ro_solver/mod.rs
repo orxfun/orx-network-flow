@@ -2,6 +2,7 @@ mod capacity;
 mod flow_balance;
 mod obj;
 mod params;
+mod sol;
 mod solver;
 mod vars;
 
