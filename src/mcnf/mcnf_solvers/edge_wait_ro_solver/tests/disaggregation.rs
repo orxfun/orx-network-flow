@@ -1,8 +1,10 @@
 use super::super::disaggregate_greedy::disaggregate_ro_greedy;
 use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
-use crate::mcnf::solution::CommodityLoad;
+use crate::mcnf::solution::{CommodityLoad, CommodityPaths, Path};
 use crate::networks::{ConnWaitEdge, ConnWaitNwSettings, ConnWaitVertex};
-use crate::{Commodity, FlowUnit, ProblemBuilder, Variant, VecTransport};
+use crate::{
+    Commodity, FlowUnit, ProblemBuilder, Variant, VecTransport, commodities::VecCommodity,
+};
 use alloc::vec::Vec;
 
 #[derive(Clone, Copy, Default)]
@@ -93,8 +95,16 @@ fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transpo
     let edge_flow = |e: EIdx| edge_flows[e];
     let mut transport_loads: VecTransport<Vec<CommodityLoad<TestVariant>>> =
         VecTransport::new_filled(p.len_transports(), Default::default);
+    let mut commodity_paths: VecCommodity<CommodityPaths<TestVariant>> =
+        VecCommodity::new_filled(p.len_commodities(), Default::default);
 
-    disaggregate_ro_greedy(&nw, ro, edge_flow, &mut transport_loads);
+    disaggregate_ro_greedy(
+        &nw,
+        ro,
+        edge_flow,
+        &mut transport_loads,
+        &mut commodity_paths,
+    );
 
     assert_eq!(sum_load_for_commodity(&transport_loads[t_ax], c_b), 4);
     assert_eq!(sum_load_for_commodity(&transport_loads[t_ax], c_c), 6);
@@ -102,6 +112,15 @@ fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transpo
     assert_eq!(sum_load_for_commodity(&transport_loads[t_xb], c_c), 0);
     assert_eq!(sum_load_for_commodity(&transport_loads[t_xc], c_b), 0);
     assert_eq!(sum_load_for_commodity(&transport_loads[t_xc], c_c), 6);
+
+    assert_eq!(sum_path_flow(&commodity_paths[c_b]), 4);
+    assert_eq!(sum_path_flow(&commodity_paths[c_c]), 6);
+
+    assert_eq!(commodity_paths[c_b].path_flows.len(), 1);
+    assert_eq!(commodity_paths[c_c].path_flows.len(), 1);
+
+    assert_path_two_legs(&commodity_paths[c_b], t_ax, t_xb);
+    assert_path_two_legs(&commodity_paths[c_c], t_ax, t_xc);
 }
 
 #[test]
@@ -154,13 +173,57 @@ fn greedy_disaggregation_splits_within_same_destination_by_remaining_amount() {
     let edge_flow = |e: EIdx| edge_flows[e];
     let mut transport_loads: VecTransport<Vec<CommodityLoad<TestVariant>>> =
         VecTransport::new_filled(p.len_transports(), Default::default);
+    let mut commodity_paths: VecCommodity<CommodityPaths<TestVariant>> =
+        VecCommodity::new_filled(p.len_commodities(), Default::default);
 
-    disaggregate_ro_greedy(&nw, ro, edge_flow, &mut transport_loads);
+    disaggregate_ro_greedy(
+        &nw,
+        ro,
+        edge_flow,
+        &mut transport_loads,
+        &mut commodity_paths,
+    );
 
     assert_eq!(sum_load_for_commodity(&transport_loads[t], c0), 2);
     assert_eq!(sum_load_for_commodity(&transport_loads[t], c1), 8);
+
+    assert_eq!(sum_path_flow(&commodity_paths[c0]), 2);
+    assert_eq!(sum_path_flow(&commodity_paths[c1]), 8);
+
+    assert_eq!(commodity_paths[c0].path_flows.len(), 1);
+    assert_eq!(commodity_paths[c1].path_flows.len(), 1);
+
+    assert_path_one_leg(&commodity_paths[c0], t);
+    assert_path_one_leg(&commodity_paths[c1], t);
 }
 
 fn sum_load_for_commodity<V: Variant>(loads: &[CommodityLoad<V>], c: Commodity) -> V::F {
     FlowUnit::sum(loads.iter().filter(|x| x.commodity == c).map(|x| x.load))
+}
+
+fn sum_path_flow<V: Variant>(paths: &CommodityPaths<V>) -> V::F {
+    FlowUnit::sum(paths.path_flows.iter().map(|x| x.flow))
+}
+
+fn assert_path_one_leg<V: Variant>(paths: &CommodityPaths<V>, t: crate::Transport) {
+    let p = &paths.path_flows[0].path;
+    match p {
+        Path::OneLeg(x) => assert_eq!(*x, t),
+        _ => panic!("expected one-leg path"),
+    }
+}
+
+fn assert_path_two_legs<V: Variant>(
+    paths: &CommodityPaths<V>,
+    t1: crate::Transport,
+    t2: crate::Transport,
+) {
+    let p = &paths.path_flows[0].path;
+    match p {
+        Path::TwoLegs([a, b]) => {
+            assert_eq!(*a, t1);
+            assert_eq!(*b, t2);
+        }
+        _ => panic!("expected two-leg path"),
+    }
 }

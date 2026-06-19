@@ -18,6 +18,8 @@ pub fn create_solution<V: Variant, S: Solver>(
     let p = nw.p();
     let var_to_flow = |x: &Variable| FlowUnit::from_f64(solution.value(*x));
 
+    let mut commodity_paths = VecCommodity::new_filled(p.len_commodities(), Default::default);
+
     let mut transport_loads: VecTransport<Vec<CommodityLoad<V>>> =
         VecTransport::new_filled(p.len_transports(), Default::default);
 
@@ -25,13 +27,15 @@ pub fn create_solution<V: Variant, S: Solver>(
         let edge_flow = |e: EIdx| var_to_flow(&vars[e]);
 
         match params.disaggregation {
-            DisaggregationStrategy::Greedy => {
-                disaggregate_ro_greedy(nw, ro, edge_flow, &mut transport_loads)
-            }
+            DisaggregationStrategy::Greedy => disaggregate_ro_greedy(
+                nw,
+                ro,
+                edge_flow,
+                &mut transport_loads,
+                &mut commodity_paths,
+            ),
         }
     }
-
-    let commodity_paths = VecCommodity::new_filled(p.len_commodities(), Default::default);
 
     McnfSolution::new(commodity_paths, transport_loads)
 }
