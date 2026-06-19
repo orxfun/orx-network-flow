@@ -2,11 +2,10 @@ use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
-use crate::mcnf::CommodityLoad;
+use crate::mcnf::Path;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
 use crate::{
-    Commodity, CommodityData, FlowUnit, McnfSolution, Problem, Space, SpaceTime, Variant,
-    VecTransport,
+    Commodity, CommodityData, FlowUnit, McnfSolution, Problem, Space, SpaceTime, Transport, Variant,
 };
 use alloc::string::{String, ToString};
 use alloc::{format, vec::Vec};
@@ -96,6 +95,65 @@ where
     fn space(&self, space: Space) -> &V::S {
         self.nw.p.space_key(space)
     }
+
+    fn edge_flow_from_solution(&self, e: EIdx, solution: &McnfSolution<V>) -> V::F {
+        let p = self.nw.p;
+        let edge = self.graph().edge(e);
+
+        match edge.data() {
+            ConnWaitEdge::Bypass(c) => {
+                let amount = p.commodity_by_idx(*c).amount();
+                let served = FlowUnit::sum(
+                    solution.commodity_paths()[*c]
+                        .path_flows
+                        .iter()
+                        .map(|x| x.flow),
+                );
+                match amount > served {
+                    true => amount - served,
+                    false => FlowUnit::zero(),
+                }
+            }
+            ConnWaitEdge::Enter => {
+                let ro = self
+                    .graph()
+                    .vertex(edge.tail())
+                    .data()
+                    .get_ro()
+                    .expect("ro");
+                let t = self.graph().vertex(edge.head()).data().get_t().expect("t");
+                let paths = solution.commodity_paths().enumerated_iter();
+                let matching = paths.filter(|(c, _)| p.commodity_by_idx(*c).origin() == ro);
+                let matching = matching.flat_map(|(_, paths)| paths.path_flows.iter());
+                let matching = matching.filter(|pf| first_transport(&pf.path) == Some(t));
+                FlowUnit::sum(matching.map(|pf| pf.flow))
+            }
+            ConnWaitEdge::Exit => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let dd = self
+                    .graph()
+                    .vertex(edge.head())
+                    .data()
+                    .get_dd()
+                    .expect("dd");
+                let paths = solution.commodity_paths().enumerated_iter();
+                let matching = paths.filter(|(c, _)| p.commodity_by_idx(*c).destination() == dd);
+                let matching = matching.flat_map(|(_, paths)| paths.path_flows.iter());
+                let matching = matching.filter(|pf| last_transport(&pf.path) == Some(t));
+                FlowUnit::sum(matching.map(|pf| pf.flow))
+            }
+            ConnWaitEdge::Wait | ConnWaitEdge::Connect => {
+                let t1 = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t2 = self.graph().vertex(edge.head()).data().get_t().expect("t");
+                let all_path_flows = solution
+                    .commodity_paths()
+                    .iter()
+                    .flat_map(|paths| paths.path_flows.iter());
+                let matching = all_path_flows.filter(|pf| has_transition(&pf.path, t1, t2));
+                FlowUnit::sum(matching.map(|pf| pf.flow))
+            }
+        }
+    }
 }
 
 impl<'a, V> DotGraph for ConnWaitDot<'a, V>
@@ -183,9 +241,18 @@ where
     }
 
     fn edge_label(&self, e: EIdx) -> impl core::fmt::Display {
-        match &self.flows_deprecated {
-            Some(flows) => flows[e].to_string(),
-            None => String::new(),
+        match &self.solution {
+            Some(solution) => {
+                let flow = self.edge_flow_from_solution(e, solution);
+                match flow.is_pos() {
+                    true => flow.to_string(),
+                    false => String::new(),
+                }
+            }
+            None => match &self.flows_deprecated {
+                Some(flows) => flows[e].to_string(),
+                None => String::new(),
+            },
         }
     }
 
@@ -248,4 +315,33 @@ fn com_str<V: Variant>(p: &Problem<V>, c: Commodity, data: &CommodityData<V>) ->
         data.amount(),
         p.costs.lost_revenue.cost(c)
     )
+}
+
+fn first_transport(path: &Path) -> Option<Transport> {
+    match path {
+        Path::OneLeg(t) => Some(*t),
+        Path::TwoLegs([t, _]) => Some(*t),
+        Path::ThreeLegs([t, _, _]) => Some(*t),
+        Path::Long(path) => path.first().copied(),
+    }
+}
+
+fn last_transport(path: &Path) -> Option<Transport> {
+    match path {
+        Path::OneLeg(t) => Some(*t),
+        Path::TwoLegs([_, t]) => Some(*t),
+        Path::ThreeLegs([_, _, t]) => Some(*t),
+        Path::Long(path) => path.last().copied(),
+    }
+}
+
+fn has_transition(path: &Path, tail: Transport, head: Transport) -> bool {
+    let has_in_slice = |slice: &[Transport]| slice.windows(2).any(|w| w[0] == tail && w[1] == head);
+
+    match path {
+        Path::OneLeg(_) => false,
+        Path::TwoLegs(path) => has_in_slice(path),
+        Path::ThreeLegs(path) => has_in_slice(path),
+        Path::Long(path) => has_in_slice(path),
+    }
 }
