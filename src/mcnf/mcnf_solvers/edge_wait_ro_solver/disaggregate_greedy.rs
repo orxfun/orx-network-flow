@@ -3,7 +3,7 @@ use crate::graphs::core::GraphCore;
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 use crate::mcnf::solution::{CommodityLoad, CommodityPaths, Path, PathFlow};
 use crate::networks::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
-use crate::{Commodity, FlowUnit, SpaceTime, Transport, Variant, VecTransport};
+use crate::{Commodity, FlowUnit, SpaceTime, Variant, VecTransport};
 use alloc::collections::{BTreeMap, VecDeque};
 use alloc::vec::Vec;
 
@@ -144,6 +144,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         }
     }
 
+    let mut path_transports = Vec::new();
     for (&commodity, &remaining) in &remaining_by_commodity {
         if remaining.is_nonpos() {
             continue;
@@ -188,7 +189,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
 
             remaining_to_extract -= path_flow;
 
-            let mut path_transports = Vec::new();
+            debug_assert!(path_transports.is_empty());
             for &e in &path_edges {
                 let head = g.edge(e).head();
                 if let ConnWaitVertex::Transport(t) = g.vertex(head).data() {
@@ -200,7 +201,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
                 continue;
             }
 
-            let path = into_path(path_transports);
+            let path = Path::drain_from(&mut path_transports);
             commodity_paths[commodity].path_flows.push(PathFlow {
                 path,
                 flow: path_flow,
@@ -316,14 +317,4 @@ fn find_positive_path<V: Variant>(
 
     edges_rev.reverse();
     Some(edges_rev)
-}
-
-fn into_path(path_transports: Vec<Transport>) -> Path {
-    match path_transports.len() {
-        0 => Path::Long(path_transports),
-        1 => Path::OneLeg(path_transports[0]),
-        2 => Path::TwoLegs([path_transports[0], path_transports[1]]),
-        3 => Path::ThreeLegs([path_transports[0], path_transports[1], path_transports[2]]),
-        _ => Path::Long(path_transports),
-    }
 }

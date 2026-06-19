@@ -125,7 +125,7 @@ where
                 let paths = solution.commodity_paths().enumerated_iter();
                 let matching = paths.filter(|(c, _)| p.commodity_by_idx(*c).origin() == ro);
                 let matching = matching.flat_map(|(_, paths)| paths.path_flows.iter());
-                let matching = matching.filter(|pf| first_transport(&pf.path) == Some(t));
+                let matching = matching.filter(|pf| pf.path.first() == Some(t));
                 FlowUnit::sum(matching.map(|pf| pf.flow))
             }
             ConnWaitEdge::Exit => {
@@ -139,7 +139,7 @@ where
                 let paths = solution.commodity_paths().enumerated_iter();
                 let matching = paths.filter(|(c, _)| p.commodity_by_idx(*c).destination() == dd);
                 let matching = matching.flat_map(|(_, paths)| paths.path_flows.iter());
-                let matching = matching.filter(|pf| last_transport(&pf.path) == Some(t));
+                let matching = matching.filter(|pf| pf.path.last() == Some(t));
                 FlowUnit::sum(matching.map(|pf| pf.flow))
             }
             ConnWaitEdge::Wait | ConnWaitEdge::Connect => {
@@ -315,24 +315,6 @@ fn com_str<V: Variant>(p: &Problem<V>, c: Commodity, data: &CommodityData<V>) ->
         data.amount(),
         p.costs.lost_revenue.cost(c)
     )
-}
-
-fn first_transport(path: &Path) -> Option<Transport> {
-    match path {
-        Path::OneLeg(t) => Some(*t),
-        Path::TwoLegs([t, _]) => Some(*t),
-        Path::ThreeLegs([t, _, _]) => Some(*t),
-        Path::Long(path) => path.first().copied(),
-    }
-}
-
-fn last_transport(path: &Path) -> Option<Transport> {
-    match path {
-        Path::OneLeg(t) => Some(*t),
-        Path::TwoLegs([_, t]) => Some(*t),
-        Path::ThreeLegs([_, _, t]) => Some(*t),
-        Path::Long(path) => path.last().copied(),
-    }
 }
 
 fn has_transition(path: &Path, tail: Transport, head: Transport) -> bool {
