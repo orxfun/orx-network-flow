@@ -104,8 +104,6 @@ fn main() {
     let solution = solver.solve().unwrap();
 
     let dot = dot.with_solution(&solution);
-    // let output = nw.solve(true);
-    // let dot = dot.with_flows_deprecated(&output.edge_flows);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 }
