@@ -1,1 +1,1 @@
-mod edge_wait_ro_solver;
+pub mod edge_wait_ro_solver;

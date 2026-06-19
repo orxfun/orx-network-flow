@@ -4,3 +4,6 @@ mod obj;
 mod params;
 mod solver;
 mod vars;
+
+pub use params::EdgeWaitRoMcnfParams;
+pub use solver::EdgeWaitRoMcnfSolver;

@@ -1,6 +1,6 @@
-mod mcnf_solver;
+mod factory;
 mod mcnf_solvers;
 mod solution;
 
-pub use mcnf_solver::McnfSolver;
-pub use solution::McnfSol;
+pub use factory::McnfSolver;
+pub use solution::McnfSolution;

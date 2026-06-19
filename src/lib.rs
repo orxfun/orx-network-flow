@@ -45,6 +45,7 @@ pub use solution_deprecated::SolutionDeprecated;
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
 pub use flow_units::FlowUnit;
 pub(crate) use indices::{IdxMap, IdxMapSubset};
+pub use mcnf::{McnfSolution, McnfSolver};
 pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
 pub(crate) use time::Time;
 pub(crate) use transports::{Transport, TransportData, Transports, VecTransport};
