@@ -8,14 +8,25 @@ use good_lp::{ProblemVariables, Variable, VariableDefinition};
 
 pub struct RoVars<'a, V: Variant> {
     p: &'a Problem<V>,
+    /// Variables per unique ready-origin time-space, which is parallel to
+    /// `sorted_ro_commodities` of the corresponding problem `p`.
     vars: Vec<VecEdge<Variable>>,
 }
 
 impl<V: Variant> RoVars<'_, V> {
+    pub fn ro(&self) -> impl Iterator<Item = SpaceTime> {
+        self.p.sorted_ro_commodities.keys().copied()
+    }
+
     pub fn vars_of(&self, ro: SpaceTime) -> &VecEdge<Variable> {
         let p = self.p;
         let ro_idx = p.sorted_ro_commodities.key_to_idx(&ro).expect("exists");
         &self.vars[ro_idx]
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (SpaceTime, &VecEdge<Variable>)> {
+        let ro_idx = self.p.sorted_ro_commodities.keys_indices();
+        ro_idx.map(|(ro, idx)| (*ro, &self.vars[idx]))
     }
 }
 

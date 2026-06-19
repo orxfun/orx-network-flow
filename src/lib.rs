@@ -43,6 +43,7 @@ pub use problem::{
 pub use solution_deprecated::SolutionDeprecated;
 
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
+pub use flow_units::FlowUnit;
 pub(crate) use indices::{IdxMap, IdxMapSubset};
 pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
 pub(crate) use time::Time;
