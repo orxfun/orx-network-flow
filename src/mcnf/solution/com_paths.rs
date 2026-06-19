@@ -1,9 +1,20 @@
 use crate::{Transport, Variant};
 use alloc::vec::Vec;
+use core::fmt::{Debug, Display};
 
 #[derive(Default)]
 pub struct CommodityPaths<V: Variant> {
     pub path_flows: Vec<PathFlow<V>>,
+}
+
+impl<'a, V: Variant> IntoIterator for &'a CommodityPaths<V> {
+    type Item = &'a PathFlow<V>;
+
+    type IntoIter = core::slice::Iter<'a, PathFlow<V>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.path_flows.iter()
+    }
 }
 
 pub struct PathFlow<V: Variant> {
@@ -93,5 +104,25 @@ impl<'a> IntoIterator for &'a Path {
 
     fn into_iter(self) -> Self::IntoIter {
         self.as_slice().iter().copied()
+    }
+}
+
+impl Debug for Path {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let mut started = false;
+        for x in self.into_iter() {
+            match started {
+                true => write!(f, "-{x}")?,
+                false => write!(f, "{x}")?,
+            }
+            started = true;
+        }
+        Ok(())
+    }
+}
+
+impl Display for Path {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

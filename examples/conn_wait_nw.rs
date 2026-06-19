@@ -106,6 +106,15 @@ fn main() {
     let dot = dot.with_solution(&solution);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
+
+    for (c, paths) in solution.commodity_paths().enumerated_iter() {
+        let com = problem.commodity_key(c);
+        let commodity = problem.commodity_by_idx(c).to_str(&problem);
+        println!("c{com} = {commodity}");
+        for path_flow in paths {
+            println!("* {}\t\t{}", path_flow.path, path_flow.flow);
+        }
+    }
 }
 
 pub fn cplex_solver() -> LpSolver<Cplex> {

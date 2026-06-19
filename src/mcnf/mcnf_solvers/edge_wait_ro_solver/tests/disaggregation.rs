@@ -208,7 +208,7 @@ fn sum_path_flow<V: Variant>(paths: &CommodityPaths<V>) -> V::F {
 fn assert_path_one_leg<V: Variant>(paths: &CommodityPaths<V>, t: crate::Transport) {
     let p = &paths.path_flows[0].path;
     match p {
-        Path::OneLeg(x) => assert_eq!(*x, t),
+        Path::OneLeg([x]) => assert_eq!(*x, t),
         _ => panic!("expected one-leg path"),
     }
 }

@@ -30,4 +30,11 @@ impl<V: Variant> CommodityData<V> {
         let [rt, due] = [self.ori.time(), self.des.time()];
         format!("{}_{}_{}_{}", ori, des, rt, due)
     }
+
+    pub fn to_str(&self, p: &Problem<V>) -> String {
+        let [ori, des] = [self.ori, self.des].map(|x| p.space_key(x.space()));
+        let [rt, due] = [self.ori.time(), self.des.time()];
+        let amount = self.amount();
+        format!("ori={ori}, des={des}, ready={rt}, due={due}, amount={amount}")
+    }
 }
