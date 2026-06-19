@@ -45,7 +45,6 @@ pub fn create_solution<V: Variant, S: Solver>(
 
         for (t, edges) in nw.transport_edges() {
             let total_load_on_transport = FlowUnit::sum(edges.iter().copied().map(edge_flow));
-            // edges.iter().map(|&e| solution.value(vars[e])).sum::<f64>();
 
             if total_load_on_transport.is_nonpos() {
                 continue;
