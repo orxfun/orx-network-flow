@@ -101,12 +101,13 @@ fn main() {
     let solver = McnfSolver::edge_wait_ro(&nw, Default::default(), cplex_solver());
     solver.display_lp();
     solver.export_lp("target/conn_wait_nw.lp").expect("lp");
-    let x = solver.solve();
+    let solution = solver.solve().unwrap();
 
+    let dot = dot.with_solution(&solution);
     // let output = nw.solve(true);
-    // let dot = dot.with_flows(&output.edge_flows);
-    // dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
-    //     .unwrap();
+    // let dot = dot.with_flows_deprecated(&output.edge_flows);
+    dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
+        .unwrap();
 }
 
 pub fn cplex_solver() -> LpSolver<Cplex> {

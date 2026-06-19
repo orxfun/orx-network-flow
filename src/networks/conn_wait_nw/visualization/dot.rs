@@ -1,10 +1,13 @@
-use crate::flow_units::FlowUnit;
 use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
+use crate::mcnf::CommodityLoad;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
-use crate::{Commodity, CommodityData, Problem, Space, SpaceTime, Variant};
+use crate::{
+    Commodity, CommodityData, FlowUnit, McnfSolution, Problem, Space, SpaceTime, Variant,
+    VecTransport,
+};
 use alloc::string::{String, ToString};
 use alloc::{format, vec::Vec};
 use orx_iterable::{Collection, Iterable};
@@ -63,7 +66,8 @@ where
 {
     nw: &'a ConnWaitNw<'a, V>,
     settings: ConnWaitDotSettings,
-    flows: Option<&'a VecEdge<V::F>>,
+    flows_deprecated: Option<&'a VecEdge<V::F>>,
+    solution: Option<&'a McnfSolution<V>>,
 }
 
 impl<'a, V> ConnWaitDot<'a, V>
@@ -74,12 +78,18 @@ where
         Self {
             nw,
             settings: settings.unwrap_or_default(),
-            flows: None,
+            flows_deprecated: None,
+            solution: None,
         }
     }
 
-    pub fn with_flows(mut self, flows: &'a VecEdge<V::F>) -> Self {
-        self.flows = Some(flows);
+    pub fn with_flows_deprecated(mut self, flows: &'a VecEdge<V::F>) -> Self {
+        self.flows_deprecated = Some(flows);
+        self
+    }
+
+    pub fn with_solution(mut self, solution: &'a McnfSolution<V>) -> Self {
+        self.solution = Some(solution);
         self
     }
 
@@ -173,7 +183,7 @@ where
     }
 
     fn edge_label(&self, e: EIdx) -> impl core::fmt::Display {
-        match &self.flows {
+        match &self.flows_deprecated {
             Some(flows) => flows[e].to_string(),
             None => String::new(),
         }
