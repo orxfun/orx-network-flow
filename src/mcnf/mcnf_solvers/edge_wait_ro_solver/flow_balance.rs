@@ -2,7 +2,7 @@ use crate::graphs::core::VertexCore;
 use crate::graphs::{Graph, Vertex};
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
 use crate::networks::{ConnWaitNw, ConnWaitVertex};
-use crate::{FlowUnit, Problem, Variant};
+use crate::{FlowUnit, Problem, SpaceTime, Variant};
 use alloc::{format, string::String};
 use good_lp::{Expression, Solver, SolverModel, constraint};
 
@@ -45,7 +45,7 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
             let constraint = constraint!(out_minus_in == b);
 
             let constraint = match named {
-                true => constraint.set_name(constraint_name(p, vertex)),
+                true => constraint.set_name(constraint_name(p, ro, vertex)),
                 false => constraint,
             };
 
@@ -54,19 +54,25 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
     }
 }
 
-fn constraint_name<V: Variant>(p: &Problem<V>, vertex: &VertexCore<ConnWaitVertex>) -> String {
+fn constraint_name<V: Variant>(
+    p: &Problem<V>,
+    ro: SpaceTime,
+    vertex: &VertexCore<ConnWaitVertex>,
+) -> String {
+    let o = p.space_key(ro.space());
+    let r = ro.time();
     match vertex.data() {
         ConnWaitVertex::ReadyOri(ro) => {
             let ori = p.space_key(ro.space());
-            format!("fb_exit__{ori}_{}", ro.time())
+            format!("fb_enter__{o}_{r}__{ori}_{}", ro.time())
         }
         ConnWaitVertex::DueDes(dd) => {
             let des = p.space_key(dd.space());
-            format!("fb_exit__{des}_{}", dd.time())
+            format!("fb_exit__{o}_{r}__{des}_{}", dd.time())
         }
         ConnWaitVertex::Transport(t) => {
             let t = p.transport_by_idx(*t);
-            format!("fb_tra__{}", t.var_str(p))
+            format!("fb_tra__{o}_{r}__{}", t.var_str(p))
         }
     }
 }
