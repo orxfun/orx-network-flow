@@ -154,6 +154,123 @@ where
             }
         }
     }
+
+    fn edge_commodity_flows_from_solution(
+        &self,
+        e: EIdx,
+        solution: &McnfSolution<V>,
+    ) -> Vec<(String, V::F)> {
+        let p = self.nw.p;
+        let edge = self.graph().edge(e);
+
+        match edge.data() {
+            ConnWaitEdge::Bypass(c) => {
+                let amount = p.commodity_by_idx(*c).amount();
+                let served = FlowUnit::sum(
+                    solution.commodity_paths()[*c]
+                        .path_flows
+                        .iter()
+                        .map(|x| x.flow),
+                );
+
+                if amount > served {
+                    Vec::from([(commodity_short_str(p, *c), amount - served)])
+                } else {
+                    Vec::new()
+                }
+            }
+            ConnWaitEdge::Enter => {
+                let ro = self
+                    .graph()
+                    .vertex(edge.tail())
+                    .data()
+                    .get_ro()
+                    .expect("ro");
+                let t = self.graph().vertex(edge.head()).data().get_t().expect("t");
+
+                solution
+                    .commodity_paths()
+                    .enumerated_iter()
+                    .filter_map(|(c, paths)| {
+                        if p.commodity_by_idx(c).origin() != ro {
+                            return None;
+                        }
+
+                        let flow = FlowUnit::sum(
+                            paths
+                                .path_flows
+                                .iter()
+                                .filter(|pf| pf.flow.is_pos() && pf.path.first() == Some(t))
+                                .map(|pf| pf.flow),
+                        );
+
+                        if flow.is_pos() {
+                            Some((commodity_short_str(p, c), flow))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
+            }
+            ConnWaitEdge::Exit => {
+                let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let dd = self
+                    .graph()
+                    .vertex(edge.head())
+                    .data()
+                    .get_dd()
+                    .expect("dd");
+
+                solution
+                    .commodity_paths()
+                    .enumerated_iter()
+                    .filter_map(|(c, paths)| {
+                        if p.commodity_by_idx(c).destination() != dd {
+                            return None;
+                        }
+
+                        let flow = FlowUnit::sum(
+                            paths
+                                .path_flows
+                                .iter()
+                                .filter(|pf| pf.flow.is_pos() && pf.path.last() == Some(t))
+                                .map(|pf| pf.flow),
+                        );
+
+                        if flow.is_pos() {
+                            Some((commodity_short_str(p, c), flow))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
+            }
+            ConnWaitEdge::Wait | ConnWaitEdge::Connect => {
+                let t1 = self.graph().vertex(edge.tail()).data().get_t().expect("t");
+                let t2 = self.graph().vertex(edge.head()).data().get_t().expect("t");
+
+                solution
+                    .commodity_paths()
+                    .enumerated_iter()
+                    .filter_map(|(c, paths)| {
+                        let flow = FlowUnit::sum(
+                            paths
+                                .path_flows
+                                .iter()
+                                .filter(|pf| pf.flow.is_pos() && has_transition(&pf.path, t1, t2))
+                                .map(|pf| pf.flow),
+                        );
+
+                        if flow.is_pos() {
+                            Some((commodity_short_str(p, c), flow))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
+            }
+        }
+    }
 }
 
 impl<'a, V> DotGraph for ConnWaitDot<'a, V>
@@ -261,7 +378,7 @@ where
         let edge = self.graph().edge(e);
         let space = |st: SpaceTime| self.nw.p.space_key(st.space());
 
-        Some(match edge.data() {
+        let base = match edge.data() {
             ConnWaitEdge::Wait => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let t = p.transport_by_idx(t);
@@ -288,6 +405,54 @@ where
                 let com_str = com_str(p, *c, &com);
                 format!("Bypass edge with lost revenue cost\n{com_str}")
             }
+        };
+
+        Some(match self.solution {
+            Some(solution) => {
+                let flow = self.edge_flow_from_solution(e, solution);
+                if flow.is_nonpos() {
+                    base
+                } else {
+                    let commodity_flows = self.edge_commodity_flows_from_solution(e, solution);
+                    if commodity_flows.is_empty() {
+                        base
+                    } else {
+                        let left_header = "Commodity";
+                        let right_header = "Flow";
+                        let left_width = core::cmp::max(
+                            left_header.len(),
+                            commodity_flows
+                                .iter()
+                                .map(|(commodity, _)| commodity.len())
+                                .max()
+                                .unwrap_or(0),
+                        );
+                        let right_values: Vec<String> =
+                            commodity_flows.iter().map(|(_, f)| f.to_string()).collect();
+                        let right_width = core::cmp::max(
+                            right_header.len(),
+                            right_values.iter().map(|x| x.len()).max().unwrap_or(0),
+                        );
+
+                        let mut lines = Vec::with_capacity(2 + commodity_flows.len());
+                        lines.push(format!(
+                            "{:<left_width$}  {:>right_width$}",
+                            left_header, right_header
+                        ));
+                        for ((commodity, _), flow_str) in
+                            commodity_flows.iter().zip(right_values.iter())
+                        {
+                            lines.push(format!(
+                                "{:<left_width$}  {:>right_width$}",
+                                commodity, flow_str
+                            ));
+                        }
+
+                        format!("{base}\n\nCommodities on edge:\n{}", lines.join("\n"))
+                    }
+                }
+            }
+            None => base,
         })
     }
 
@@ -314,6 +479,18 @@ fn com_str<V: Variant>(p: &Problem<V>, c: Commodity, data: &CommodityData<V>) ->
         s(data.destination().space()),
         data.amount(),
         p.costs.lost_revenue.cost(c)
+    )
+}
+
+fn commodity_short_str<V: Variant>(p: &Problem<V>, c: Commodity) -> String {
+    let data = p.commodity_by_idx(c);
+    let s = |s: Space| p.space_key(s);
+    format!(
+        "{}-{} {}-{}",
+        s(data.origin().space()),
+        s(data.destination().space()),
+        data.origin().time(),
+        data.destination().time()
     )
 }
 
