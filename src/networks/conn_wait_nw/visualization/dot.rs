@@ -11,6 +11,10 @@ use alloc::string::{String, ToString};
 use alloc::{format, vec::Vec};
 use orx_iterable::{Collection, Iterable};
 
+const EDGE_WIDTH_UNIFORM: f64 = 1.4;
+const EDGE_WIDTH_WITH_FLOW: f64 = 2.8;
+const EDGE_WIDTH_WITHOUT_FLOW: f64 = 0.8;
+
 pub struct ConnWaitDotSettings {
     transport: VertexSettings,
     ready_ori: VertexSettings,
@@ -42,18 +46,23 @@ impl Default for ConnWaitDotSettings {
             },
             wait: EdgeSettings {
                 color: Some(String::from("lightgray")),
+                pen_width: Some(EDGE_WIDTH_UNIFORM),
             },
             connect: EdgeSettings {
                 color: Some(String::from("darkgreen")),
+                pen_width: Some(EDGE_WIDTH_UNIFORM),
             },
             enter: EdgeSettings {
                 color: Some(String::from("lightgray")),
+                pen_width: Some(EDGE_WIDTH_UNIFORM),
             },
             exit: EdgeSettings {
                 color: Some(String::from("darkgreen")),
+                pen_width: Some(EDGE_WIDTH_UNIFORM),
             },
             bypass: EdgeSettings {
                 color: Some(String::from("orange")),
+                pen_width: Some(EDGE_WIDTH_UNIFORM),
             },
         }
     }
@@ -65,6 +74,7 @@ where
 {
     nw: &'a ConnWaitNw<'a, V>,
     settings: ConnWaitDotSettings,
+    edge_settings_by_edge: Option<VecEdge<EdgeSettings>>,
     flows_deprecated: Option<&'a VecEdge<V::F>>,
     solution: Option<&'a McnfSolution<V>>,
 }
@@ -77,6 +87,7 @@ where
         Self {
             nw,
             settings: settings.unwrap_or_default(),
+            edge_settings_by_edge: None,
             flows_deprecated: None,
             solution: None,
         }
@@ -88,8 +99,35 @@ where
     }
 
     pub fn with_solution(mut self, solution: &'a McnfSolution<V>) -> Self {
+        self.edge_settings_by_edge = Some(self.edge_settings_with_solution(solution));
         self.solution = Some(solution);
         self
+    }
+
+    fn edge_settings_default(&self, e: EIdx) -> &EdgeSettings {
+        match self.graph().edge(e).data() {
+            ConnWaitEdge::Wait => &self.settings.wait,
+            ConnWaitEdge::Connect => &self.settings.connect,
+            ConnWaitEdge::Enter => &self.settings.enter,
+            ConnWaitEdge::Exit => &self.settings.exit,
+            ConnWaitEdge::Bypass(_) => &self.settings.bypass,
+        }
+    }
+
+    fn edge_settings_with_solution(&self, solution: &McnfSolution<V>) -> VecEdge<EdgeSettings> {
+        let mut settings_by_edge = VecEdge::new();
+
+        for e in self.graph().edge_indices() {
+            let mut settings = self.edge_settings_default(e).clone();
+            let flow = self.edge_flow_from_solution(e, solution);
+            settings.pen_width = match flow.is_pos() {
+                true => Some(EDGE_WIDTH_WITH_FLOW),
+                false => Some(EDGE_WIDTH_WITHOUT_FLOW),
+            };
+            settings_by_edge.push(settings);
+        }
+
+        settings_by_edge
     }
 
     fn space(&self, space: Space) -> &V::S {
@@ -533,12 +571,9 @@ where
     }
 
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings {
-        match self.graph().edge(e).data() {
-            ConnWaitEdge::Wait => &self.settings.wait,
-            ConnWaitEdge::Connect => &self.settings.connect,
-            ConnWaitEdge::Enter => &self.settings.enter,
-            ConnWaitEdge::Exit => &self.settings.exit,
-            ConnWaitEdge::Bypass(_) => &self.settings.bypass,
+        match &self.edge_settings_by_edge {
+            Some(settings) => &settings[e],
+            None => self.edge_settings_default(e),
         }
     }
 
