@@ -87,6 +87,7 @@ fn main() {
     lost_revenue_cost.commodity_specific(&1, 3); // LEJ-CVG
     lost_revenue_cost.commodity_specific(&2, 10); // LEJ-CVG-X
     lost_revenue_cost.commodity_specific(&3, 2); // AMS-CVG
+    lost_revenue_cost.commodity_specific(&4, 8); // AMS-CVG
 
     let problem = builder.finish();
 
