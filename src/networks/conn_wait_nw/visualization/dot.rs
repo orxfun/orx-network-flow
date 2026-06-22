@@ -271,6 +271,48 @@ where
             }
         }
     }
+
+    fn graph_path_table_label_from_solution(&self, solution: &McnfSolution<V>) -> Option<String> {
+        let p = self.nw.p;
+
+        let mut rows = Vec::new();
+        for (commodity, paths) in solution.commodity_paths().enumerated_iter() {
+            let commodity_str = commodity_short_str(p, commodity);
+            for path_flow in &paths.path_flows {
+                if path_flow.flow.is_nonpos() {
+                    continue;
+                }
+                rows.push((
+                    commodity_str.clone(),
+                    path_flow.path.to_string(),
+                    path_flow.flow.to_string(),
+                ));
+            }
+        }
+
+        if rows.is_empty() {
+            return None;
+        }
+
+        let mut table = String::from(
+            "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">",
+        );
+        table.push_str(
+            "<TR><TD BGCOLOR=\"#f2f2f2\"><B>Commodity</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Path</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Flow</B></TD></TR>",
+        );
+
+        for (commodity, path, flow) in rows {
+            let commodity = escape_dot_html(&commodity);
+            let path = escape_dot_html(&path);
+            let flow = escape_dot_html(&flow);
+            table.push_str(&format!(
+                "<TR><TD ALIGN=\"LEFT\">{commodity}</TD><TD ALIGN=\"LEFT\">{path}</TD><TD ALIGN=\"RIGHT\">{flow}</TD></TR>"
+            ));
+        }
+
+        table.push_str("</TABLE>");
+        Some(table)
+    }
 }
 
 impl<'a, V> DotGraph for ConnWaitDot<'a, V>
@@ -466,6 +508,11 @@ where
         }
     }
 
+    fn graph_label(&self) -> Option<impl core::fmt::Display> {
+        self.solution
+            .and_then(|solution| self.graph_path_table_label_from_solution(solution))
+    }
+
     fn graph(&self) -> &Self::G {
         &self.nw.g
     }
@@ -503,4 +550,12 @@ fn has_transition(path: &Path, tail: Transport, head: Transport) -> bool {
         Path::ThreeLegs(path) => has_in_slice(path),
         Path::Long(path) => has_in_slice(path),
     }
+}
+
+fn escape_dot_html(value: &str) -> String {
+    value
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }
