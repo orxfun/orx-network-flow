@@ -110,7 +110,11 @@ fn var_name<V: Variant>(
             let tail_st = g.vertex(e.tail()).data().0;
             let head_st = g.vertex(e.head()).data().0;
             let tail_s = p.space_key(tail_st.space());
-            format!("{ro_str}__wait__{tail_s}_{}__{}", tail_st.time(), head_st.time())
+            format!(
+                "{ro_str}__wait__{tail_s}_{}__{}",
+                tail_st.time(),
+                head_st.time()
+            )
         }
         SpaceTimeEdge::Bypass(c) => {
             let com = p.commodity_by_idx(*c);

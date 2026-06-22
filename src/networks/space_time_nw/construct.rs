@@ -1,6 +1,8 @@
 use crate::commodities::VecCommodity;
 use crate::graphs::{EIdx, EdgeRange, VIdx};
-use crate::networks::space_time_nw::{SpaceTimeEdge, SpaceTimeGraph, SpaceTimeNwSettings, SpaceTimeVertex};
+use crate::networks::space_time_nw::{
+    SpaceTimeEdge, SpaceTimeGraph, SpaceTimeNwSettings, SpaceTimeVertex,
+};
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Space, SpaceTime, Time, Variant, VecTransport};

@@ -1,5 +1,6 @@
 use good_lp::LpSolver;
 use lp_solvers::solvers::Cplex;
+use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::{
     McnfSolver, ProblemBuilder, SpaceTimeNwSettings, SpaceTimeRoMcnfParams, Variant,
 };
@@ -32,12 +33,24 @@ fn main() {
         add_bypass_edges: true,
     });
 
-    let conn_wait_solver = McnfSolver::edge_wait_ro(&conn_wait_nw, Default::default(), cplex_solver());
+    let dot = space_time_nw.as_dot_graph(None);
+    dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
+        .unwrap();
+
+    let conn_wait_solver =
+        McnfSolver::edge_wait_ro(&conn_wait_nw, Default::default(), cplex_solver());
     let conn_wait_sol = conn_wait_solver.solve().expect("conn_wait solution");
 
-    let space_time_solver =
-        McnfSolver::space_time_ro(&space_time_nw, SpaceTimeRoMcnfParams::default(), cplex_solver());
+    let space_time_solver = McnfSolver::space_time_ro(
+        &space_time_nw,
+        SpaceTimeRoMcnfParams::default(),
+        cplex_solver(),
+    );
     let space_time_sol = space_time_solver.solve().expect("space_time solution");
+
+    let dot = dot.with_solution(&space_time_sol);
+    dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
+        .unwrap();
 
     println!("=== Commodity Transported Flow (ConnWait vs SpaceTime) ===");
     for (c, com_paths_a) in conn_wait_sol.commodity_paths().enumerated_iter() {

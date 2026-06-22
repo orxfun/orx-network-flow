@@ -1,5 +1,6 @@
 use crate::commodities::VecCommodity;
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
+use crate::networks::space_time_nw::visualization::dot::{SpaceTimeDot, SpaceTimeDotSettings};
 use crate::networks::space_time_nw::{SpaceTimeEdge, SpaceTimeVertex};
 use crate::utils::std_utils::Map;
 use crate::{Commodity, Problem, SpaceTime, Transport, Variant, VecTransport};
@@ -42,9 +43,7 @@ where
     }
 
     pub(crate) fn transport_arcs(&self) -> impl Iterator<Item = (Transport, EIdx)> + '_ {
-        self.transport_arc
-            .enumerated_iter()
-            .map(|(t, &e)| (t, e))
+        self.transport_arc.enumerated_iter().map(|(t, &e)| (t, e))
     }
 
     pub(crate) fn bypass_edge_by_commodity(&self) -> &VecCommodity<Option<EIdx>> {
@@ -75,5 +74,9 @@ where
             bypass_edges_range: output.bypass_edges_range,
             bypass_edge_per_commodity: output.bypass_edge_per_commodity,
         }
+    }
+
+    pub fn as_dot_graph(&'a self, settings: Option<SpaceTimeDotSettings>) -> SpaceTimeDot<'a, V> {
+        SpaceTimeDot::new(self, settings)
     }
 }

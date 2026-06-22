@@ -24,7 +24,9 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     let commodities = p.sorted_ro_commodities.value_by_key_unc(&ro);
     for &c in commodities {
         let amount = p.commodity_by_idx(c).amount();
-        let bypass = bypass_edge_by_commodity[c].map(edge_flow).unwrap_or_default();
+        let bypass = bypass_edge_by_commodity[c]
+            .map(edge_flow)
+            .unwrap_or_default();
         let remaining = amount - bypass;
 
         if remaining.is_nonpos() {
