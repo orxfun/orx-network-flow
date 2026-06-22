@@ -555,8 +555,8 @@ where
         let mut dot = String::from("digraph G {\n");
 
         if let Some(graph_label) = self.graph_label() {
-            dot.push_str("    labelloc=\"t\";\n");
-            dot.push_str("    labeljust=\"r\";\n");
+            dot.push_str("    labelloc=\"b\";\n");
+            dot.push_str("    labeljust=\"l\";\n");
             dot.push_str(&format!("    label=<{}>;\n", graph_label));
         }
 
