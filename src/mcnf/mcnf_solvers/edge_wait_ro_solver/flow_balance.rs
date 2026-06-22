@@ -15,6 +15,8 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
     let (p, g) = (nw.p(), &nw.g());
 
     for (ro, vars) in ro_vars.iter() {
+        let ro_commodities = p.sorted_ro_commodities.value_by_key_unc(&ro);
+
         for vertex in g.vertices() {
             let mut out_minus_in = Expression::default();
 
@@ -27,15 +29,18 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
             }
 
             let b = match vertex.data() {
-                ConnWaitVertex::ReadyOri(ro) => {
-                    let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
-                    let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
-                    let demand = commodities.map(|c| c.amount());
-                    FlowUnit::sum(demand).into_f64()
+                ConnWaitVertex::ReadyOri(vertex_ro) => {
+                    if *vertex_ro != ro {
+                        0.0
+                    } else {
+                        let commodities = ro_commodities.iter().map(|&c| p.commodity_by_idx(c));
+                        let demand = commodities.map(|c| c.amount());
+                        FlowUnit::sum(demand).into_f64()
+                    }
                 }
                 ConnWaitVertex::DueDes(dd) => {
-                    let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
-                    let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
+                    let commodities = ro_commodities.iter().map(|&c| p.commodity_by_idx(c));
+                    let commodities = commodities.filter(|c| c.destination() == *dd);
                     let demand = commodities.map(|c| c.amount());
                     -FlowUnit::sum(demand).into_f64()
                 }

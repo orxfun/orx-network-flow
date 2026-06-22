@@ -51,6 +51,7 @@ fn main() {
     commodity("AMS", "CVG", 0, 20);
     commodity("AMS", "LEJ", 0, 20);
     commodity("AMS", "LEJ", 0, 20);
+    commodity("LEJ", "CVG", 0, 20);
     // commodity("LEJ", "CVG", 0, 20);
     // commodity("AMS", "CVG", 0, 20);
 
