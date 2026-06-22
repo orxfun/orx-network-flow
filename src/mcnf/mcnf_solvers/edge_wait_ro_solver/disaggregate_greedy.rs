@@ -62,6 +62,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         VecVertex::new_filled(g.v(), || {
             VecCommodity::new_filled(num_commodities, || FlowUnit::zero())
         });
+    let mut node_total_sunken: VecVertex<V::F> = VecVertex::new_filled(g.v(), || FlowUnit::zero());
 
     for &commodity in commodities {
         let flow = remaining_by_commodity[commodity];
@@ -72,6 +73,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         let dd = p.commodity_by_idx(commodity).destination();
         if let Some(&v) = dd_to_vertex.get(&dd) {
             node_sunken_by_commodity[v][commodity] += flow;
+            node_total_sunken[v] += flow;
         }
     }
 
@@ -116,12 +118,17 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             let assigned = assign_greedy(
                 edge_total,
                 &node_sunken_by_commodity[head],
+                node_total_sunken[head],
                 commodities,
                 head_originating,
             );
 
+            let assigned_total = total_assignment(&assigned, commodities);
+
             subtract_assignments(&mut node_sunken_by_commodity[head], &assigned, commodities);
             add_assignments(&mut node_sunken_by_commodity[tail], &assigned, commodities);
+            node_total_sunken[head] -= assigned_total;
+            node_total_sunken[tail] += assigned_total;
             assigned_by_edge[e] = assigned;
 
             nonzero_out_degree[tail] -= 1;
@@ -227,12 +234,12 @@ pub fn disaggregate_ro_greedy<V: Variant>(
 fn assign_greedy<F: FlowUnit>(
     total_edge_flow: F,
     head_sunken_flows: &VecCommodity<F>,
+    head_total_sunken: F,
     commodities: &[Commodity],
     originating_flow_from_head: F,
 ) -> VecCommodity<F> {
     let mut remaining_edge_flow = total_edge_flow;
-    let mut remaining_head_sunken =
-        FlowUnit::sum(commodities.iter().map(|&c| head_sunken_flows[c]));
+    let mut remaining_head_sunken = head_total_sunken;
     let mut assigned = VecCommodity::new_filled(head_sunken_flows.len(), || F::zero());
 
     for &commodity in commodities {
@@ -261,6 +268,10 @@ fn assign_greedy<F: FlowUnit>(
     }
 
     assigned
+}
+
+fn total_assignment<F: FlowUnit>(assigned: &VecCommodity<F>, commodities: &[Commodity]) -> F {
+    FlowUnit::sum(commodities.iter().map(|&c| assigned[c]))
 }
 
 fn add_assignments<F: FlowUnit>(
