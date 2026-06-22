@@ -1,7 +1,7 @@
 use crate::IdxMap;
 use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
 use crate::costs::Costs;
-use crate::networks::{ConnWaitNw, ConnWaitNwSettings};
+use crate::networks::{ConnWaitNw, ConnWaitNwSettings, SpaceTimeNw, SpaceTimeNwSettings};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, SpaceTime, Spaces};
@@ -124,5 +124,9 @@ impl<V: Variant> Problem<V> {
 
     pub fn construct_wait_nw(&self, settings: ConnWaitNwSettings) -> ConnWaitNw<'_, V> {
         ConnWaitNw::construct(self, settings)
+    }
+
+    pub fn construct_space_time_nw(&self, settings: SpaceTimeNwSettings) -> SpaceTimeNw<'_, V> {
+        SpaceTimeNw::construct(self, settings)
     }
 }
