@@ -112,7 +112,12 @@ fn main() {
         let commodity = problem.commodity_by_idx(c).to_str(&problem);
         println!("c{com} = {commodity}");
         for path_flow in paths {
-            println!("* {}\t\t{}", path_flow.path, path_flow.flow);
+            println!(
+                "* {}\t{}\t{}",
+                path_flow.path,
+                path_flow.path.to_str_as_spaces(&problem),
+                path_flow.flow
+            );
         }
     }
 }

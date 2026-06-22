@@ -1,6 +1,7 @@
-use crate::{Transport, Variant};
-use alloc::vec::Vec;
-use core::fmt::{Debug, Display};
+use crate::{Problem, Transport, Variant};
+use alloc::{string::String, vec::Vec};
+use core::fmt::{Debug, Display, Write};
+use orx_iterable::Iterable;
 
 #[derive(Default)]
 pub struct CommodityPaths<V: Variant> {
@@ -94,6 +95,39 @@ impl Path {
             Path::ThreeLegs(x) => x,
             Path::Long(x) => x,
         }
+    }
+
+    pub fn used_transports<V: Variant>(&self, p: &Problem<V>) -> impl Iterator<Item = Transport> {
+        let is_transport = |(i, t): &(usize, Transport)| match self.as_slice().get(i + 1) {
+            Some(&next) => {
+                let ori1 = p.transport_by_idx(*t).origin().space();
+                let ori2 = p.transport_by_idx(next).origin().space();
+                ori1 != ori2
+            }
+            None => true,
+        };
+        self.iter().enumerate().filter(is_transport).map(|x| x.1)
+    }
+
+    pub fn to_str_as_spaces<V: Variant>(&self, p: &Problem<V>) -> String {
+        let mut str = String::new();
+        let mut started = false;
+
+        for t in self.used_transports(p) {
+            let t = p.transport_by_idx(t);
+            match started {
+                false => {
+                    write!(&mut str, "{}", p.space_key(t.origin().space())).expect("build-str");
+                    write!(&mut str, "-{}", p.space_key(t.destination().space()))
+                        .expect("build-str");
+                }
+                true => write!(&mut str, "-{}", p.space_key(t.destination().space()))
+                    .expect("build-str"),
+            }
+            started = true;
+        }
+
+        str
     }
 }
 
