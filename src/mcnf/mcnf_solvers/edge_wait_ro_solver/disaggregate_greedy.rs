@@ -164,6 +164,16 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         }
     }
 
+    let mut out_non_bypass_edges_by_vertex: VecVertex<Vec<EIdx>> =
+        VecVertex::new_filled(g.v(), Vec::new);
+    for (v, vertex) in g.enumerated_vertices() {
+        let out_edges: Vec<EIdx> = vertex
+            .out_edges()
+            .filter(|&e| !matches!(g.edge(e).data(), ConnWaitEdge::Bypass(_)))
+            .collect();
+        out_non_bypass_edges_by_vertex[v] = out_edges;
+    }
+
     let mut path_transports = Vec::new();
     for &commodity in commodities {
         let remaining = remaining_by_commodity[commodity];
@@ -181,10 +191,20 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             residual[e] = assigned[commodity];
         }
 
+        let mut next_out_edge_pos = VecVertex::new_filled(g.v(), || 0);
+        let mut blocked = VecVertex::new_filled(g.v(), || false);
+
         let mut remaining_to_extract = remaining;
         while remaining_to_extract.is_pos() {
-            let Some(path_edges) = find_positive_path::<V>(g, &residual, ro_vertex, dd_vertex)
-            else {
+            let Some(path_edges) = find_positive_path_dag::<V>(
+                g,
+                &out_non_bypass_edges_by_vertex,
+                &residual,
+                &mut next_out_edge_pos,
+                &mut blocked,
+                ro_vertex,
+                dd_vertex,
+            ) else {
                 break;
             };
 
@@ -300,54 +320,69 @@ fn subtract_assignments<F: FlowUnit>(
     }
 }
 
-fn find_positive_path<V: Variant>(
+fn find_positive_path_dag<V: Variant>(
     g: &GraphCore<ConnWaitVertex, ConnWaitEdge>,
+    out_non_bypass_edges_by_vertex: &VecVertex<Vec<EIdx>>,
     residual: &VecEdge<V::F>,
+    next_out_edge_pos: &mut VecVertex<usize>,
+    blocked: &mut VecVertex<bool>,
     s: VIdx,
     t: VIdx,
 ) -> Option<Vec<EIdx>> {
-    let mut visited = VecVertex::new_filled(g.v(), || false);
-    let mut pred = VecVertex::new_filled(g.v(), || None);
-    let mut queue = VecDeque::new();
+    if blocked[s] {
+        return None;
+    }
 
-    visited[s] = true;
-    queue.push_back(s);
+    let mut vertices = Vec::new();
+    let mut path_edges = Vec::new();
 
-    while let Some(v) = queue.pop_front() {
+    vertices.push(s);
+
+    while let Some(&v) = vertices.last() {
         if v == t {
-            break;
+            return Some(path_edges);
         }
 
-        for e in g.vertex(v).out_edges() {
+        let mut advanced = false;
+        let out_edges = &out_non_bypass_edges_by_vertex[v];
+        while next_out_edge_pos[v] < out_edges.len() {
+            let e = out_edges[next_out_edge_pos[v]];
             if residual[e].is_nonpos() {
-                continue;
-            }
-
-            if matches!(g.edge(e).data(), ConnWaitEdge::Bypass(_)) {
+                next_out_edge_pos[v] += 1;
                 continue;
             }
 
             let head = g.edge(e).head();
-            if !visited[head] {
-                visited[head] = true;
-                pred[head] = Some(e);
-                queue.push_back(head);
+            if blocked[head] {
+                next_out_edge_pos[v] += 1;
+                continue;
             }
+
+            path_edges.push(e);
+            vertices.push(head);
+            advanced = true;
+            break;
+        }
+
+        if advanced {
+            continue;
+        }
+
+        blocked[v] = true;
+        vertices.pop();
+
+        let Some(prev_edge) = path_edges.pop() else {
+            return None;
+        };
+        let Some(&parent) = vertices.last() else {
+            return None;
+        };
+
+        debug_assert_eq!(g.edge(prev_edge).tail(), parent);
+        if next_out_edge_pos[parent] < out_non_bypass_edges_by_vertex[parent].len() {
+            next_out_edge_pos[parent] += 1;
         }
     }
 
-    if !visited[t] {
-        return None;
-    }
-
-    let mut edges_rev = Vec::new();
-    let mut curr = t;
-    while curr != s {
-        let e = pred[curr]?;
-        edges_rev.push(e);
-        curr = g.edge(e).tail();
-    }
-
-    edges_rev.reverse();
-    Some(edges_rev)
+    None
 }
