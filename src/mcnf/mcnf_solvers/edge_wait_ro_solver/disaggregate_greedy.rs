@@ -15,8 +15,9 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     commodity_paths: &mut VecCommodity<CommodityPaths<V>>,
 ) {
     let (p, g) = (nw.p(), nw.g());
+    let num_commodities = p.len_commodities();
 
-    let mut remaining_by_commodity: BTreeMap<Commodity, V::F> = BTreeMap::new();
+    let mut remaining_by_commodity = VecCommodity::new_filled(num_commodities, || FlowUnit::zero());
     let mut total_remaining = <V::F as FlowUnit>::zero();
 
     let bypass_edge_by_commodity = nw.bypass_edge_by_commodity();
@@ -33,7 +34,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         }
 
         total_remaining += remaining;
-        remaining_by_commodity.insert(c, remaining);
+        remaining_by_commodity[c] = remaining;
     }
 
     if total_remaining.is_nonpos() {
@@ -57,13 +58,20 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         return;
     };
 
-    let mut node_sunken_by_commodity: VecVertex<BTreeMap<Commodity, V::F>> =
-        VecVertex::new_filled(g.v(), || Default::default());
+    let mut node_sunken_by_commodity: VecVertex<VecCommodity<V::F>> =
+        VecVertex::new_filled(g.v(), || {
+            VecCommodity::new_filled(num_commodities, || FlowUnit::zero())
+        });
 
-    for (&commodity, &flow) in &remaining_by_commodity {
+    for &commodity in commodities {
+        let flow = remaining_by_commodity[commodity];
+        if flow.is_nonpos() {
+            continue;
+        }
+
         let dd = p.commodity_by_idx(commodity).destination();
         if let Some(&v) = dd_to_vertex.get(&dd) {
-            *node_sunken_by_commodity[v].entry(commodity).or_default() += flow;
+            node_sunken_by_commodity[v][commodity] += flow;
         }
     }
 
@@ -83,13 +91,14 @@ pub fn disaggregate_ro_greedy<V: Variant>(
         }
     }
 
-    let mut assigned_by_edge: VecEdge<BTreeMap<Commodity, V::F>> =
-        VecEdge::new_filled(g.e(), || Default::default());
+    let mut assigned_by_edge: VecEdge<VecCommodity<V::F>> = VecEdge::new_filled(g.e(), || {
+        VecCommodity::new_filled(num_commodities, || FlowUnit::zero())
+    });
 
     while let Some(head) = queue.pop_front() {
         let head_originating = match g.vertex(head).data() {
             ConnWaitVertex::ReadyOri(x) if *x == ro => total_remaining,
-            _ => <V::F as FlowUnit>::zero(),
+            _ => FlowUnit::zero(),
         };
 
         let in_edges: Vec<_> = g
@@ -107,11 +116,12 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             let assigned = assign_greedy(
                 edge_total,
                 &node_sunken_by_commodity[head],
+                commodities,
                 head_originating,
             );
 
-            subtract_assignments(&mut node_sunken_by_commodity[head], &assigned);
-            add_assignments(&mut node_sunken_by_commodity[tail], &assigned);
+            subtract_assignments(&mut node_sunken_by_commodity[head], &assigned, commodities);
+            add_assignments(&mut node_sunken_by_commodity[tail], &assigned, commodities);
             assigned_by_edge[e] = assigned;
 
             nonzero_out_degree[tail] -= 1;
@@ -122,18 +132,21 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     }
 
     for (t, edges) in nw.transport_edges() {
-        let mut load_by_commodity: BTreeMap<Commodity, V::F> = BTreeMap::new();
+        let mut load_by_commodity =
+            VecCommodity::new_filled(num_commodities, || <V::F as FlowUnit>::zero());
 
         for &e in edges {
-            for (&commodity, &load) in &assigned_by_edge[e] {
+            for &commodity in commodities {
+                let load = assigned_by_edge[e][commodity];
                 if load.is_pos() {
-                    *load_by_commodity.entry(commodity).or_default() += load;
+                    load_by_commodity[commodity] += load;
                 }
             }
         }
 
         let loads = &mut transport_loads[t];
-        for (commodity, load_on_transport) in load_by_commodity {
+        for &commodity in commodities {
+            let load_on_transport = load_by_commodity[commodity];
             if load_on_transport.is_nonpos() {
                 continue;
             }
@@ -145,7 +158,8 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     }
 
     let mut path_transports = Vec::new();
-    for (&commodity, &remaining) in &remaining_by_commodity {
+    for &commodity in commodities {
+        let remaining = remaining_by_commodity[commodity];
         if remaining.is_nonpos() {
             continue;
         }
@@ -155,9 +169,9 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             continue;
         };
 
-        let mut residual = VecEdge::new_filled(g.e(), || <V::F as FlowUnit>::zero());
+        let mut residual = VecEdge::new_filled(g.e(), || FlowUnit::zero());
         for (e, assigned) in assigned_by_edge.enumerated_iter() {
-            residual[e] = assigned.get(&commodity).copied().unwrap_or_default();
+            residual[e] = assigned[commodity];
         }
 
         let mut remaining_to_extract = remaining;
@@ -210,16 +224,18 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     }
 }
 
-fn assign_greedy<K: Ord + Copy, F: FlowUnit>(
+fn assign_greedy<F: FlowUnit>(
     total_edge_flow: F,
-    head_sunken_flows: &BTreeMap<K, F>,
+    head_sunken_flows: &VecCommodity<F>,
+    commodities: &[Commodity],
     originating_flow_from_head: F,
-) -> BTreeMap<K, F> {
+) -> VecCommodity<F> {
     let mut remaining_edge_flow = total_edge_flow;
-    let mut remaining_head_sunken = FlowUnit::sum(head_sunken_flows.values().copied());
-    let mut assigned = BTreeMap::new();
+    let mut remaining_head_sunken =
+        FlowUnit::sum(commodities.iter().map(|&c| head_sunken_flows[c]));
+    let mut assigned = VecCommodity::new_filled(head_sunken_flows.len(), || F::zero());
 
-    for (&dd, &flow) in head_sunken_flows {
+    for &commodity in commodities {
         if remaining_head_sunken <= originating_flow_from_head {
             break;
         }
@@ -228,6 +244,7 @@ fn assign_greedy<K: Ord + Copy, F: FlowUnit>(
             break;
         }
 
+        let flow = head_sunken_flows[commodity];
         if flow.is_nonpos() {
             continue;
         }
@@ -238,7 +255,7 @@ fn assign_greedy<K: Ord + Copy, F: FlowUnit>(
             flow
         };
 
-        assigned.insert(dd, flow_to_assign);
+        assigned[commodity] = flow_to_assign;
         remaining_edge_flow -= flow_to_assign;
         remaining_head_sunken -= flow_to_assign;
     }
@@ -246,25 +263,30 @@ fn assign_greedy<K: Ord + Copy, F: FlowUnit>(
     assigned
 }
 
-fn add_assignments<K: Ord + Copy, F: FlowUnit>(dst: &mut BTreeMap<K, F>, src: &BTreeMap<K, F>) {
-    for (&dd, &flow) in src {
+fn add_assignments<F: FlowUnit>(
+    dst: &mut VecCommodity<F>,
+    src: &VecCommodity<F>,
+    commodities: &[Commodity],
+) {
+    for &commodity in commodities {
+        let flow = src[commodity];
         if flow.is_pos() {
-            *dst.entry(dd).or_default() += flow;
+            dst[commodity] += flow;
         }
     }
 }
 
-fn subtract_assignments<K: Ord + Copy, F: FlowUnit>(
-    dst: &mut BTreeMap<K, F>,
-    src: &BTreeMap<K, F>,
+fn subtract_assignments<F: FlowUnit>(
+    dst: &mut VecCommodity<F>,
+    src: &VecCommodity<F>,
+    commodities: &[Commodity],
 ) {
-    for (&dd, &flow) in src {
-        if let Some(x) = dst.get_mut(&dd) {
-            *x -= flow;
+    for &commodity in commodities {
+        let flow = src[commodity];
+        if flow.is_pos() {
+            dst[commodity] -= flow;
         }
     }
-
-    dst.retain(|_, flow| flow.is_pos());
 }
 
 fn find_positive_path<V: Variant>(
