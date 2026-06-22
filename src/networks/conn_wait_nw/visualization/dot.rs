@@ -272,6 +272,36 @@ where
         }
     }
 
+    fn path_used_transports_str(&self, path: &Path) -> String {
+        let p = self.nw.p;
+        path.used_transports(p)
+            .map(|t| t.to_string())
+            .collect::<Vec<_>>()
+            .join("-")
+    }
+
+    fn path_with_waiting_str(&self, path: &Path) -> String {
+        let p = self.nw.p;
+        let mut result = String::new();
+        let mut started = false;
+
+        for transport in path.as_slice().iter() {
+            let data = p.transport_by_idx(*transport);
+            let origin_space = p.space_key(data.origin().space());
+            let dest_space = p.space_key(data.destination().space());
+            let origin_time = data.origin().time();
+            let dest_time = data.destination().time();
+
+            if started {
+                result.push_str(" \u{2192} "); // arrow character
+            }
+            result.push_str(&format!("{}({}→{})", origin_space, origin_time, dest_time));
+            started = true;
+        }
+
+        result
+    }
+
     fn graph_path_table_label_from_solution(&self, solution: &McnfSolution<V>) -> Option<String> {
         let p = self.nw.p;
 
@@ -284,6 +314,8 @@ where
                 }
                 rows.push((
                     commodity_str.clone(),
+                    self.path_used_transports_str(&path_flow.path),
+                    path_flow.path.to_str_as_spaces(p),
                     path_flow.path.to_string(),
                     path_flow.flow.to_string(),
                 ));
@@ -298,15 +330,17 @@ where
             "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">",
         );
         table.push_str(
-            "<TR><TD BGCOLOR=\"#f2f2f2\"><B>Commodity</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Path</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Flow</B></TD></TR>",
+            "<TR><TD BGCOLOR=\"#f2f2f2\"><B>Commodity</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Transports</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Locations</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Path</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Flow</B></TD></TR>",
         );
 
-        for (commodity, path, flow) in rows {
+        for (commodity, transports, locations, path_with_waiting, flow) in rows {
             let commodity = escape_dot_html(&commodity);
-            let path = escape_dot_html(&path);
+            let transports = escape_dot_html(&transports);
+            let locations = escape_dot_html(&locations);
+            let path_with_waiting = escape_dot_html(&path_with_waiting);
             let flow = escape_dot_html(&flow);
             table.push_str(&format!(
-                "<TR><TD ALIGN=\"LEFT\">{commodity}</TD><TD ALIGN=\"LEFT\">{path}</TD><TD ALIGN=\"RIGHT\">{flow}</TD></TR>"
+                "<TR><TD ALIGN=\"LEFT\">{commodity}</TD><TD ALIGN=\"LEFT\">{transports}</TD><TD ALIGN=\"LEFT\">{locations}</TD><TD ALIGN=\"LEFT\">{path_with_waiting}</TD><TD ALIGN=\"RIGHT\">{flow}</TD></TR>"
             ));
         }
 
@@ -515,6 +549,59 @@ where
 
     fn graph(&self) -> &Self::G {
         &self.nw.g
+    }
+
+    fn dot_string(&self) -> String {
+        let mut dot = String::from("digraph G {\n");
+
+        if let Some(graph_label) = self.graph_label() {
+            dot.push_str("    labelloc=\"t\";\n");
+            dot.push_str("    labeljust=\"r\";\n");
+            dot.push_str(&format!("    label=<{}>;\n", graph_label));
+        }
+
+        for v in self.vertices() {
+            let label = self.vertex_label(v);
+            let tooltip = self.vertex_tooltip(v);
+            let settings = self.vertex_settings(v);
+
+            let vertex = match tooltip {
+                Some(tooltip) => {
+                    format!(
+                        "    {} [label=\"{label}\"{settings} tooltip=\"{}\"]",
+                        v, tooltip
+                    )
+                }
+                None => format!("    {} [label=\"{label}\"{settings}]", v),
+            };
+
+            dot.push_str(&vertex);
+            dot.push_str(";\n");
+        }
+
+        for (e, tail, head) in self.edges() {
+            let label = self.edge_label(e);
+            let tooltip = self.edge_tooltip(e);
+            let settings = self.edge_settings(e);
+            let edge = match tooltip {
+                Some(tooltip) => {
+                    format!(
+                        "    {} -> {} [label=\"{}\" {} tooltip=\"{}\"]",
+                        tail, head, label, settings, tooltip
+                    )
+                }
+                None => format!(
+                    "    {} -> {} [label=\"{}\" {}]",
+                    tail, head, label, settings
+                ),
+            };
+            dot.push_str(&edge);
+            dot.push_str(";\n");
+        }
+
+        dot.push('}');
+
+        dot
     }
 }
 
