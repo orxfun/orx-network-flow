@@ -6,6 +6,7 @@ use crate::networks::space_time_nw::{
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Space, SpaceTime, Time, Variant, VecTransport};
+use alloc::vec::Vec;
 
 pub struct Output {
     pub graph: SpaceTimeGraph,
@@ -47,24 +48,28 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
     }
 
     let space_to_sorted_times = map_set_into_map_sorted_vec(space_to_times);
+    let mut sorted_spaces: Vec<_> = space_to_sorted_times.keys().copied().collect();
+    sorted_spaces.sort();
 
     // create vertices for all unique space-time pairs
     let mut st_to_v: Map<SpaceTime, VIdx> = Default::default();
-    for (&space, times) in &space_to_sorted_times {
+    for space in &sorted_spaces {
+        let times = space_to_sorted_times.get(space).expect("exists");
         for &time in times {
-            let st = SpaceTime::new(space, time);
+            let st = SpaceTime::new(*space, time);
             let v = b.vertex(SpaceTimeVertex(st));
             st_to_v.insert(st, v);
         }
     }
 
     // edges: wait arcs within each space (consecutive times)
-    for (&space, sorted_times) in &space_to_sorted_times {
+    for space in &sorted_spaces {
+        let sorted_times = space_to_sorted_times.get(space).expect("exists");
         let tails = sorted_times.iter().copied();
         let heads = sorted_times.iter().copied().skip(1);
         for (t1, t2) in tails.zip(heads) {
-            let tail = *st_to_v.get(&SpaceTime::new(space, t1)).expect("exists");
-            let head = *st_to_v.get(&SpaceTime::new(space, t2)).expect("exists");
+            let tail = *st_to_v.get(&SpaceTime::new(*space, t1)).expect("exists");
+            let head = *st_to_v.get(&SpaceTime::new(*space, t2)).expect("exists");
             b.edge(SpaceTimeEdge::Wait, tail, head);
         }
     }
