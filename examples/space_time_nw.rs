@@ -136,12 +136,11 @@ fn sample_problem() -> orx_network_flow::Problem<MyVariant> {
     };
 
     transport("AMS", "BRU", 1, 2, 10);
-    transport("LEJ", "CVG", 1, 2, 10);
-    // transport("AMS", "BRU", 4, 5, 10);
-    // transport("AMS", "LEJ", 4, 5, 10);
+    transport("AMS", "BRU", 4, 5, 10);
+    transport("AMS", "LEJ", 4, 5, 10);
     // transport("LEJ", "BRU", 1, 2, 10);
-    // transport("LEJ", "BRU", 4, 5, 10);
-    // transport("BRU", "CVG", 7, 12, 10);
+    transport("LEJ", "BRU", 4, 5, 10);
+    transport("BRU", "CVG", 7, 12, 10);
 
     let mut lost_revenue_cost = builder.lost_revenue_cost();
     lost_revenue_cost.commodity_specific(&0, 1);

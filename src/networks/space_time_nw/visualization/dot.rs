@@ -130,12 +130,16 @@ where
             SpaceTimeEdge::Wait => {
                 let tail_st = self.graph().vertex(edge.tail()).data().0;
                 let head_st = self.graph().vertex(edge.head()).data().0;
-                let all_path_flows = solution
-                    .commodity_paths()
-                    .iter()
-                    .flat_map(|paths| paths.path_flows.iter());
-                let matching = all_path_flows
-                    .filter(|pf| uses_wait_arc(self.nw.p, &pf.path, tail_st, head_st));
+                let matching =
+                    solution
+                        .commodity_paths()
+                        .enumerated_iter()
+                        .flat_map(|(c, paths)| {
+                            let commodity = p.commodity_by_idx(c);
+                            paths.path_flows.iter().filter(move |pf| {
+                                uses_wait_arc(p, commodity, &pf.path, tail_st, head_st)
+                            })
+                        });
                 FlowUnit::sum(matching.map(|pf| pf.flow))
             }
         }
@@ -192,13 +196,14 @@ where
                     .commodity_paths()
                     .enumerated_iter()
                     .filter_map(|(c, paths)| {
+                        let commodity = p.commodity_by_idx(c);
                         let flow = FlowUnit::sum(
                             paths
                                 .path_flows
                                 .iter()
                                 .filter(|pf| {
                                     pf.flow.is_pos()
-                                        && uses_wait_arc(self.nw.p, &pf.path, tail_st, head_st)
+                                        && uses_wait_arc(p, commodity, &pf.path, tail_st, head_st)
                                 })
                                 .map(|pf| pf.flow),
                         );
@@ -562,6 +567,7 @@ fn commodity_short_str<V: Variant>(p: &Problem<V>, c: Commodity) -> String {
 
 fn uses_wait_arc<V: Variant>(
     p: &Problem<V>,
+    commodity: &CommodityData<V>,
     path: &Path,
     tail: SpaceTime,
     head: SpaceTime,
@@ -575,9 +581,13 @@ fn uses_wait_arc<V: Variant>(
         return false;
     }
 
-    for &t in transports {
-        let td = p.transport_by_idx(t);
-        if td.origin() == head && tail.time() <= td.origin().time() {
+    if let Some(&first_t) = transports.first() {
+        let first = p.transport_by_idx(first_t);
+        if commodity.origin().space() == tail.space()
+            && first.origin().space() == head.space()
+            && commodity.origin().time() <= tail.time()
+            && head.time() <= first.origin().time()
+        {
             return true;
         }
     }
@@ -592,6 +602,17 @@ fn uses_wait_arc<V: Variant>(
             && o2.space() == head.space()
             && d1.time() <= tail.time()
             && head.time() <= o2.time()
+        {
+            return true;
+        }
+    }
+
+    if let Some(&last_t) = transports.last() {
+        let last = p.transport_by_idx(last_t);
+        if last.destination().space() == tail.space()
+            && commodity.destination().space() == head.space()
+            && last.destination().time() <= tail.time()
+            && head.time() <= commodity.destination().time()
         {
             return true;
         }
