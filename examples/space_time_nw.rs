@@ -46,6 +46,10 @@ fn main() {
         SpaceTimeRoMcnfParams::default(),
         cplex_solver(),
     );
+    space_time_solver.display_lp();
+    space_time_solver
+        .export_lp("target/space_time_nw.lp")
+        .expect("lp");
     let space_time_sol = space_time_solver.solve().expect("space_time solution");
 
     let dot = dot.with_solution(&space_time_sol);
