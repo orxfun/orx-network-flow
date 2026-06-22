@@ -1,10 +1,9 @@
-use crate::{Commodity, SpaceTime, Transport};
-use alloc::vec::Vec;
+use crate::{SpaceTime, Transport};
 
 pub enum ConnWaitVertex {
     Transport(Transport),
-    ReadyOri(SpaceTime, Vec<Commodity>),
-    DueDes(SpaceTime, Vec<Commodity>),
+    ReadyOri(SpaceTime),
+    DueDes(SpaceTime),
 }
 
 impl ConnWaitVertex {
@@ -15,37 +14,17 @@ impl ConnWaitVertex {
         }
     }
 
-    pub fn get_ro(&self) -> Option<(SpaceTime, &[Commodity])> {
+    pub fn get_ro(&self) -> Option<SpaceTime> {
         match self {
-            Self::ReadyOri(ro, commodities) => Some((*ro, &commodities)),
+            Self::ReadyOri(ro) => Some(*ro),
             _ => None,
         }
     }
 
-    pub fn get_dd(&self) -> Option<(SpaceTime, &[Commodity])> {
+    pub fn get_dd(&self) -> Option<(SpaceTime)> {
         match self {
-            Self::DueDes(dd, commodities) => Some((*dd, &commodities)),
+            Self::DueDes(dd) => Some(*dd),
             _ => None,
-        }
-    }
-
-    pub fn push_ro_commodity(&mut self, c: Commodity) -> Result<(), &str> {
-        match self {
-            Self::ReadyOri(_, commodities) => {
-                commodities.push(c);
-                Ok(())
-            }
-            _ => Err("push_ro_commodity called on a non-ro vertex"),
-        }
-    }
-
-    pub fn push_dd_commodity(&mut self, c: Commodity) -> Result<(), &str> {
-        match self {
-            Self::DueDes(_, commodities) => {
-                commodities.push(c);
-                Ok(())
-            }
-            _ => Err("push_dd_commodity called on a non-dd vertex"),
         }
     }
 }

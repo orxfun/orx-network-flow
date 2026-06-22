@@ -8,4 +8,4 @@ pub use builder::SolutionBuilder;
 pub use commodity_flows::CommodityFlows;
 pub use path::Path;
 pub use path_flow::PathFlow;
-pub use soln::Solution;
+pub use soln::SolutionDeprecated;

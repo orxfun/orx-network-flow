@@ -1,6 +1,8 @@
+use good_lp::LpSolver;
+use lp_solvers::solvers::Cplex;
 use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::networks::ConnWaitNwSettings;
-use orx_network_flow::{ProblemBuilder, Variant};
+use orx_network_flow::{McnfSolver, ProblemBuilder, Variant};
 
 #[derive(Clone, Copy, Default)]
 struct MyVariant;
@@ -96,8 +98,32 @@ fn main() {
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
 
-    let output = nw.solve(true);
-    let dot = dot.with_flows(&output.edge_flows);
+    let solver = McnfSolver::edge_wait_ro(&nw, Default::default(), cplex_solver());
+    solver.display_lp();
+    solver.export_lp("target/conn_wait_nw.lp").expect("lp");
+    let solution = solver.solve().unwrap();
+
+    let dot = dot.with_solution(&solution);
     dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
         .unwrap();
+
+    for (c, paths) in solution.commodity_paths().enumerated_iter() {
+        let com = problem.commodity_key(c);
+        let commodity = problem.commodity_by_idx(c).to_str(&problem);
+        println!("c{com} = {commodity}");
+        for path_flow in paths {
+            println!(
+                "* {}\t{}\t{}",
+                path_flow.path,
+                path_flow.path.to_str_as_spaces(&problem),
+                path_flow.flow
+            );
+        }
+    }
+}
+
+pub fn cplex_solver() -> LpSolver<Cplex> {
+    good_lp::LpSolver(Cplex::with_command(
+        "/usr/local/cplex/bin/x86-64_linux/cplex".to_string(),
+    ))
 }

@@ -1,9 +1,10 @@
+use crate::IdxMap;
 use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
 use crate::costs::Costs;
 use crate::networks::{ConnWaitNw, ConnWaitNwSettings};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
-use crate::spaces::{Space, SpaceData, Spaces};
+use crate::spaces::{Space, SpaceData, SpaceTime, Spaces};
 use crate::time_bounds::TimeBounds;
 use crate::transports::{Transport, TransportData, Transports};
 use crate::utils::std_utils::Map;
@@ -27,6 +28,8 @@ pub struct Problem<V: Variant> {
     pub sorted_transport_origins: Vec<Space>,
     pub sorted_commodity_origins: Vec<Space>,
     pub sorted_commodity_destinations: Vec<Space>,
+    pub sorted_ro_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
+    pub sorted_dd_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
 }
 
 impl<V: Variant> Problem<V> {
@@ -89,13 +92,17 @@ impl<V: Variant> Problem<V> {
         self.spaces.key(idx).expect("validated problem")
     }
 
+    pub fn commodity_key(&self, idx: Commodity) -> &V::K {
+        self.commodities.key(idx).expect("validated problem")
+    }
+
     // get by idx
 
     pub(crate) fn space_by_idx(&self, s: Space) -> &SpaceData {
         self.spaces.get_by_idx(s).expect("validated problem")
     }
 
-    pub(crate) fn commodity_by_idx(&self, c: Commodity) -> &CommodityData<V> {
+    pub fn commodity_by_idx(&self, c: Commodity) -> &CommodityData<V> {
         self.commodities.get_by_idx(c).expect("validated problem")
     }
 

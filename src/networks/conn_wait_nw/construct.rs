@@ -1,3 +1,4 @@
+use crate::commodities::VecCommodity;
 use crate::graphs::EdgeRange;
 use crate::graphs::{EIdx, VIdx, core::GraphCoreBuilder};
 use crate::networks::ConnWaitNwSettings;
@@ -5,7 +6,7 @@ use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex}
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
-use alloc::{vec, vec::Vec};
+use alloc::vec::Vec;
 use core::iter::Peekable;
 
 pub struct Output {
@@ -14,6 +15,7 @@ pub struct Output {
     pub dd_to_v: Map<SpaceTime, VIdx>,
     pub transport_edges: VecTransport<Vec<EIdx>>,
     pub bypass_edges_range: EdgeRange,
+    pub bypass_edge_per_commodity: VecCommodity<Option<EIdx>>,
 }
 
 pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
@@ -41,12 +43,9 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
                 sorted_ready_set.insert(com.origin().time());
 
                 let ro = com.origin();
-                match ro_to_v.get(&ro) {
-                    Some(&v) => b.vertex_data_mut(v).push_ro_commodity(c).expect("ro"),
-                    None => {
-                        let v = b.vertex(ConnWaitVertex::ReadyOri(ro, vec![c]));
-                        ro_to_v.insert(ro, v);
-                    }
+                if !ro_to_v.contains_key(&ro) {
+                    let v = b.vertex(ConnWaitVertex::ReadyOri(ro));
+                    ro_to_v.insert(ro, v);
                 }
             }
         }
@@ -66,12 +65,9 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
                 sorted_due_set.insert(com.destination().time());
 
                 let dd = com.destination();
-                match dd_to_v.get(&dd) {
-                    Some(&v) => b.vertex_data_mut(v).push_dd_commodity(c).expect("dd"),
-                    None => {
-                        let v = b.vertex(ConnWaitVertex::DueDes(dd, vec![c]));
-                        dd_to_v.insert(dd, v);
-                    }
+                if !dd_to_v.contains_key(&dd) {
+                    let v = b.vertex(ConnWaitVertex::DueDes(dd));
+                    dd_to_v.insert(dd, v);
                 }
             }
         }
@@ -144,12 +140,14 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
     }
 
     // edges: ro-dd bypass
+    let mut bypass_edge_per_commodity = VecCommodity::new_filled(p.len_commodities(), || None);
     let bypass_edges_range = EdgeRange::new(EIdx::from(b.e()), p.len_commodities());
     if settings.add_bypass_edges {
         for (c, com) in p.commodities.indices_values() {
             let ro = *ro_to_v.get(&com.origin()).expect("exists");
             let dd = *dd_to_v.get(&com.destination()).expect("exists");
-            b.edge(ConnWaitEdge::Bypass(c), ro, dd);
+            let e = b.edge(ConnWaitEdge::Bypass(c), ro, dd);
+            bypass_edge_per_commodity[c] = Some(e);
         }
     }
 
@@ -161,6 +159,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
         dd_to_v,
         transport_edges,
         bypass_edges_range,
+        bypass_edge_per_commodity,
     }
 }
 

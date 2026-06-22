@@ -16,6 +16,7 @@ extern crate alloc;
 #[cfg(any(test, feature = "std"))]
 extern crate std;
 
+mod algorithm;
 mod commodities;
 mod common_ds;
 mod cost;
@@ -23,9 +24,10 @@ mod costs;
 mod flow_units;
 pub mod graphs;
 mod indices;
+mod mcnf;
 pub mod networks;
 mod problem;
-mod solution;
+mod solution_deprecated;
 mod spaces;
 mod time;
 mod time_bounds;
@@ -38,10 +40,12 @@ pub use indices::{Idx, IdxCore};
 pub use problem::{
     EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
-pub use solution::Solution;
+pub use solution_deprecated::SolutionDeprecated;
 
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
+pub use flow_units::FlowUnit;
 pub(crate) use indices::{IdxMap, IdxMapSubset};
+pub use mcnf::{McnfSolution, McnfSolver};
 pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
 pub(crate) use time::Time;
 pub(crate) use transports::{Transport, TransportData, Transports, VecTransport};

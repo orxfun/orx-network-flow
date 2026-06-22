@@ -23,11 +23,8 @@ macro_rules! impl_vec_of_idx {
                 Self(Default::default())
             }
 
-            pub fn new_filled(n: usize, value: T) -> Self
-            where
-                T: Clone,
-            {
-                Self((0..n).map(|_| value.clone()).collect())
+            pub fn new_filled(n: usize, value: impl Fn() -> T) -> Self {
+                Self((0..n).map(|_| value()).collect())
             }
 
             pub fn len(&self) -> usize {
@@ -62,6 +59,10 @@ macro_rules! impl_vec_of_idx {
                 use crate::indices::IdxCore;
                 let range = range.0.into_inner()..range.1.into_inner();
                 &self.0[range]
+            }
+
+            pub fn as_slice(&self) -> &[T] {
+                &self.0
             }
         }
 

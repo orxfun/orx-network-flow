@@ -5,7 +5,9 @@ use crate::problem::connectivity::{
 };
 use crate::spaces::{Coordinate, Geocode, Location, SpaceData};
 use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
+use crate::utils::std_utils::Map;
 use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant};
+use alloc::vec::Vec;
 use core::marker::PhantomData;
 
 pub trait ProblemBuilderState {}
@@ -38,6 +40,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
                 sorted_transport_origins: Default::default(),
                 sorted_commodity_origins: Default::default(),
                 sorted_commodity_destinations: Default::default(),
+                sorted_ro_commodities: Default::default(),
+                sorted_dd_commodities: Default::default(),
             },
             PhantomData,
         )
@@ -157,6 +161,28 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         self.0.sorted_commodity_destinations =
             self.0.des_sorted_commodities.keys().copied().collect();
         self.0.sorted_commodity_destinations.sort();
+
+        // sorted ro & dd commodities
+        let mut ro_commodities: Map<_, Vec<_>> = Map::default();
+        let mut dd_commodities: Map<_, Vec<_>> = Map::default();
+        for (c, x) in self.0.commodities.indices_values() {
+            ro_commodities.entry(x.origin()).or_default().push(c);
+            dd_commodities.entry(x.destination()).or_default().push(c);
+        }
+
+        let mut ro_commodities: Vec<_> = ro_commodities.into_iter().collect();
+        ro_commodities.sort();
+        for (_, commodities) in &mut ro_commodities {
+            commodities.sort();
+        }
+        self.0.sorted_ro_commodities = ro_commodities.into_iter().collect();
+
+        let mut dd_commodities: Vec<_> = dd_commodities.into_iter().collect();
+        dd_commodities.sort();
+        for (_, commodities) in &mut dd_commodities {
+            commodities.sort();
+        }
+        self.0.sorted_dd_commodities = dd_commodities.into_iter().collect();
 
         // finish
 

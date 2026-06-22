@@ -28,6 +28,10 @@ pub trait DotGraph {
 
     fn edge_settings(&self, e: EIdx) -> &EdgeSettings;
 
+    fn graph_label(&self) -> Option<impl Display> {
+        Option::<String>::None
+    }
+
     fn graph(&self) -> &Self::G;
 
     fn vertices(&self) -> impl Iterator<Item = VIdx> {
@@ -43,6 +47,12 @@ pub trait DotGraph {
 
     fn dot_string(&self) -> String {
         let mut dot = String::from("digraph G {\n");
+
+        if let Some(graph_label) = self.graph_label() {
+            dot.push_str("    labelloc=\"b\";\n");
+            dot.push_str("    labeljust=\"l\";\n");
+            dot.push_str(&format!("    label=<{graph_label}>;\n"));
+        }
 
         for v in self.vertices() {
             let label = self.vertex_label(v);

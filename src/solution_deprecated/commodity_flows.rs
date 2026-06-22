@@ -1,4 +1,4 @@
-use crate::{Variant, solution::PathFlow};
+use crate::{Variant, solution_deprecated::PathFlow};
 use alloc::vec::Vec;
 
 #[derive(Default)]
