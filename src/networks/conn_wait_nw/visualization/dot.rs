@@ -131,11 +131,11 @@ where
     }
 
     fn space(&self, space: Space) -> &V::S {
-        self.nw.p.space_key(space)
+        self.nw.p().space_key(space)
     }
 
     fn edge_flow_from_solution(&self, e: EIdx, solution: &McnfSolution<V>) -> V::F {
-        let p = self.nw.p;
+        let p = self.nw.p();
         let edge = self.graph().edge(e);
 
         match edge.data() {
@@ -198,7 +198,7 @@ where
         e: EIdx,
         solution: &McnfSolution<V>,
     ) -> Vec<(String, V::F)> {
-        let p = self.nw.p;
+        let p = self.nw.p();
         let edge = self.graph().edge(e);
 
         match edge.data() {
@@ -311,7 +311,7 @@ where
     }
 
     fn path_used_transports_str(&self, path: &Path) -> String {
-        let p = self.nw.p;
+        let p = self.nw.p();
         path.used_transports(p)
             .map(|t| t.to_string())
             .collect::<Vec<_>>()
@@ -319,7 +319,7 @@ where
     }
 
     fn path_with_waiting_str(&self, path: &Path) -> String {
-        let p = self.nw.p;
+        let p = self.nw.p();
         let mut result = String::new();
         let mut started = false;
 
@@ -341,7 +341,7 @@ where
     }
 
     fn graph_path_table_label_from_solution(&self, solution: &McnfSolution<V>) -> Option<String> {
-        let p = self.nw.p;
+        let p = self.nw.p();
 
         let mut rows = Vec::new();
         for (commodity, paths) in solution.commodity_paths().enumerated_iter() {
@@ -394,7 +394,7 @@ where
     type G = ConnWaitGraph;
 
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
-        let p = self.nw.p;
+        let p = self.nw.p();
         match self.graph().vertex(v).data() {
             ConnWaitVertex::Transport(t) => {
                 let data = p.transport_by_idx(*t);
@@ -426,7 +426,7 @@ where
 
     fn vertex_tooltip(&self, v: VIdx) -> Option<impl core::fmt::Display> {
         Some({
-            let p = self.nw.p;
+            let p = self.nw.p();
             let com_str = |(c, x): (Commodity, &CommodityData<V>)| com_str(p, c, x);
 
             match self.graph().vertex(v).data() {
@@ -488,9 +488,9 @@ where
     }
 
     fn edge_tooltip(&self, e: EIdx) -> Option<impl core::fmt::Display> {
-        let p = self.nw.p;
+        let p = self.nw.p();
         let edge = self.graph().edge(e);
-        let space = |st: SpaceTime| self.nw.p.space_key(st.space());
+        let space = |st: SpaceTime| self.nw.p().space_key(st.space());
 
         let base = match edge.data() {
             ConnWaitEdge::Wait => {
@@ -583,7 +583,7 @@ where
     }
 
     fn graph(&self) -> &Self::G {
-        &self.nw.g
+        self.nw.g()
     }
 
     fn dot_string(&self) -> String {

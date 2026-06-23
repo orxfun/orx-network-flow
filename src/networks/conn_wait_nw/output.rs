@@ -31,7 +31,7 @@ fn create_solution<V: Variant>(
     nw: &ConnWaitNw<'_, V>,
     edge_flows: &VecEdge<V::F>,
 ) -> SolutionDeprecated<V> {
-    let (p, g_orig) = (nw.p, &nw.g);
+    let (p, g_orig) = (nw.p(), nw.g());
     let mut builder = SolutionDeprecated::builder(p.len_commodities());
     let b = &mut builder;
 
@@ -61,8 +61,8 @@ fn create_solution<V: Variant>(
         let mut remaining = com.amount() - edge_flows[nw.bypass_edge_of(c)];
 
         let (ro, dd) = (com.origin(), com.destination());
-        let s = *nw.ro_to_v.get(&ro).expect("ro");
-        let t = *nw.dd_to_v.get(&dd).expect("dd");
+        let s = *nw.ro_to_v().get(&ro).expect("ro");
+        let t = *nw.dd_to_v().get(&dd).expect("dd");
 
         while remaining.is_pos() {
             let found = shortest_path::<V>(&g, &mut heap, &mut visited, &mut pred, s, t);

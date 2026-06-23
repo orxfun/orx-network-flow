@@ -24,7 +24,7 @@ pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool) -> Output<V>
 where
     V: Variant,
 {
-    let (p, g) = (nw.p, &nw.g);
+    let (p, g) = (nw.p(), nw.g());
     let t_str = |t: &TransportData<V>| t.var_str(p);
     let mut pr_vars = ProblemVariables::new();
 
@@ -109,11 +109,11 @@ fn objective<V>(nw: &ConnWaitNw<'_, V>, vars: &VecEdge<Variable>) -> Expression
 where
     V: Variant,
 {
-    let (p, g) = (nw.p, &nw.g);
+    let (p, g) = (nw.p(), nw.g());
     let mut cost = Expression::default();
 
-    let bypass_edges_data = g.edges_slice(nw.bypass_edges_range);
-    let bypass_edge_indices = nw.bypass_edges_range.iter();
+    let bypass_edges_data = g.edges_slice(nw.bypass_edges_range());
+    let bypass_edge_indices = nw.bypass_edges_range().iter();
     for (e, edge) in bypass_edge_indices.zip(bypass_edges_data) {
         let c = edge.data().get_bypass_c().expect("bypass");
         let coef = p.costs.lost_revenue.cost(c);
@@ -129,7 +129,7 @@ fn flow_balance<V: Variant, S: Solver>(
     model: &mut S::Model,
     named: bool,
 ) {
-    let (p, g) = (nw.p, &nw.g);
+    let (p, g) = (nw.p(), nw.g());
 
     for vertex in g.vertices() {
         let mut out_minus_in = Expression::default();
@@ -188,12 +188,12 @@ fn capacity<V: Variant, S: Solver>(
     model: &mut S::Model,
     named: bool,
 ) {
-    for (t, edges) in nw.transport_edges.enumerated_iter() {
+    for (t, edges) in nw.transport_edges() {
         if edges.is_empty() {
             continue;
         }
 
-        let capacity = nw.p.transport_by_idx(t).capacity().into_f64();
+        let capacity = nw.p().transport_by_idx(t).capacity().into_f64();
 
         let mut total_flow = Expression::default();
         for &e in edges {

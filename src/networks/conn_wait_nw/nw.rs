@@ -17,12 +17,12 @@ pub struct ConnWaitNw<'a, V>
 where
     V: Variant,
 {
-    pub(super) p: &'a Problem<V>,
-    pub(super) g: ConnWaitGraph,
-    pub(super) ro_to_v: Map<SpaceTime, VIdx>,
-    pub(super) dd_to_v: Map<SpaceTime, VIdx>,
-    pub(super) transport_edges: VecTransport<Vec<EIdx>>,
-    pub(super) bypass_edges_range: EdgeRange,
+    p: &'a Problem<V>,
+    g: ConnWaitGraph,
+    ro_to_v: Map<SpaceTime, VIdx>,
+    dd_to_v: Map<SpaceTime, VIdx>,
+    transport_edges: VecTransport<Vec<EIdx>>,
+    bypass_edges_range: EdgeRange,
     bypass_edge_per_commodity: VecCommodity<Option<EIdx>>,
 }
 
@@ -36,11 +36,19 @@ where
     }
 
     pub(crate) fn p(&self) -> &Problem<V> {
-        self.p
+        &self.p
     }
 
     pub(crate) fn g(&self) -> &ConnWaitGraph {
         &self.g
+    }
+
+    pub(crate) fn ro_to_v(&self) -> &Map<SpaceTime, VIdx> {
+        &self.ro_to_v
+    }
+
+    pub(crate) fn dd_to_v(&self) -> &Map<SpaceTime, VIdx> {
+        &self.dd_to_v
     }
 
     pub(crate) fn bypass_edges_range(&self) -> EdgeRange {
