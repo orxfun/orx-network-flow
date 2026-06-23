@@ -22,29 +22,23 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
 
     // collect all relevant (space, time) pairs
     let mut space_to_times: Map<Space, Set<Time>> = Default::default();
+    let mut insert_st = |st: SpaceTime| {
+        space_to_times
+            .entry(st.space())
+            .or_default()
+            .insert(st.time())
+    };
 
     for t in p.transports.indices() {
         let td = p.transport_by_idx(t);
-        space_to_times
-            .entry(td.origin().space())
-            .or_default()
-            .insert(td.origin().time());
-        space_to_times
-            .entry(td.destination().space())
-            .or_default()
-            .insert(td.destination().time());
+        insert_st(td.origin());
+        insert_st(td.destination());
     }
 
     for c in p.commodities.indices() {
         let com = p.commodity_by_idx(c);
-        space_to_times
-            .entry(com.origin().space())
-            .or_default()
-            .insert(com.origin().time());
-        space_to_times
-            .entry(com.destination().space())
-            .or_default()
-            .insert(com.destination().time());
+        insert_st(com.origin());
+        insert_st(com.destination());
     }
 
     let space_to_sorted_times = map_set_into_map_sorted_vec(space_to_times);
