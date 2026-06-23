@@ -15,14 +15,14 @@ pub struct SpaceTimeNw<'a, V>
 where
     V: Variant,
 {
-    pub(super) p: &'a Problem<V>,
-    pub(super) g: SpaceTimeGraph,
+    p: &'a Problem<V>,
+    g: SpaceTimeGraph,
     /// Map from space-time pair to vertex index.
-    pub(super) st_to_v: Map<SpaceTime, VIdx>,
+    st_to_v: Map<SpaceTime, VIdx>,
     /// Single arc index per transport.
-    pub(super) transport_arc: VecTransport<EIdx>,
-    pub(super) bypass_edges_range: EdgeRange,
-    pub(super) bypass_edge_per_commodity: VecCommodity<Option<EIdx>>,
+    transport_arc: VecTransport<EIdx>,
+    bypass_edges_range: EdgeRange,
+    bypass_edge_per_commodity: VecCommodity<Option<EIdx>>,
 }
 
 // helpers

@@ -1,5 +1,6 @@
 use good_lp::LpSolver;
 use lp_solvers::solvers::Cplex;
+use orx_network_flow::graphs::Graph;
 use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::{
     McnfSolver, ProblemBuilder, SpaceTimeNwSettings, SpaceTimeRoMcnfParams, Variant,
@@ -36,6 +37,8 @@ fn main() {
     let dot = space_time_nw.as_dot_graph(None);
     dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
         .unwrap();
+
+    report_complexity(&problem, &conn_wait_nw, &space_time_nw, true);
 
     let conn_wait_solver =
         McnfSolver::edge_wait_ro(&conn_wait_nw, Default::default(), cplex_solver());
@@ -156,4 +159,59 @@ pub fn cplex_solver() -> LpSolver<Cplex> {
     good_lp::LpSolver(Cplex::with_command(
         "/usr/local/cplex/bin/x86-64_linux/cplex".to_string(),
     ))
+}
+
+fn report_complexity(
+    problem: &orx_network_flow::Problem<MyVariant>,
+    conn_wait_nw: &orx_network_flow::networks::ConnWaitNw<'_, MyVariant>,
+    space_time_nw: &orx_network_flow::networks::SpaceTimeNw<'_, MyVariant>,
+    add_bypass_edges: bool,
+) {
+    let ro_groups = problem.sorted_ro_commodities.len();
+    let transports = problem.len_transports();
+    let bypass_edges = match add_bypass_edges {
+        true => problem.len_commodities(),
+        false => 0,
+    };
+
+    let cw = conn_wait_nw.as_dot_graph(None);
+    let st = space_time_nw.as_dot_graph(None);
+
+    let cw_v = cw.graph().v();
+    let cw_e = cw.graph().e();
+    let st_v = st.graph().v();
+    let st_e = st.graph().e();
+
+    let estimate_lp = |v: usize, e: usize| {
+        // RO model: one variable set per RO for non-bypass edges,
+        // one bypass variable per commodity, and one dummy variable.
+        let vars = 1 + ro_groups * (e.saturating_sub(bypass_edges)) + bypass_edges;
+        // Flow-balance per (RO, vertex) and one capacity per transport.
+        let constraints = ro_groups * v + transports;
+        (vars, constraints)
+    };
+
+    let (cw_vars, cw_cons) = estimate_lp(cw_v, cw_e);
+    let (st_vars, st_cons) = estimate_lp(st_v, st_e);
+
+    println!("\n=== Complexity Report ===");
+    println!("RO groups (R): {ro_groups}");
+    println!("Transports (T): {transports}");
+    println!("Bypass edges (B): {bypass_edges}");
+
+    println!("\nConnWait network size:");
+    println!("* vertices: {cw_v}");
+    println!("* edges:    {cw_e}");
+
+    println!("\nSpaceTime network size:");
+    println!("* vertices: {st_v}");
+    println!("* edges:    {st_e}");
+
+    println!("\nEstimated RO LP size (ConnWait):");
+    println!("* variables:   {cw_vars}");
+    println!("* constraints: {cw_cons}");
+
+    println!("\nEstimated RO LP size (SpaceTime):");
+    println!("* variables:   {st_vars}");
+    println!("* constraints: {st_cons}");
 }
