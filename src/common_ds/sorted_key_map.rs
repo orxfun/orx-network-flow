@@ -1,0 +1,35 @@
+use crate::utils::std_utils::{Map, MapKey};
+use alloc::vec::Vec;
+
+pub struct SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    map: Map<K, V>,
+    sorted_keys: Vec<K>,
+}
+
+impl<K, V> From<Map<K, V>> for SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    fn from(map: Map<K, V>) -> Self {
+        let mut sorted_keys: Vec<_> = map.keys().cloned().collect();
+        sorted_keys.sort();
+        Self { map, sorted_keys }
+    }
+}
+
+impl<K, V> SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    pub fn keys(&self) -> &[K] {
+        &self.sorted_keys
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        let keys = self.sorted_keys.iter();
+        keys.map(|k| (k, self.map.get(k).expect("exists")))
+    }
+}

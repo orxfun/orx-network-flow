@@ -1,4 +1,5 @@
 use crate::commodities::VecCommodity;
+use crate::common_ds::SortedKeyMap;
 use crate::graphs::{EIdx, EdgeRange, VIdx};
 use crate::networks::space_time_nw::{
     SpaceTimeEdge, SpaceTimeGraph, SpaceTimeNwSettings, SpaceTimeVertex,
@@ -42,13 +43,11 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
     }
 
     let space_to_sorted_times = map_set_into_map_sorted_vec(space_to_times);
-    let mut sorted_spaces: Vec<_> = space_to_sorted_times.keys().copied().collect();
-    sorted_spaces.sort();
+    let space_to_sorted_times = SortedKeyMap::from(space_to_sorted_times);
 
     // create vertices for all unique space-time pairs
     let mut st_to_v: Map<SpaceTime, VIdx> = Default::default();
-    for space in &sorted_spaces {
-        let times = space_to_sorted_times.get(space).expect("exists");
+    for (space, times) in space_to_sorted_times.iter() {
         for &time in times {
             let st = SpaceTime::new(*space, time);
             let v = b.vertex(SpaceTimeVertex(st));
@@ -57,8 +56,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
     }
 
     // edges: wait arcs within each space (consecutive times)
-    for space in &sorted_spaces {
-        let sorted_times = space_to_sorted_times.get(space).expect("exists");
+    for (space, sorted_times) in space_to_sorted_times.iter() {
         let tails = sorted_times.iter().copied();
         let heads = sorted_times.iter().copied().skip(1);
         for (t1, t2) in tails.zip(heads) {
