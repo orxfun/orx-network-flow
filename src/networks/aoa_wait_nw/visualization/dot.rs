@@ -2,6 +2,7 @@ use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
+use crate::mcnf::McnfStats;
 use crate::mcnf::Path;
 use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitGraph, AoaWaitNw};
 use crate::{Commodity, CommodityData, FlowUnit, McnfSolution, Problem, Space, SpaceTime, Variant};
@@ -52,6 +53,7 @@ where
     settings: AoaWaitDotSettings,
     edge_settings_by_edge: Option<VecEdge<EdgeSettings>>,
     solution: Option<&'a McnfSolution<V>>,
+    stats: Option<McnfStats>,
 }
 
 impl<'a, V> AoaWaitDot<'a, V>
@@ -64,12 +66,18 @@ where
             settings: settings.unwrap_or_default(),
             edge_settings_by_edge: None,
             solution: None,
+            stats: None,
         }
     }
 
     pub fn with_solution(mut self, solution: &'a McnfSolution<V>) -> Self {
         self.edge_settings_by_edge = Some(self.edge_settings_with_solution(solution));
         self.solution = Some(solution);
+        self
+    }
+
+    pub fn with_stats(mut self, stats: McnfStats) -> Self {
+        self.stats = Some(stats);
         self
     }
 
@@ -353,15 +361,30 @@ where
     }
 
     fn graph_info_table_label(&self) -> String {
-        format!(
-            "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\
+        match self.stats {
+            Some(stats) => format!(
+                "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\
+<TR><TD BGCOLOR=\"#f2f2f2\"><B>Metric</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Value</B></TD></TR>\
+<TR><TD>Vertices</TD><TD>{}</TD></TR>\
+<TR><TD>Edges</TD><TD>{}</TD></TR>\
+<TR><TD>Variables</TD><TD>{}</TD></TR>\
+<TR><TD>Constraints</TD><TD>{}</TD></TR>\
+</TABLE>",
+                stats.graph_stats.num_vertices,
+                stats.graph_stats.num_edges,
+                stats.num_variables,
+                stats.num_constraints,
+            ),
+            None => format!(
+                "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\
 <TR><TD BGCOLOR=\"#f2f2f2\"><B>Metric</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Value</B></TD></TR>\
 <TR><TD>Vertices</TD><TD>{}</TD></TR>\
 <TR><TD>Edges</TD><TD>{}</TD></TR>\
 </TABLE>",
-            self.graph().v(),
-            self.graph().e(),
-        )
+                self.graph().v(),
+                self.graph().e(),
+            ),
+        }
     }
 }
 

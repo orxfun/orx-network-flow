@@ -27,15 +27,16 @@ fn main() {
     let aon_wait_solver = McnfSolver::aon_wait_ro(&aon_wait_nw, Default::default(), cplex_solver());
     let aon_wait_sol = aon_wait_solver.solve().expect("aon_wait solution");
 
-    let space_time_solver =
+    let aoa_wait_solver =
         McnfSolver::aoa_wait_ro(&aoa_wait_nw, AoaWaitRoMcnfParams::default(), cplex_solver());
-    space_time_solver.display_lp();
-    space_time_solver
+    aoa_wait_solver.display_lp();
+    aoa_wait_solver
         .export_lp("target/aoa_wait_nw.lp")
         .expect("lp");
-    let aoa_wait_sol = space_time_solver.solve().expect("aoa_wait solution");
+    let stats = aoa_wait_solver.stats();
+    let aoa_wait_sol = aoa_wait_solver.solve().expect("aoa_wait solution");
 
-    let dot = dot.with_solution(&aoa_wait_sol);
+    let dot = dot.with_solution(&aoa_wait_sol).with_stats(stats);
     dot.create_svg_file("target/aoa_wait_nw.dot", "target/aoa_wait_nw.svg")
         .unwrap();
 
