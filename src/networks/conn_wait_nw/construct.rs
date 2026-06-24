@@ -75,8 +75,8 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
     let des_to_sorted_due = map_set_into_map_sorted_vec(des_to_sorted_due);
 
     // edges: t-t wait
-    for (_, des_transports) in &p.ori_des_sorted_transports {
-        for (_, transports) in des_transports {
+    for (_, des_transports) in p.ori_des_sorted_transports.iter() {
+        for (_, transports) in des_transports.iter() {
             let tails = transports.iter().copied();
             let heads = transports.iter().copied().skip(1);
             for (tail, head) in tails.zip(heads) {
@@ -86,11 +86,11 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
     }
 
     // edges: t-t connect
-    for (x, des_sorted_transports) in &p.ori_des_sorted_transports {
-        for (des, tail_sorted_transports) in des_sorted_transports {
+    for (x, des_sorted_transports) in p.ori_des_sorted_transports.iter() {
+        for (des, tail_sorted_transports) in des_sorted_transports.iter() {
             // tail: x => des
             if let Some(map_head_sorted_transports) = p.ori_des_sorted_transports.get(des) {
-                for (y, head_sorted_transports) in map_head_sorted_transports {
+                for (y, head_sorted_transports) in map_head_sorted_transports.iter() {
                     // head: des => y
 
                     match p.connectivity.can_connect_spatially(p, [*x, *des, *y]) {
@@ -110,7 +110,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
 
     for (&ori, sorted_ready) in &ori_to_sorted_ready {
         if let Some(des_sorted_transports) = p.ori_des_sorted_transports.get(&ori) {
-            for (_, sorted_transports) in des_sorted_transports {
+            for (_, sorted_transports) in des_sorted_transports.iter() {
                 let map_tail = |r: &Time| {
                     let ro = SpaceTime::new(ori, *r);
                     let v = *ro_to_v.get(&ro).expect("exists");
@@ -126,7 +126,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
     // edges: t-dd connect
     for (&des, sorted_due) in &des_to_sorted_due {
         if let Some(ori_sorted_transports) = p.des_ori_sorted_transports.get(&des) {
-            for (_, sorted_transports) in ori_sorted_transports {
+            for (_, sorted_transports) in ori_sorted_transports.iter() {
                 let map_head = |d: &Time| {
                     let dd = SpaceTime::new(des, *d);
                     let v = *dd_to_v.get(&dd).expect("exists");

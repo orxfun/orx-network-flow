@@ -29,3 +29,11 @@ impl<K: Debug + Display + Clone + Eq + core::hash::Hash> MapKey for K {}
 pub trait MapKey: Debug + Display + Clone + PartialOrd + Ord {}
 #[cfg(not(feature = "std"))]
 impl<K: Debug + Display + Clone + PartialOrd + Ord> MapKey for K {}
+
+// map entry
+
+#[cfg(feature = "std")]
+pub type Entry<'a, K, V> = std::collections::hash_map::Entry<'a, K, V>;
+
+#[cfg(not(feature = "std"))]
+pub type Entry<'a, K, V> = alloc::collections::btree_map::Entry<'a, K, V>;

@@ -1,5 +1,6 @@
 use crate::IdxMap;
 use crate::commodities::{Commodities, Commodity, CommodityData};
+use crate::common_ds::SortedKeyMap;
 use crate::costs::Costs;
 use crate::networks::{ConnWaitNw, ConnWaitNwSettings, SpaceTimeNw, SpaceTimeNwSettings};
 use crate::problem::connectivity::Connectivity;
@@ -23,9 +24,8 @@ pub struct Problem<V: Variant> {
     pub time_bounds: TimeBounds,
     pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,
     pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
-    pub ori_des_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
-    pub des_ori_sorted_transports: Map<Space, Map<Space, Vec<Transport>>>,
-    pub sorted_transport_origins: Vec<Space>,
+    pub ori_des_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
+    pub des_ori_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
     pub sorted_commodity_origins: Vec<Space>,
     pub sorted_commodity_destinations: Vec<Space>,
     pub sorted_ro_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,

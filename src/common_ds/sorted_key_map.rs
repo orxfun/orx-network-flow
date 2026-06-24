@@ -1,4 +1,4 @@
-use crate::utils::std_utils::{Map, MapKey};
+use crate::utils::std_utils::{Entry, Map, MapKey};
 use alloc::vec::Vec;
 
 pub struct SortedKeyMap<K, V>
@@ -7,6 +7,18 @@ where
 {
     map: Map<K, V>,
     sorted_keys: Vec<K>,
+}
+
+impl<K, V> Default for SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    fn default() -> Self {
+        Self {
+            map: Default::default(),
+            sorted_keys: Default::default(),
+        }
+    }
 }
 
 impl<K, V> From<Map<K, V>> for SortedKeyMap<K, V>
@@ -36,5 +48,14 @@ where
     #[inline(always)]
     pub fn get(&self, key: &K) -> Option<&V> {
         self.map.get(key)
+    }
+
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
+        self.map.values_mut()
+    }
+
+    #[inline(always)]
+    pub fn entry(&mut self, key: K) -> Entry<'_, K, V> {
+        self.map.entry(key)
     }
 }
