@@ -389,46 +389,80 @@ where
     fn vertex_tooltip(&self, v: VIdx) -> Option<impl core::fmt::Display> {
         Some({
             let p = self.nw.p();
+            let com_str = |(c, x): (Commodity, &CommodityData<V>)| com_str(p, c, x);
             let st = self.graph().vertex(v).data().0;
 
-            let supply = p
-                .sorted_ro_commodities
-                .value_by_key(&st)
-                .map(|commodities| {
+            let supply_coms = p.sorted_ro_commodities.value_by_key(&st);
+            let demand_coms = p.sorted_dd_commodities.value_by_key(&st);
+
+            match (supply_coms, demand_coms) {
+                (Some(supply), Some(demand)) => {
+                    let supply_total =
+                        FlowUnit::sum(supply.iter().map(|&c| p.commodity_by_idx(c).amount()));
+                    let demand_total =
+                        FlowUnit::sum(demand.iter().map(|&c| p.commodity_by_idx(c).amount()));
+
+                    let supply_lines: Vec<_> = supply
+                        .iter()
+                        .map(|&c| (c, p.commodity_by_idx(c)))
+                        .map(com_str)
+                        .collect();
+                    let demand_lines: Vec<_> = demand
+                        .iter()
+                        .map(|&c| (c, p.commodity_by_idx(c)))
+                        .map(com_str)
+                        .collect();
+
+                    format!(
+                        "Source & sink vertex at {}-{}\n\
+                         source commodities = {}\n\
+                         total amount entering = {}\n\n\
+                         {}\n\n\
+                         sink commodities = {}\n\
+                         total amount leaving = {}\n\n\
+                         {}",
+                        p.space_key(st.space()),
+                        st.time(),
+                        supply.len(),
+                        supply_total,
+                        supply_lines.join("\n"),
+                        demand.len(),
+                        demand_total,
+                        demand_lines.join("\n")
+                    )
+                }
+                (Some(commodities), None) => {
                     let total_amount =
                         FlowUnit::sum(commodities.iter().map(|&c| p.commodity_by_idx(c).amount()));
-                    format!("supply={total_amount}")
-                });
+                    let commodities: Vec<_> = commodities
+                        .iter()
+                        .map(|&c| (c, p.commodity_by_idx(c)))
+                        .map(com_str)
+                        .collect();
 
-            let demand = p
-                .sorted_dd_commodities
-                .value_by_key(&st)
-                .map(|commodities| {
+                    format!(
+                        "Source vertex per origin & ready\n{} commodities\ntotal amount entering = {}\n\n{}",
+                        commodities.len(),
+                        total_amount,
+                        commodities.join("\n")
+                    )
+                }
+                (None, Some(commodities)) => {
                     let total_amount =
                         FlowUnit::sum(commodities.iter().map(|&c| p.commodity_by_idx(c).amount()));
-                    format!("demand={total_amount}")
-                });
+                    let commodities: Vec<_> = commodities
+                        .iter()
+                        .map(|&c| (c, p.commodity_by_idx(c)))
+                        .map(com_str)
+                        .collect();
 
-            match (supply, demand) {
-                (Some(s), Some(d)) => format!(
-                    "space-time node\n{}-{}\n{}\n{}",
-                    p.space_key(st.space()),
-                    st.time(),
-                    s,
-                    d
-                ),
-                (Some(s), None) => format!(
-                    "space-time node\n{}-{}\n{}",
-                    p.space_key(st.space()),
-                    st.time(),
-                    s
-                ),
-                (None, Some(d)) => format!(
-                    "space-time node\n{}-{}\n{}",
-                    p.space_key(st.space()),
-                    st.time(),
-                    d
-                ),
+                    format!(
+                        "Sink vertex per destination & due time\n{} commodities\ntotal amount leaving = {}\n\n{}",
+                        commodities.len(),
+                        total_amount,
+                        commodities.join("\n")
+                    )
+                }
                 (None, None) => {
                     format!("space-time node\n{}-{}", p.space_key(st.space()), st.time())
                 }
