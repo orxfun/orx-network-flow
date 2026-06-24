@@ -36,6 +36,10 @@ impl<K, V> SortedKeyMap<K, V>
 where
     K: Ord + Clone + MapKey,
 {
+    pub fn builder() -> SortedKeyMapBuilder<K, V> {
+        Default::default()
+    }
+
     pub fn keys(&self) -> &[K] {
         &self.sorted_keys
     }
@@ -50,10 +54,6 @@ where
         self.map.get(key)
     }
 
-    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
-        self.map.values_mut()
-    }
-
     #[inline]
     pub fn get_or_add_default_mut(&mut self, key: K) -> &mut V
     where
@@ -63,6 +63,10 @@ where
             self.sorted_keys.push(key.clone());
         }
         self.map.entry(key).or_default()
+    }
+
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
+        self.map.values_mut()
     }
 
     // TODO: this is not nice as the struct is not always in sorted state, move to builder pattern
@@ -101,6 +105,10 @@ where
             map: self.map,
             sorted_keys: self.sorted_keys,
         }
+    }
+
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
+        self.map.values_mut()
     }
 
     #[inline]

@@ -1,4 +1,4 @@
-use crate::common_ds::SortedKeyMap;
+use crate::common_ds::{SortedKeyMap, SortedKeyMapBuilder};
 use crate::costs::Costs;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, LostRevenueBuilder, TransportCost};
 use crate::problem::connectivity::{
@@ -35,8 +35,8 @@ pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState> {
     connectivity: Connectivity,
     costs: Costs<V>,
     time_bounds: TimeBounds,
-    ori_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
-    des_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
+    ori_sorted_commodities: SortedKeyMapBuilder<Space, Vec<Commodity>>,
+    des_sorted_commodities: SortedKeyMapBuilder<Space, Vec<Commodity>>,
     ori_des_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
     des_ori_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
     sorted_ro_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
@@ -183,7 +183,6 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             };
             x.sort_by_key(&sort_key);
         }
-        self.ori_sorted_commodities.preserve_key_order();
 
         for x in self.des_sorted_commodities.values_mut() {
             let sort_key = |c: &Commodity| {
@@ -195,7 +194,6 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             };
             x.sort_by_key(&sort_key);
         }
-        self.des_sorted_commodities.preserve_key_order();
 
         // sort ori&des and des&ori transports by departure time
 
@@ -263,8 +261,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             connectivity: self.connectivity,
             costs: self.costs,
             time_bounds: self.time_bounds,
-            ori_sorted_commodities: self.ori_sorted_commodities,
-            des_sorted_commodities: self.des_sorted_commodities,
+            ori_sorted_commodities: self.ori_sorted_commodities.finish(),
+            des_sorted_commodities: self.des_sorted_commodities.finish(),
             ori_des_sorted_transports: self.ori_des_sorted_transports,
             des_ori_sorted_transports: self.des_ori_sorted_transports,
             sorted_ro_commodities: self.sorted_ro_commodities,
