@@ -1,8 +1,9 @@
+use crate::spaces::Spaces;
 use crate::{Problem, Variant, spaces::Space, time::Time, utils::std_utils::Map};
 
 #[derive(derive_new::new)]
 pub struct TemporalConnectivityBuilder<'a, V: Variant> {
-    p: &'a Problem<V>,
+    spaces: &'a Spaces<V>,
     conn: &'a mut TemporalConnectivity,
 }
 
@@ -14,7 +15,7 @@ impl<V: Variant> TemporalConnectivityBuilder<'_, V> {
     }
 
     pub fn local(&mut self, location: &V::S, min: impl Into<Time>, max: impl Into<Time>) {
-        let space = self.p.space_idx(location).expect("unknown space");
+        let space = self.spaces.get_ind_by_key(location).expect("unknown space");
         let [min, max] = [min.into(), max.into()];
         assert!(max >= min);
         self.conn.local_min_max_ct.insert(space, [min, max]);

@@ -1,15 +1,16 @@
+use crate::spaces::Spaces;
 use crate::spaces::{Coordinate, Geocode, Location, Space};
 use crate::{Problem, Variant, utils::std_utils::Set};
 
 #[derive(derive_new::new)]
 pub struct SpatialConnectivityBuilder<'a, V: Variant> {
-    p: &'a Problem<V>,
+    spaces: &'a Spaces<V>,
     conn: &'a mut SpatialConnectivity,
 }
 
 impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
     pub fn ban_connection(self, a: &V::S, b: &V::S, c: &V::S) -> Self {
-        let [a, b, c] = [a, b, c].map(|s| self.p.space_idx(s).expect("invalid space"));
+        let [a, b, c] = [a, b, c].map(|s| self.spaces.get_ind_by_key(s).expect("invalid space"));
         self.conn.taboo_set.insert((a, b, c));
         self
     }
@@ -25,8 +26,30 @@ impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
     }
 
     pub fn can_connect(&self, a: &V::S, b: &V::S, c: &V::S) -> bool {
-        let [a, b, c] = [a, b, c].map(|s| self.p.space_idx(s).expect("invalid space"));
-        self.conn.can_connect(self.p, a, b, c)
+        let [a, b, c] = [a, b, c].map(|s| self.spaces.get_ind_by_key(s).expect("invalid space"));
+
+        if a == c || self.conn.taboo_set.contains(&(a, b, c)) {
+            return false;
+        }
+
+        let [a, b, c] =
+            [a, b, c].map(|s| self.spaces.get_by_idx(s).expect("invalid space").location);
+        match (a, b, c) {
+            (Location::Basic, Location::Basic, Location::Basic) => true,
+            (Location::Euclidean(a), Location::Euclidean(b), Location::Euclidean(c)) => {
+                match &self.conn.euclidean_connectivity {
+                    None => true,
+                    Some(conn) => conn.can_connect(a, b, c),
+                }
+            }
+            (Location::Geographic(a), Location::Geographic(b), Location::Geographic(c)) => {
+                match &self.conn.geographical_connectivity {
+                    None => true,
+                    Some(conn) => conn.can_connect(a, b, c),
+                }
+            }
+            _ => unreachable!("consistent locations by construction"),
+        }
     }
 }
 

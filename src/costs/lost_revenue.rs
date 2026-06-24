@@ -1,4 +1,4 @@
-use crate::{Problem, Variant, commodities::Commodity, cost::Cost, utils::std_utils::Map};
+use crate::{Commodities, Variant, commodities::Commodity, cost::Cost, utils::std_utils::Map};
 
 pub struct LostRevenue<V: Variant> {
     global: V::C,
@@ -29,7 +29,7 @@ impl<V: Variant> LostRevenue<V> {
 
 #[derive(derive_new::new)]
 pub struct LostRevenueBuilder<'a, V: Variant> {
-    p: &'a Problem<V>,
+    commodities: &'a Commodities<V>,
     cost: &'a mut LostRevenue<V>,
 }
 
@@ -39,7 +39,10 @@ impl<'a, V: Variant> LostRevenueBuilder<'a, V> {
     }
 
     pub fn commodity_specific(&mut self, commodity: &V::K, unit_revenue: V::C) {
-        let commodity = self.p.commodity_ind(commodity).expect("Unknown commodity");
+        let commodity = self
+            .commodities
+            .get_ind_by_key(commodity)
+            .expect("Unknown commodity");
         self.cost.by_commodity.insert(commodity, unit_revenue);
     }
 }

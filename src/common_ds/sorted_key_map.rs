@@ -1,0 +1,137 @@
+use crate::utils::std_utils::{Map, MapKey, Set};
+use alloc::vec::Vec;
+
+pub struct SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    map: Map<K, V>,
+    sorted_keys: Vec<K>,
+}
+
+impl<K, V> Default for SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    fn default() -> Self {
+        Self {
+            map: Default::default(),
+            sorted_keys: Default::default(),
+        }
+    }
+}
+
+impl<K, V> From<Map<K, V>> for SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    fn from(map: Map<K, V>) -> Self {
+        let mut sorted_keys: Vec<_> = map.keys().cloned().collect();
+        sorted_keys.sort();
+        Self { map, sorted_keys }
+    }
+}
+
+impl<K, V> SortedKeyMap<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    pub fn builder() -> SortedKeyMapBuilder<K, V> {
+        Default::default()
+    }
+
+    pub fn keys(&self) -> &[K] {
+        &self.sorted_keys
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        let keys = self.sorted_keys.iter();
+        keys.map(|k| (k, self.map.get(k).expect("exists")))
+    }
+
+    #[inline(always)]
+    pub fn get(&self, key: &K) -> Option<&V> {
+        self.map.get(key)
+    }
+}
+
+impl<K, V> SortedKeyMap<K, Vec<V>>
+where
+    K: Ord + Clone + MapKey,
+    V: Ord,
+{
+    pub fn from_sets_to_vecs(map: Map<K, Set<V>>) -> Self {
+        let mut sorted_keys: Vec<_> = map.keys().cloned().collect();
+        sorted_keys.sort();
+        let map = map
+            .into_iter()
+            .map(|(k, set)| {
+                let mut sorted_vec: Vec<_> = set.into_iter().collect();
+                sorted_vec.sort();
+                (k, sorted_vec)
+            })
+            .collect();
+        Self { map, sorted_keys }
+    }
+}
+
+pub struct SortedKeyMapBuilder<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    map: Map<K, V>,
+    sorted_keys: Vec<K>,
+}
+
+impl<K, V> Default for SortedKeyMapBuilder<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    fn default() -> Self {
+        Self {
+            map: Default::default(),
+            sorted_keys: Default::default(),
+        }
+    }
+}
+
+impl<K, V> SortedKeyMapBuilder<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    pub fn finish(mut self) -> SortedKeyMap<K, V> {
+        self.sorted_keys.sort();
+        SortedKeyMap {
+            map: self.map,
+            sorted_keys: self.sorted_keys,
+        }
+    }
+
+    pub fn drain_finished(&mut self) -> SortedKeyMap<K, V> {
+        let mut sorted_keys: Vec<_> = self.sorted_keys.drain(..).collect();
+        sorted_keys.sort();
+        let mut map = Default::default();
+        core::mem::swap(&mut self.map, &mut map);
+        SortedKeyMap { map, sorted_keys }
+    }
+
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
+        self.map.values_mut()
+    }
+
+    #[inline]
+    pub fn get_or_add_default_mut(&mut self, key: K) -> &mut V
+    where
+        V: Default,
+    {
+        if !self.map.contains_key(&key) {
+            self.sorted_keys.push(key.clone());
+        }
+        self.map.entry(key).or_default()
+    }
+
+    pub fn insert(&mut self, key: K, value: V) {
+        self.sorted_keys.push(key.clone());
+        self.map.insert(key, value);
+    }
+}
