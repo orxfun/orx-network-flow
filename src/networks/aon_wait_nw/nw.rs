@@ -9,7 +9,6 @@ use crate::utils::std_utils::{Map, Set};
 use crate::{
     Commodity, IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport,
 };
-use alloc::vec;
 use alloc::vec::Vec;
 
 pub struct AonWaitNwSettings {
@@ -121,13 +120,9 @@ where
         }
         let des_to_sorted_due = SortedKeyMap::from_sets_to_vecs(des_to_sorted_due);
 
-        let mut in_degrees = vec![0usize; next_v];
-        let mut out_degrees = vec![0usize; next_v];
         let mut num_edges = 0usize;
 
-        let mut add_edge = |tail: usize, head: usize| {
-            out_degrees[tail] += 1;
-            in_degrees[head] += 1;
+        let mut add_edge = |_tail: usize, _head: usize| {
             num_edges += 1;
         };
 
@@ -261,7 +256,10 @@ where
             }
         }
 
-        GraphStats::from_degrees(&in_degrees, &out_degrees, num_edges)
+        GraphStats {
+            num_vertices: next_v,
+            num_edges,
+        }
     }
 
     pub fn construct(p: &'a Problem<V>, settings: AonWaitNwSettings) -> Self {
