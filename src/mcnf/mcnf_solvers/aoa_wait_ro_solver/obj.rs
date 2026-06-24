@@ -1,10 +1,10 @@
 use crate::graphs::{Edge, Graph, Vertex};
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::vars::RoVars;
-use crate::networks::SpaceTimeNw;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::vars::RoVars;
+use crate::networks::AoaWaitNw;
 use crate::{Variant, cost::Cost};
 use good_lp::Expression;
 
-pub fn objective<'a, V>(nw: &SpaceTimeNw<'a, V>, ro_vars: &RoVars<'a, V>) -> Expression
+pub fn objective<'a, V>(nw: &AoaWaitNw<'a, V>, ro_vars: &RoVars<'a, V>) -> Expression
 where
     V: Variant,
 {

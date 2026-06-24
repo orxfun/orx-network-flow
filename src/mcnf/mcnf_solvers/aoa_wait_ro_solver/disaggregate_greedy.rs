@@ -2,13 +2,13 @@ use crate::commodities::VecCommodity;
 use crate::graphs::core::GraphCore;
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 use crate::mcnf::solution::{CommodityLoad, CommodityPaths, Path, PathFlow};
-use crate::networks::{SpaceTimeEdge, SpaceTimeNw, SpaceTimeVertex};
+use crate::networks::{AoaWaitEdge, AoaWaitNw, AoaWaitVertex};
 use crate::{Commodity, FlowUnit, SpaceTime, Variant, VecTransport};
 use alloc::collections::{BTreeMap, VecDeque};
 use alloc::vec::Vec;
 
 pub fn disaggregate_ro_greedy<V: Variant>(
-    nw: &SpaceTimeNw<'_, V>,
+    nw: &AoaWaitNw<'_, V>,
     ro: SpaceTime,
     edge_flow: impl Fn(EIdx) -> V::F + Copy,
     transport_loads: &mut VecTransport<Vec<CommodityLoad<V>>>,
@@ -100,7 +100,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             .vertex(head)
             .in_edges()
             .filter(|&e| edge_flow(e).is_pos())
-            .filter(|&e| !matches!(g.edge(e).data(), SpaceTimeEdge::Bypass(_)))
+            .filter(|&e| !matches!(g.edge(e).data(), AoaWaitEdge::Bypass(_)))
             .collect();
 
         for e in in_edges {
@@ -160,7 +160,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     for (v, vertex) in g.enumerated_vertices() {
         let out_edges: Vec<EIdx> = vertex
             .out_edges()
-            .filter(|&e| !matches!(g.edge(e).data(), SpaceTimeEdge::Bypass(_)))
+            .filter(|&e| !matches!(g.edge(e).data(), AoaWaitEdge::Bypass(_)))
             .collect();
         out_non_bypass_edges_by_vertex[v] = out_edges;
     }
@@ -223,7 +223,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
 
             debug_assert!(path_transports.is_empty());
             for &e in &path_edges {
-                if let SpaceTimeEdge::Transport(t) = g.edge(e).data() {
+                if let AoaWaitEdge::Transport(t) = g.edge(e).data() {
                     path_transports.push(*t);
                 }
             }
@@ -311,7 +311,7 @@ fn subtract_assignments<F: FlowUnit>(
 }
 
 fn find_positive_path_dag<V: Variant>(
-    g: &GraphCore<SpaceTimeVertex, SpaceTimeEdge>,
+    g: &GraphCore<AoaWaitVertex, AoaWaitEdge>,
     out_non_bypass_edges_by_vertex: &VecVertex<Vec<EIdx>>,
     residual: &VecEdge<V::F>,
     next_out_edge_pos: &mut VecVertex<usize>,

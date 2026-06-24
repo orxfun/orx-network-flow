@@ -1,5 +1,5 @@
 #[derive(Default)]
-pub struct SpaceTimeRoMcnfParams {
+pub struct AoaWaitRoMcnfParams {
     pub disaggregation: DisaggregationStrategy,
 }
 

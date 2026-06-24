@@ -1,12 +1,12 @@
 use crate::{Commodity, Transport};
 
-pub enum SpaceTimeEdge {
+pub enum AoaWaitEdge {
     Transport(Transport),
     Wait,
     Bypass(Commodity),
 }
 
-impl SpaceTimeEdge {
+impl AoaWaitEdge {
     pub fn get_transport(&self) -> Option<Transport> {
         match self {
             Self::Transport(t) => Some(*t),

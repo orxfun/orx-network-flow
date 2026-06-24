@@ -1,7 +1,7 @@
 use crate::flow_units::FlowUnit;
 use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};
-use crate::networks::{SpaceTimeEdge, SpaceTimeNw, SpaceTimeVertex};
+use crate::networks::{AoaWaitEdge, AoaWaitNw, AoaWaitVertex};
 use crate::{Problem, SpaceTime, TransportData, Variant};
 use alloc::{format, string::String, vec::Vec};
 use good_lp::{ProblemVariables, Variable, VariableDefinition};
@@ -34,7 +34,7 @@ impl<V: Variant> RoVars<'_, V> {
 }
 
 pub fn define_vars<'a, V: Variant>(
-    nw: &'a SpaceTimeNw<'_, V>,
+    nw: &'a AoaWaitNw<'_, V>,
 ) -> (ProblemVariables, RoVars<'a, V>) {
     let mut pr_vars = ProblemVariables::new();
     let mut ro_vars = Vec::new();
@@ -57,7 +57,7 @@ pub fn define_vars<'a, V: Variant>(
 
 fn define_vars_ro<V: Variant>(
     ro: SpaceTime,
-    nw: &SpaceTimeNw<'_, V>,
+    nw: &AoaWaitNw<'_, V>,
     pr_vars: &mut ProblemVariables,
     dummy: Variable,
 ) -> VecEdge<Variable> {
@@ -69,7 +69,7 @@ fn define_vars_ro<V: Variant>(
         let mut var = VariableDefinition::new().min(0);
 
         let include_in_ro = match e.data() {
-            SpaceTimeEdge::Bypass(c) => {
+            AoaWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount().into_f64();
                 var = var.max(amount);
                 // only include bypass if this commodity belongs to this ro
@@ -94,19 +94,19 @@ fn define_vars_ro<V: Variant>(
 
 fn var_name<V: Variant>(
     p: &Problem<V>,
-    g: &GraphCore<SpaceTimeVertex, SpaceTimeEdge>,
+    g: &GraphCore<AoaWaitVertex, AoaWaitEdge>,
     ro: SpaceTime,
-    e: &EdgeCore<SpaceTimeEdge>,
+    e: &EdgeCore<AoaWaitEdge>,
 ) -> String {
     let ro_str = format!("{}_{}", p.space_key(ro.space()), ro.time());
     let t_str = |t: &TransportData<V>| t.var_str(p);
 
     match e.data() {
-        SpaceTimeEdge::Transport(t) => {
+        AoaWaitEdge::Transport(t) => {
             let td = p.transport_by_idx(*t);
             format!("{ro_str}__arc__{}", t_str(td))
         }
-        SpaceTimeEdge::Wait => {
+        AoaWaitEdge::Wait => {
             let tail_st = g.vertex(e.tail()).data().0;
             let head_st = g.vertex(e.head()).data().0;
             let tail_s = p.space_key(tail_st.space());
@@ -116,7 +116,7 @@ fn var_name<V: Variant>(
                 head_st.time()
             )
         }
-        SpaceTimeEdge::Bypass(c) => {
+        AoaWaitEdge::Bypass(c) => {
             let com = p.commodity_by_idx(*c);
             format!("{ro_str}__bypass__{}", com.var_str(p))
         }

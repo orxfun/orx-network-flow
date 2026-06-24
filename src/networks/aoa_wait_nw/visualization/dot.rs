@@ -3,7 +3,7 @@ use crate::graphs::visualization::dot::{
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::mcnf::Path;
-use crate::networks::space_time_nw::{SpaceTimeEdge, SpaceTimeGraph, SpaceTimeNw};
+use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitGraph, AoaWaitNw};
 use crate::{Commodity, CommodityData, FlowUnit, McnfSolution, Problem, Space, SpaceTime, Variant};
 use alloc::string::{String, ToString};
 use alloc::{format, vec::Vec};
@@ -13,14 +13,14 @@ const EDGE_WIDTH_UNIFORM: f64 = 1.4;
 const EDGE_WIDTH_WITH_FLOW: f64 = 2.8;
 const EDGE_WIDTH_WITHOUT_FLOW: f64 = 0.8;
 
-pub struct SpaceTimeDotSettings {
+pub struct AoaWaitDotSettings {
     space_time: VertexSettings,
     wait: EdgeSettings,
     transport: EdgeSettings,
     bypass: EdgeSettings,
 }
 
-impl Default for SpaceTimeDotSettings {
+impl Default for AoaWaitDotSettings {
     fn default() -> Self {
         Self {
             space_time: VertexSettings {
@@ -44,21 +44,21 @@ impl Default for SpaceTimeDotSettings {
     }
 }
 
-pub struct SpaceTimeDot<'a, V>
+pub struct AoaWaitDot<'a, V>
 where
     V: Variant,
 {
-    nw: &'a SpaceTimeNw<'a, V>,
-    settings: SpaceTimeDotSettings,
+    nw: &'a AoaWaitNw<'a, V>,
+    settings: AoaWaitDotSettings,
     edge_settings_by_edge: Option<VecEdge<EdgeSettings>>,
     solution: Option<&'a McnfSolution<V>>,
 }
 
-impl<'a, V> SpaceTimeDot<'a, V>
+impl<'a, V> AoaWaitDot<'a, V>
 where
     V: Variant,
 {
-    pub fn new(nw: &'a SpaceTimeNw<'a, V>, settings: Option<SpaceTimeDotSettings>) -> Self {
+    pub fn new(nw: &'a AoaWaitNw<'a, V>, settings: Option<AoaWaitDotSettings>) -> Self {
         Self {
             nw,
             settings: settings.unwrap_or_default(),
@@ -75,9 +75,9 @@ where
 
     fn edge_settings_default(&self, e: EIdx) -> &EdgeSettings {
         match self.graph().edge(e).data() {
-            SpaceTimeEdge::Wait => &self.settings.wait,
-            SpaceTimeEdge::Transport(_) => &self.settings.transport,
-            SpaceTimeEdge::Bypass(_) => &self.settings.bypass,
+            AoaWaitEdge::Wait => &self.settings.wait,
+            AoaWaitEdge::Transport(_) => &self.settings.transport,
+            AoaWaitEdge::Bypass(_) => &self.settings.bypass,
         }
     }
 
@@ -106,7 +106,7 @@ where
         let edge = self.graph().edge(e);
 
         match edge.data() {
-            SpaceTimeEdge::Bypass(c) => {
+            AoaWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount();
                 let served = FlowUnit::sum(
                     solution.commodity_paths()[*c]
@@ -119,7 +119,7 @@ where
                     false => FlowUnit::zero(),
                 }
             }
-            SpaceTimeEdge::Transport(t) => {
+            AoaWaitEdge::Transport(t) => {
                 let all_path_flows = solution
                     .commodity_paths()
                     .iter()
@@ -127,7 +127,7 @@ where
                 let matching = all_path_flows.filter(|pf| pf.path.as_slice().contains(t));
                 FlowUnit::sum(matching.map(|pf| pf.flow))
             }
-            SpaceTimeEdge::Wait => {
+            AoaWaitEdge::Wait => {
                 let tail_st = self.graph().vertex(edge.tail()).data().0;
                 let head_st = self.graph().vertex(edge.head()).data().0;
                 let matching =
@@ -154,7 +154,7 @@ where
         let edge = self.graph().edge(e);
 
         match edge.data() {
-            SpaceTimeEdge::Bypass(c) => {
+            AoaWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount();
                 let served = FlowUnit::sum(
                     solution.commodity_paths()[*c]
@@ -169,7 +169,7 @@ where
                     Vec::new()
                 }
             }
-            SpaceTimeEdge::Transport(t) => solution
+            AoaWaitEdge::Transport(t) => solution
                 .commodity_paths()
                 .enumerated_iter()
                 .filter_map(|(c, paths)| {
@@ -188,7 +188,7 @@ where
                     }
                 })
                 .collect(),
-            SpaceTimeEdge::Wait => {
+            AoaWaitEdge::Wait => {
                 let tail_st = self.graph().vertex(edge.tail()).data().0;
                 let head_st = self.graph().vertex(edge.head()).data().0;
 
@@ -295,11 +295,11 @@ where
     }
 }
 
-impl<'a, V> DotGraph for SpaceTimeDot<'a, V>
+impl<'a, V> DotGraph for AoaWaitDot<'a, V>
 where
     V: Variant,
 {
-    type G = SpaceTimeGraph;
+    type G = AoaWaitGraph;
 
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
         let st = self.graph().vertex(v).data().0;
@@ -402,11 +402,11 @@ where
         let head = self.graph().vertex(edge.head()).data().0;
 
         let base = match edge.data() {
-            SpaceTimeEdge::Wait => {
+            AoaWaitEdge::Wait => {
                 let s = p.space_key(tail.space());
                 format!("Wait arc at {s}: {} -> {}", tail.time(), head.time())
             }
-            SpaceTimeEdge::Transport(t) => {
+            AoaWaitEdge::Transport(t) => {
                 let td = p.transport_by_idx(*t);
                 let [o, d] = [
                     p.space_key(td.origin().space()),
@@ -416,7 +416,7 @@ where
                 let cap = td.capacity();
                 format!("Transport arc {t}\n{o}-{d} at {dt}-{at}\ncapacity={cap}")
             }
-            SpaceTimeEdge::Bypass(c) => {
+            AoaWaitEdge::Bypass(c) => {
                 let com = p.commodity_by_idx(*c);
                 let com_str = com_str(p, *c, com);
                 format!("Bypass arc with lost revenue cost\n{com_str}")

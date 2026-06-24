@@ -1,22 +1,22 @@
 use crate::commodities::VecCommodity;
 use crate::common_ds::SortedKeyMap;
 use crate::graphs::{EIdx, EdgeRange, VIdx};
-use crate::networks::space_time_nw::{
-    SpaceTimeEdge, SpaceTimeGraph, SpaceTimeNwSettings, SpaceTimeVertex,
+use crate::networks::aoa_wait_nw::{
+    AoaWaitEdge, AoaWaitGraph, AoaWaitNwSettings, AoaWaitVertex,
 };
 use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Space, SpaceTime, Time, Variant, VecTransport};
 
 pub struct Output {
-    pub graph: SpaceTimeGraph,
+    pub graph: AoaWaitGraph,
     pub st_to_v: Map<SpaceTime, VIdx>,
     pub transport_arc: VecTransport<EIdx>,
     pub bypass_edges_range: EdgeRange,
     pub bypass_edge_per_commodity: VecCommodity<Option<EIdx>>,
 }
 
-pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> Output {
-    let mut builder = SpaceTimeGraph::builder();
+pub fn construct<V: Variant>(p: &Problem<V>, settings: AoaWaitNwSettings) -> Output {
+    let mut builder = AoaWaitGraph::builder();
     let b = &mut builder;
 
     // collect all relevant (space, time) pairs
@@ -46,7 +46,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
     for (space, times) in space_to_sorted_times.iter() {
         for &time in times {
             let st = SpaceTime::new(*space, time);
-            let v = b.vertex(SpaceTimeVertex(st));
+            let v = b.vertex(AoaWaitVertex(st));
             st_to_v.insert(st, v);
         }
     }
@@ -58,7 +58,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
         for (t1, t2) in tails.zip(heads) {
             let tail = *st_to_v.get(&SpaceTime::new(*space, t1)).expect("exists");
             let head = *st_to_v.get(&SpaceTime::new(*space, t2)).expect("exists");
-            b.edge(SpaceTimeEdge::Wait, tail, head);
+            b.edge(AoaWaitEdge::Wait, tail, head);
         }
     }
 
@@ -68,7 +68,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
         let td = p.transport_by_idx(t);
         let tail = *st_to_v.get(&td.origin()).expect("exists");
         let head = *st_to_v.get(&td.destination()).expect("exists");
-        let e = b.edge(SpaceTimeEdge::Transport(t), tail, head);
+        let e = b.edge(AoaWaitEdge::Transport(t), tail, head);
         transport_arc.push(e);
     }
 
@@ -79,7 +79,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
         for (c, com) in p.commodities.indices_values() {
             let tail = *st_to_v.get(&com.origin()).expect("exists");
             let head = *st_to_v.get(&com.destination()).expect("exists");
-            let e = b.edge(SpaceTimeEdge::Bypass(c), tail, head);
+            let e = b.edge(AoaWaitEdge::Bypass(c), tail, head);
             bypass_edge_per_commodity[c] = Some(e);
         }
     }

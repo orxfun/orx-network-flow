@@ -7,5 +7,5 @@ mod sol;
 mod solver;
 mod vars;
 
-pub use params::SpaceTimeRoMcnfParams;
-pub use solver::SpaceTimeRoMcnfSolver;
+pub use params::AoaWaitRoMcnfParams;
+pub use solver::AoaWaitRoMcnfSolver;

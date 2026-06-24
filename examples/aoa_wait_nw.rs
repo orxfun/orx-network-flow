@@ -31,37 +31,37 @@ fn main() {
             add_bypass_edges: true,
         });
 
-    let space_time_nw = problem.construct_aoa_wait_nw(AoaWaitNwSettings {
+    let aoa_wait_nw = problem.construct_aoa_wait_nw(AoaWaitNwSettings {
         add_bypass_edges: true,
     });
 
-    let dot = space_time_nw.as_dot_graph(None);
-    dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
+    let dot = aoa_wait_nw.as_dot_graph(None);
+    dot.create_svg_file("target/aoa_wait_nw.dot", "target/aoa_wait_nw.svg")
         .unwrap();
 
-    report_complexity(&problem, &aon_wait_nw, &space_time_nw, true);
+    report_complexity(&problem, &aon_wait_nw, &aoa_wait_nw, true);
 
     let aon_wait_solver = McnfSolver::aon_wait_ro(&aon_wait_nw, Default::default(), cplex_solver());
     let aon_wait_sol = aon_wait_solver.solve().expect("aon_wait solution");
 
     let space_time_solver = McnfSolver::aoa_wait_ro(
-        &space_time_nw,
+        &aoa_wait_nw,
         AoaWaitRoMcnfParams::default(),
         cplex_solver(),
     );
     space_time_solver.display_lp();
     space_time_solver
-        .export_lp("target/space_time_nw.lp")
+        .export_lp("target/aoa_wait_nw.lp")
         .expect("lp");
-    let space_time_sol = space_time_solver.solve().expect("space_time solution");
+    let aoa_wait_sol = space_time_solver.solve().expect("aoa_wait solution");
 
-    let dot = dot.with_solution(&space_time_sol);
-    dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
+    let dot = dot.with_solution(&aoa_wait_sol);
+    dot.create_svg_file("target/aoa_wait_nw.dot", "target/aoa_wait_nw.svg")
         .unwrap();
 
-    println!("=== Commodity Transported Flow (AonWait vs SpaceTime) ===");
+    println!("=== Commodity Transported Flow (AonWait vs AoaWait) ===");
     for (c, com_paths_a) in aon_wait_sol.commodity_paths().enumerated_iter() {
-        let com_paths_b = &space_time_sol.commodity_paths()[c];
+        let com_paths_b = &aoa_wait_sol.commodity_paths()[c];
 
         let sum_a: u64 = com_paths_a.path_flows.iter().map(|x| x.flow).sum();
         let sum_b: u64 = com_paths_b.path_flows.iter().map(|x| x.flow).sum();
@@ -70,17 +70,17 @@ fn main() {
         println!("commodity {key}: {sum_a} vs {sum_b}");
     }
 
-    println!("\n=== Transport Loads (AonWait vs SpaceTime) ===");
+    println!("\n=== Transport Loads (AonWait vs AoaWait) ===");
     for (t, loads_a) in aon_wait_sol.transport_loads().enumerated_iter() {
-        let loads_b = &space_time_sol.transport_loads()[t];
+        let loads_b = &aoa_wait_sol.transport_loads()[t];
         let load_a: u64 = loads_a.iter().map(|x| x.load).sum();
         let load_b: u64 = loads_b.iter().map(|x| x.load).sum();
 
         println!("transport {t}: {load_a} vs {load_b}");
     }
 
-    println!("\n=== Space-Time Solution Paths ===");
-    for (c, paths) in space_time_sol.commodity_paths().enumerated_iter() {
+    println!("\n=== AoaWait Solution Paths ===");
+    for (c, paths) in aoa_wait_sol.commodity_paths().enumerated_iter() {
         let com = problem.commodity_key(c);
         let commodity = problem.commodity_by_idx(c).to_str(&problem);
         println!("c{com} = {commodity}");
@@ -164,7 +164,7 @@ pub fn cplex_solver() -> LpSolver<Cplex> {
 fn report_complexity(
     problem: &orx_network_flow::Problem<MyVariant>,
     aon_wait_nw: &orx_network_flow::networks::AonWaitNw<'_, MyVariant>,
-    space_time_nw: &orx_network_flow::networks::AoaWaitNw<'_, MyVariant>,
+    aoa_wait_nw: &orx_network_flow::networks::AoaWaitNw<'_, MyVariant>,
     add_bypass_edges: bool,
 ) {
     let ro_groups = problem.sorted_ro_commodities.len();
@@ -175,7 +175,7 @@ fn report_complexity(
     };
 
     let cw = aon_wait_nw.as_dot_graph(None);
-    let st = space_time_nw.as_dot_graph(None);
+    let st = aoa_wait_nw.as_dot_graph(None);
 
     let cw_v = cw.graph().v();
     let cw_e = cw.graph().e();
@@ -203,7 +203,7 @@ fn report_complexity(
     println!("* vertices: {cw_v}");
     println!("* edges:    {cw_e}");
 
-    println!("\nSpaceTime network size:");
+    println!("\nAoaWait network size:");
     println!("* vertices: {st_v}");
     println!("* edges:    {st_e}");
 
@@ -211,7 +211,7 @@ fn report_complexity(
     println!("* variables:   {cw_vars}");
     println!("* constraints: {cw_cons}");
 
-    println!("\nEstimated RO LP size (SpaceTime):");
+    println!("\nEstimated RO LP size (AoaWait):");
     println!("* variables:   {st_vars}");
     println!("* constraints: {st_cons}");
 }

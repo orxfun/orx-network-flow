@@ -1,16 +1,16 @@
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::SpaceTimeRoMcnfParams;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::disaggregate_greedy::disaggregate_ro_greedy;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::params::DisaggregationStrategy;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::vars::RoVars;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::AoaWaitRoMcnfParams;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::disaggregate_greedy::disaggregate_ro_greedy;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::params::DisaggregationStrategy;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::vars::RoVars;
 use crate::mcnf::solution::CommodityLoad;
 use crate::{FlowUnit, McnfSolution, Variant, VecTransport};
-use crate::{commodities::VecCommodity, networks::SpaceTimeNw};
+use crate::{commodities::VecCommodity, networks::AoaWaitNw};
 use alloc::vec::Vec;
 use good_lp::{Solution, Solver, SolverModel, Variable};
 
 pub fn create_solution<V: Variant, S: Solver>(
-    nw: &SpaceTimeNw<'_, V>,
-    params: &SpaceTimeRoMcnfParams,
+    nw: &AoaWaitNw<'_, V>,
+    params: &AoaWaitRoMcnfParams,
     ro_vars: &RoVars<'_, V>,
     solution: &<S::Model as SolverModel>::Solution,
 ) -> McnfSolution<V> {

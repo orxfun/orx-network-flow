@@ -1,13 +1,13 @@
 use crate::graphs::core::VertexCore;
 use crate::graphs::{Graph, Vertex};
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::vars::RoVars;
-use crate::networks::{SpaceTimeNw, SpaceTimeVertex};
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::vars::RoVars;
+use crate::networks::{AoaWaitNw, AoaWaitVertex};
 use crate::{FlowUnit, Problem, SpaceTime, Variant};
 use alloc::{format, string::String};
 use good_lp::{Expression, Solver, SolverModel, constraint};
 
 pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
-    nw: &SpaceTimeNw<'a, V>,
+    nw: &AoaWaitNw<'a, V>,
     ro_vars: &RoVars<'a, V>,
     model: &mut S::Model,
 ) {
@@ -58,7 +58,7 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
 fn constraint_name<V: Variant>(
     p: &Problem<V>,
     ro: SpaceTime,
-    vertex: &VertexCore<SpaceTimeVertex>,
+    vertex: &VertexCore<AoaWaitVertex>,
 ) -> String {
     let o = p.space_key(ro.space());
     let r = ro.time();

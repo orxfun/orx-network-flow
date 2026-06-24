@@ -1,8 +1,8 @@
+use super::mcnf_solvers::aoa_wait_ro_solver::{AoaWaitRoMcnfParams, AoaWaitRoMcnfSolver};
 use super::mcnf_solvers::aon_wait_ro_solver::{AonWaitRoMcnfParams, AonWaitRoMcnfSolver};
-use super::mcnf_solvers::space_time_ro_solver::{SpaceTimeRoMcnfParams, SpaceTimeRoMcnfSolver};
 use crate::{
     Variant,
-    networks::{AonWaitNw, SpaceTimeNw},
+    networks::{AoaWaitNw, AonWaitNw},
 };
 use good_lp::Solver;
 
@@ -21,15 +21,15 @@ impl McnfSolver {
         AonWaitRoMcnfSolver::build(nw, params, solver)
     }
 
-    pub fn space_time_ro<'a, V, S>(
-        nw: &'a SpaceTimeNw<'a, V>,
-        params: SpaceTimeRoMcnfParams,
+    pub fn aoa_wait_ro<'a, V, S>(
+        nw: &'a AoaWaitNw<'a, V>,
+        params: AoaWaitRoMcnfParams,
         solver: S,
-    ) -> SpaceTimeRoMcnfSolver<'a, V, S>
+    ) -> AoaWaitRoMcnfSolver<'a, V, S>
     where
         V: Variant,
         S: Solver,
     {
-        SpaceTimeRoMcnfSolver::build(nw, params, solver)
+        AoaWaitRoMcnfSolver::build(nw, params, solver)
     }
 }

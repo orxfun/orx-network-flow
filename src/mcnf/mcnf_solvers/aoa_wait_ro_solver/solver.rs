@@ -1,24 +1,24 @@
 use crate::McnfSolution;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::capacity::add_capacity_constraints;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::flow_balance::add_flow_balance_constraints;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::obj::objective;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::params::SpaceTimeRoMcnfParams;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::sol::create_solution;
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::vars::define_vars;
-use crate::networks::SpaceTimeNw;
-use crate::{Variant, mcnf::mcnf_solvers::space_time_ro_solver::vars::RoVars};
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::capacity::add_capacity_constraints;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::flow_balance::add_flow_balance_constraints;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::obj::objective;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::params::AoaWaitRoMcnfParams;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::sol::create_solution;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::vars::define_vars;
+use crate::networks::AoaWaitNw;
+use crate::{Variant, mcnf::mcnf_solvers::aoa_wait_ro_solver::vars::RoVars};
 use alloc::string::{String, ToString};
 use good_lp::{Solver, SolverModel};
 
-pub struct SpaceTimeRoMcnfSolver<'a, V: Variant, S: Solver> {
-    nw: &'a SpaceTimeNw<'a, V>,
-    params: SpaceTimeRoMcnfParams,
+pub struct AoaWaitRoMcnfSolver<'a, V: Variant, S: Solver> {
+    nw: &'a AoaWaitNw<'a, V>,
+    params: AoaWaitRoMcnfParams,
     ro_vars: RoVars<'a, V>,
     model: S::Model,
 }
 
-impl<'a, V: Variant, S: Solver> SpaceTimeRoMcnfSolver<'a, V, S> {
-    pub fn build(nw: &'a SpaceTimeNw<'a, V>, params: SpaceTimeRoMcnfParams, solver: S) -> Self {
+impl<'a, V: Variant, S: Solver> AoaWaitRoMcnfSolver<'a, V, S> {
+    pub fn build(nw: &'a AoaWaitNw<'a, V>, params: AoaWaitRoMcnfParams, solver: S) -> Self {
         let (pr_vars, ro_vars) = define_vars(nw);
         let obj = objective(nw, &ro_vars);
 

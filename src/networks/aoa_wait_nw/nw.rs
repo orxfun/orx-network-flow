@@ -1,22 +1,22 @@
 use crate::commodities::VecCommodity;
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
-use crate::networks::space_time_nw::visualization::dot::{SpaceTimeDot, SpaceTimeDotSettings};
-use crate::networks::space_time_nw::{SpaceTimeEdge, SpaceTimeVertex};
+use crate::networks::aoa_wait_nw::visualization::dot::{AoaWaitDot, AoaWaitDotSettings};
+use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitVertex};
 use crate::utils::std_utils::Map;
 use crate::{Commodity, Problem, SpaceTime, Transport, Variant, VecTransport};
 
-pub struct SpaceTimeNwSettings {
+pub struct AoaWaitNwSettings {
     pub add_bypass_edges: bool,
 }
 
-pub type SpaceTimeGraph = GraphCore<SpaceTimeVertex, SpaceTimeEdge>;
+pub type AoaWaitGraph = GraphCore<AoaWaitVertex, AoaWaitEdge>;
 
-pub struct SpaceTimeNw<'a, V>
+pub struct AoaWaitNw<'a, V>
 where
     V: Variant,
 {
     p: &'a Problem<V>,
-    g: SpaceTimeGraph,
+    g: AoaWaitGraph,
     /// Map from space-time pair to vertex index.
     st_to_v: Map<SpaceTime, VIdx>,
     /// Single arc index per transport.
@@ -26,7 +26,7 @@ where
 }
 
 // helpers
-impl<V> SpaceTimeNw<'_, V>
+impl<V> AoaWaitNw<'_, V>
 where
     V: Variant,
 {
@@ -34,7 +34,7 @@ where
         self.p
     }
 
-    pub(crate) fn g(&self) -> &SpaceTimeGraph {
+    pub(crate) fn g(&self) -> &AoaWaitGraph {
         &self.g
     }
 
@@ -60,11 +60,11 @@ where
 }
 
 // api
-impl<'a, V> SpaceTimeNw<'a, V>
+impl<'a, V> AoaWaitNw<'a, V>
 where
     V: Variant,
 {
-    pub fn construct(p: &'a Problem<V>, settings: SpaceTimeNwSettings) -> Self {
+    pub fn construct(p: &'a Problem<V>, settings: AoaWaitNwSettings) -> Self {
         let output = super::construct::construct(p, settings);
         Self {
             p,
@@ -76,7 +76,7 @@ where
         }
     }
 
-    pub fn as_dot_graph(&'a self, settings: Option<SpaceTimeDotSettings>) -> SpaceTimeDot<'a, V> {
-        SpaceTimeDot::new(self, settings)
+    pub fn as_dot_graph(&'a self, settings: Option<AoaWaitDotSettings>) -> AoaWaitDot<'a, V> {
+        AoaWaitDot::new(self, settings)
     }
 }

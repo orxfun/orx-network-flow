@@ -1,11 +1,11 @@
-use crate::mcnf::mcnf_solvers::space_time_ro_solver::vars::RoVars;
-use crate::networks::SpaceTimeNw;
+use crate::mcnf::mcnf_solvers::aoa_wait_ro_solver::vars::RoVars;
+use crate::networks::AoaWaitNw;
 use crate::{FlowUnit, Variant};
 use alloc::format;
 use good_lp::{Expression, Solver, SolverModel, constraint};
 
 pub fn add_capacity_constraints<'a, V: Variant, S: Solver>(
-    nw: &SpaceTimeNw<'a, V>,
+    nw: &AoaWaitNw<'a, V>,
     ro_vars: &RoVars<'a, V>,
     model: &mut S::Model,
 ) {
