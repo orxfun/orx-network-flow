@@ -5,6 +5,8 @@ use crate::mcnf::McnfStats;
 use crate::networks::{AoaWaitNw, AonWaitNw};
 use good_lp::Solver;
 
+type StatsSolver = good_lp::solvers::lp_solvers::LpSolver<lp_solvers::solvers::Cplex>;
+
 pub struct McnfSolver;
 
 impl McnfSolver {
@@ -29,7 +31,7 @@ impl McnfSolver {
     where
         V: Variant,
     {
-        todo!()
+        AonWaitRoMcnfSolver::<V, StatsSolver>::compute_stats(nw, params)
     }
 
     // aoa - wait
@@ -47,12 +49,12 @@ impl McnfSolver {
     }
 
     pub fn aoa_wait_ro_stats<'a, V>(
-        nw: &'a AonWaitNw<'a, V>,
-        params: AonWaitRoMcnfParams,
+        nw: &'a AoaWaitNw<'a, V>,
+        params: AoaWaitRoMcnfParams,
     ) -> McnfStats
     where
         V: Variant,
     {
-        todo!()
+        AoaWaitRoMcnfSolver::<V, StatsSolver>::compute_stats(nw, params)
     }
 }
