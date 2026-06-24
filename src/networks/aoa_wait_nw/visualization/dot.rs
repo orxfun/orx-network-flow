@@ -227,25 +227,83 @@ where
             .join("-")
     }
 
-    fn path_with_waiting_str(&self, path: &Path) -> String {
-        let p = self.nw.p();
-        let mut result = String::new();
-        let mut started = false;
-
-        for transport in path.as_slice().iter() {
-            let data = p.transport_by_idx(*transport);
-            let origin_space = p.space_key(data.origin().space());
-            let origin_time = data.origin().time();
-            let dest_time = data.destination().time();
-
-            if started {
-                result.push_str(" -> ");
-            }
-            result.push_str(&format!("{}({}->{})", origin_space, origin_time, dest_time));
-            started = true;
+    fn append_wait_vertices_between(
+        &self,
+        from: SpaceTime,
+        to: SpaceTime,
+        vertices: &mut Vec<VIdx>,
+    ) {
+        if from == to {
+            return;
         }
 
-        result
+        let st_to_v = self.nw.st_to_v();
+
+        if from.space() != to.space() || from.time() > to.time() {
+            if let Some(&v) = st_to_v.get(&to)
+                && vertices.last() != Some(&v)
+            {
+                vertices.push(v);
+            }
+            return;
+        }
+
+        let mut times: Vec<_> = st_to_v
+            .keys()
+            .filter(|st| st.space() == from.space())
+            .map(|st| st.time())
+            .filter(|&t| t > from.time() && t <= to.time())
+            .collect();
+        times.sort_unstable();
+        times.dedup();
+
+        for time in times {
+            let st = SpaceTime::new(from.space(), time);
+            if let Some(&v) = st_to_v.get(&st)
+                && vertices.last() != Some(&v)
+            {
+                vertices.push(v);
+            }
+        }
+    }
+
+    fn path_with_vertices_str(&self, c: Commodity, path: &Path) -> String {
+        let p = self.nw.p();
+        let commodity = p.commodity_by_idx(c);
+        let st_to_v = self.nw.st_to_v();
+
+        let mut vertices = Vec::new();
+        let source = st_to_v[&commodity.origin()];
+        vertices.push(source);
+
+        let mut current = commodity.origin();
+
+        for transport in path.as_slice() {
+            let td = p.transport_by_idx(*transport);
+
+            self.append_wait_vertices_between(current, td.origin(), &mut vertices);
+
+            let head = st_to_v[&td.destination()];
+            if vertices.last() != Some(&head) {
+                vertices.push(head);
+            }
+
+            current = td.destination();
+        }
+
+        self.append_wait_vertices_between(current, commodity.destination(), &mut vertices);
+
+        if let Some(&sink) = st_to_v.get(&commodity.destination())
+            && vertices.last() != Some(&sink)
+        {
+            vertices.push(sink);
+        }
+
+        vertices
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join("-")
     }
 
     fn graph_path_table_label_from_solution(&self, solution: &McnfSolution<V>) -> Option<String> {
@@ -262,7 +320,7 @@ where
                     commodity_str.clone(),
                     self.path_used_transports_str(&path_flow.path),
                     path_flow.path.to_str_as_spaces(p),
-                    path_flow.path.to_string(),
+                    self.path_with_vertices_str(commodity, &path_flow.path),
                     path_flow.flow.to_string(),
                 ));
             }

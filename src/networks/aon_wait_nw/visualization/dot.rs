@@ -318,26 +318,13 @@ where
             .join("-")
     }
 
-    fn path_with_waiting_str(&self, path: &Path) -> String {
+    fn path_with_endpoints_str(&self, c: Commodity, path: &Path) -> String {
         let p = self.nw.p();
-        let mut result = String::new();
-        let mut started = false;
+        let commodity = p.commodity_by_idx(c);
+        let source = self.nw.ro_to_v()[&commodity.origin()];
+        let sink = self.nw.dd_to_v()[&commodity.destination()];
 
-        for transport in path.as_slice().iter() {
-            let data = p.transport_by_idx(*transport);
-            let origin_space = p.space_key(data.origin().space());
-            let dest_space = p.space_key(data.destination().space());
-            let origin_time = data.origin().time();
-            let dest_time = data.destination().time();
-
-            if started {
-                result.push_str(" \u{2192} "); // arrow character
-            }
-            result.push_str(&format!("{}({}→{})", origin_space, origin_time, dest_time));
-            started = true;
-        }
-
-        result
+        format!("{source}-{}-{sink}", path)
     }
 
     fn graph_path_table_label_from_solution(&self, solution: &McnfSolution<V>) -> Option<String> {
@@ -354,7 +341,7 @@ where
                     commodity_str.clone(),
                     self.path_used_transports_str(&path_flow.path),
                     path_flow.path.to_str_as_spaces(p),
-                    path_flow.path.to_string(),
+                    self.path_with_endpoints_str(commodity, &path_flow.path),
                     path_flow.flow.to_string(),
                 ));
             }
