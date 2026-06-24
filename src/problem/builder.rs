@@ -37,8 +37,8 @@ pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState> {
     time_bounds: TimeBounds,
     ori_sorted_commodities: SortedKeyMapBuilder<Space, Vec<Commodity>>,
     des_sorted_commodities: SortedKeyMapBuilder<Space, Vec<Commodity>>,
-    ori_des_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
-    des_ori_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
+    ori_des_sorted_transports: Map<Space, SortedKeyMapBuilder<Space, Vec<Transport>>>,
+    des_ori_sorted_transports: Map<Space, SortedKeyMapBuilder<Space, Vec<Transport>>>,
     sorted_ro_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
     sorted_dd_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
     p: PhantomData<S>,
@@ -198,7 +198,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         // sort ori&des and des&ori transports by departure time
 
         let transports = &self.transports;
-        for des_sorted_transports in self.ori_des_sorted_transports.values_mut() {
+        let mut ori_des_sorted_transports = SortedKeyMapBuilder::default();
+        for (ori, des_sorted_transports) in self.ori_des_sorted_transports.iter_mut() {
             for x in des_sorted_transports.values_mut() {
                 let sort_key = |t: &Transport| {
                     transports
@@ -209,12 +210,11 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
                 };
                 x.sort_by_key(&sort_key);
             }
-            des_sorted_transports.preserve_key_order();
+            ori_des_sorted_transports.insert(*ori, des_sorted_transports.drain_finished());
         }
-        self.ori_des_sorted_transports.preserve_key_order();
 
-        for ori_sorted_transports in self.des_ori_sorted_transports.values_mut() {
-            ori_sorted_transports.preserve_key_order();
+        let mut des_ori_sorted_transports = SortedKeyMapBuilder::default();
+        for (des, ori_sorted_transports) in self.des_ori_sorted_transports.iter_mut() {
             for x in ori_sorted_transports.values_mut() {
                 let sort_key = |t: &Transport| {
                     transports
@@ -225,8 +225,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
                 };
                 x.sort_by_key(&sort_key);
             }
+            des_ori_sorted_transports.insert(*des, ori_sorted_transports.drain_finished());
         }
-        self.des_ori_sorted_transports.preserve_key_order();
 
         // sorted ro & dd commodities
         let mut ro_commodities: Map<_, Vec<_>> = Map::default();
@@ -263,8 +263,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             time_bounds: self.time_bounds,
             ori_sorted_commodities: self.ori_sorted_commodities.finish(),
             des_sorted_commodities: self.des_sorted_commodities.finish(),
-            ori_des_sorted_transports: self.ori_des_sorted_transports,
-            des_ori_sorted_transports: self.des_ori_sorted_transports,
+            ori_des_sorted_transports: ori_des_sorted_transports.finish(),
+            des_ori_sorted_transports: des_ori_sorted_transports.finish(),
             sorted_ro_commodities: self.sorted_ro_commodities,
             sorted_dd_commodities: self.sorted_dd_commodities,
         }
@@ -329,11 +329,13 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             .push(transport_key, vehicle, ori, des, capacity);
 
         self.ori_des_sorted_transports
-            .get_or_add_default_mut(ori_space)
+            .entry(ori_space)
+            .or_default()
             .get_or_add_default_mut(des_space)
             .push(transport);
         self.des_ori_sorted_transports
-            .get_or_add_default_mut(des_space)
+            .entry(des_space)
+            .or_default()
             .get_or_add_default_mut(ori_space)
             .push(transport);
     }

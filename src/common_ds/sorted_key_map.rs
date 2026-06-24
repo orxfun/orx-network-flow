@@ -107,6 +107,14 @@ where
         }
     }
 
+    pub fn drain_finished(&mut self) -> SortedKeyMap<K, V> {
+        let mut sorted_keys: Vec<_> = self.sorted_keys.drain(..).collect();
+        sorted_keys.sort();
+        let mut map = Default::default();
+        core::mem::swap(&mut self.map, &mut map);
+        SortedKeyMap { map, sorted_keys }
+    }
+
     pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
         self.map.values_mut()
     }
@@ -120,5 +128,10 @@ where
             self.sorted_keys.push(key.clone());
         }
         self.map.entry(key).or_default()
+    }
+
+    pub fn insert(&mut self, key: K, value: V) {
+        self.sorted_keys.push(key.clone());
+        self.map.insert(key, value);
     }
 }
