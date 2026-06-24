@@ -262,7 +262,7 @@ where
                     commodity_str.clone(),
                     self.path_used_transports_str(&path_flow.path),
                     path_flow.path.to_str_as_spaces(p),
-                    self.path_with_waiting_str(&path_flow.path),
+                    path_flow.path.to_string(),
                     path_flow.flow.to_string(),
                 ));
             }
