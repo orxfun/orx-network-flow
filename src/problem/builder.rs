@@ -21,7 +21,6 @@ impl ProblemBuilderState for DefiningProblem {}
 pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState>(Problem<V>, PhantomData<S>);
 
 impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
-    // create and complete
     pub fn new() -> Self {
         Self(
             Problem {
