@@ -32,4 +32,9 @@ where
         let keys = self.sorted_keys.iter();
         keys.map(|k| (k, self.map.get(k).expect("exists")))
     }
+
+    #[inline(always)]
+    pub fn get(&self, key: &K) -> Option<&V> {
+        self.map.get(key)
+    }
 }

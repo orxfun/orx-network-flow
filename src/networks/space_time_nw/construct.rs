@@ -7,7 +7,6 @@ use crate::networks::space_time_nw::{
 use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Space, SpaceTime, Time, Variant, VecTransport};
-use alloc::vec::Vec;
 
 pub struct Output {
     pub graph: SpaceTimeGraph,
