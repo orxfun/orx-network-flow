@@ -4,7 +4,6 @@ use crate::graphs::{EIdx, EdgeRange, VIdx};
 use crate::networks::space_time_nw::{
     SpaceTimeEdge, SpaceTimeGraph, SpaceTimeNwSettings, SpaceTimeVertex,
 };
-use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Space, SpaceTime, Time, Variant, VecTransport};
 
@@ -40,9 +39,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: SpaceTimeNwSettings) -> O
         insert_st(com.origin());
         insert_st(com.destination());
     }
-
-    let space_to_sorted_times = map_set_into_map_sorted_vec(space_to_times);
-    let space_to_sorted_times = SortedKeyMap::from(space_to_sorted_times);
+    let space_to_sorted_times = SortedKeyMap::from_sets_to_vecs(space_to_times);
 
     // create vertices for all unique space-time pairs
     let mut st_to_v: Map<SpaceTime, VIdx> = Default::default();

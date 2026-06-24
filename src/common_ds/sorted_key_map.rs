@@ -1,4 +1,4 @@
-use crate::utils::std_utils::{Map, MapKey};
+use crate::utils::std_utils::{Map, MapKey, Set};
 use alloc::vec::Vec;
 
 pub struct SortedKeyMap<K, V>
@@ -52,6 +52,26 @@ where
     #[inline(always)]
     pub fn get(&self, key: &K) -> Option<&V> {
         self.map.get(key)
+    }
+}
+
+impl<K, V> SortedKeyMap<K, Vec<V>>
+where
+    K: Ord + Clone + MapKey,
+    V: Ord,
+{
+    pub fn from_sets_to_vecs(map: Map<K, Set<V>>) -> Self {
+        let mut sorted_keys: Vec<_> = map.keys().cloned().collect();
+        sorted_keys.sort();
+        let map = map
+            .into_iter()
+            .map(|(k, set)| {
+                let mut sorted_vec: Vec<_> = set.into_iter().collect();
+                sorted_vec.sort();
+                (k, sorted_vec)
+            })
+            .collect();
+        Self { map, sorted_keys }
     }
 }
 

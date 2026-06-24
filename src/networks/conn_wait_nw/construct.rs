@@ -4,7 +4,6 @@ use crate::graphs::EdgeRange;
 use crate::graphs::{EIdx, VIdx, core::GraphCoreBuilder};
 use crate::networks::ConnWaitNwSettings;
 use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex};
-use crate::utils::sort::map_set_into_map_sorted_vec;
 use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
 use alloc::vec::Vec;
@@ -49,8 +48,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
             }
         }
     }
-    let ori_to_sorted_ready = map_set_into_map_sorted_vec(ori_to_sorted_ready);
-    let ori_to_sorted_ready = SortedKeyMap::from(ori_to_sorted_ready);
+    let ori_to_sorted_ready = SortedKeyMap::from_sets_to_vecs(ori_to_sorted_ready);
 
     // vertices: due-des
     let mut dd_to_v: Map<SpaceTime, VIdx> = Default::default();
@@ -70,8 +68,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
             }
         }
     }
-    let des_to_sorted_due = map_set_into_map_sorted_vec(des_to_sorted_due);
-    let des_to_sorted_due = SortedKeyMap::from(des_to_sorted_due);
+    let des_to_sorted_due = SortedKeyMap::from_sets_to_vecs(des_to_sorted_due);
 
     // edges: t-t wait
     for (_, des_transports) in p.ori_des_sorted_transports.iter() {
