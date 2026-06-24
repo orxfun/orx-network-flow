@@ -1,11 +1,12 @@
 use crate::commodities::VecCommodity;
-use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
+use crate::graphs::{EIdx, EdgeRange, Graph, VIdx, core::GraphCore};
 use crate::networks::GraphStats;
 use crate::networks::aoa_wait_nw::visualization::dot::{AoaWaitDot, AoaWaitDotSettings};
 use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitVertex};
 use crate::utils::std_utils::Map;
 use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
 
+#[derive(Clone, Copy)]
 pub struct AoaWaitNwSettings {
     pub add_bypass_edges: bool,
 }
@@ -94,6 +95,13 @@ where
             transport_arc: output.transport_arc,
             bypass_edges_range: output.bypass_edges_range,
             bypass_edge_per_commodity: output.bypass_edge_per_commodity,
+        }
+    }
+
+    pub fn stats(&self) -> GraphStats {
+        GraphStats {
+            num_vertices: self.g.v(),
+            num_edges: self.g.e(),
         }
     }
 

@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 pub mod visualization;
 
 mod construct;
