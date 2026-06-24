@@ -72,7 +72,7 @@ impl<'a, V> AonWaitNw<'a, V>
 where
     V: Variant,
 {
-    pub fn stats(p: &Problem<V>, settings: AonWaitNwSettings) -> GraphStats {
+    pub fn compute_stats(p: &Problem<V>, settings: AonWaitNwSettings) -> GraphStats {
         // transport vertices + unique (origin, ready_time) + unique (destination, due_time)
         let mut num_vertices = p.len_transports();
 

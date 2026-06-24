@@ -121,11 +121,11 @@ impl<V: Variant> Problem<V> {
         AoaWaitNw::construct(self, settings)
     }
 
-    pub fn stats_aon_wait_nw(&self, settings: AonWaitNwSettings) -> GraphStats {
-        AonWaitNw::stats(self, settings)
+    pub fn compute_stats_aon_wait_nw(&self, settings: AonWaitNwSettings) -> GraphStats {
+        AonWaitNw::compute_stats(self, settings)
     }
 
-    pub fn stats_aoa_wait_nw(&self, settings: AoaWaitNwSettings) -> GraphStats {
-        AoaWaitNw::stats(self, settings)
+    pub fn compute_stats_aoa_wait_nw(&self, settings: AoaWaitNwSettings) -> GraphStats {
+        AoaWaitNw::compute_stats(self, settings)
     }
 }

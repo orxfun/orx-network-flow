@@ -65,7 +65,7 @@ impl<'a, V> AoaWaitNw<'a, V>
 where
     V: Variant,
 {
-    pub fn stats(p: &Problem<V>, settings: AoaWaitNwSettings) -> GraphStats {
+    pub fn compute_stats(p: &Problem<V>, settings: AoaWaitNwSettings) -> GraphStats {
         let mut num_vertices = 0usize;
         let mut num_wait_edges = 0usize;
         for (space, _) in p.spaces.entries() {
