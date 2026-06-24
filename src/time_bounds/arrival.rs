@@ -1,5 +1,7 @@
 use crate::utils::std_utils::Map;
-use crate::{Problem, Variant, commodities::Commodity, spaces::Space, time::Time};
+use crate::spaces::Spaces;
+use crate::time_bounds::TimeBounds;
+use crate::{Commodities, Problem, Variant, commodities::Commodity, spaces::Space, time::Time};
 
 pub struct ArrivalBounds {
     global: Time,
@@ -44,27 +46,47 @@ pub enum ArrivalBoundType {
 }
 
 pub struct ArrivalTimeBoundsBuilder<'a, V: Variant> {
-    p: &'a mut Problem<V>,
+    spaces: &'a Spaces<V>,
+    commodities: &'a Commodities<V>,
+    time_bounds: &'a mut TimeBounds,
     bound_type: ArrivalBoundType,
 }
 
 impl<'a, V: Variant> ArrivalTimeBoundsBuilder<'a, V> {
-    fn new(p: &'a mut Problem<V>, bound_type: ArrivalBoundType) -> Self {
-        Self { p, bound_type }
+    fn new(
+        spaces: &'a Spaces<V>,
+        commodities: &'a Commodities<V>,
+        time_bounds: &'a mut TimeBounds,
+        bound_type: ArrivalBoundType,
+    ) -> Self {
+        Self {
+            spaces,
+            commodities,
+            time_bounds,
+            bound_type,
+        }
     }
 
-    pub(crate) fn earliness(p: &'a mut Problem<V>) -> Self {
-        Self::new(p, ArrivalBoundType::Earliness)
+    pub(crate) fn earliness(
+        spaces: &'a Spaces<V>,
+        commodities: &'a Commodities<V>,
+        time_bounds: &'a mut TimeBounds,
+    ) -> Self {
+        Self::new(spaces, commodities, time_bounds, ArrivalBoundType::Earliness)
     }
 
-    pub(crate) fn lateness(p: &'a mut Problem<V>) -> Self {
-        Self::new(p, ArrivalBoundType::Lateness)
+    pub(crate) fn lateness(
+        spaces: &'a Spaces<V>,
+        commodities: &'a Commodities<V>,
+        time_bounds: &'a mut TimeBounds,
+    ) -> Self {
+        Self::new(spaces, commodities, time_bounds, ArrivalBoundType::Lateness)
     }
 
     fn bounds(&mut self) -> &mut ArrivalBounds {
         match self.bound_type {
-            ArrivalBoundType::Earliness => &mut self.p.time_bounds.max_earliness,
-            ArrivalBoundType::Lateness => &mut self.p.time_bounds.max_lateness,
+            ArrivalBoundType::Earliness => &mut self.time_bounds.max_earliness,
+            ArrivalBoundType::Lateness => &mut self.time_bounds.max_lateness,
         }
     }
 
@@ -75,8 +97,8 @@ impl<'a, V: Variant> ArrivalTimeBoundsBuilder<'a, V> {
 
     pub fn by_space(mut self, space: &V::S, bound: impl Into<Time>) -> Self {
         let space = self
-            .p
-            .space_idx(space)
+            .spaces
+            .get_ind_by_key(space)
             .expect("Space '{space}' does not belong to the problem");
         self.bounds().by_space.insert(space, bound.into());
         self
@@ -84,8 +106,8 @@ impl<'a, V: Variant> ArrivalTimeBoundsBuilder<'a, V> {
 
     pub fn by_commodity(mut self, commodity: &V::K, bound: impl Into<Time>) -> Self {
         let commodity = self
-            .p
-            .commodity_ind(commodity)
+            .commodities
+            .get_ind_by_key(commodity)
             .expect("Commodity '{commodity}' does not belong to the problem");
         self.bounds().by_commodity.insert(commodity, bound.into());
         self

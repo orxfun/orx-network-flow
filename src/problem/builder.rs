@@ -1,11 +1,19 @@
+use crate::common_ds::SortedKeyMap;
+use crate::costs::Costs;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, LostRevenueBuilder, TransportCost};
 use crate::problem::connectivity::{
-    SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
+    Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
+use crate::spaces::Spaces;
 use crate::spaces::{Coordinate, Geocode, Location, SpaceData};
+use crate::time_bounds::TimeBounds;
 use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
+use crate::transports::Transports;
 use crate::utils::std_utils::Map;
+use crate::vehicle_types::VehicleTypes;
+use crate::vehicles::Vehicles;
+use crate::{Commodities, IdxMap};
 use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant};
 use alloc::vec::Vec;
 use core::marker::PhantomData;
@@ -18,33 +26,63 @@ impl ProblemBuilderState for DefiningSpaces {}
 pub struct DefiningProblem;
 impl ProblemBuilderState for DefiningProblem {}
 
-pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState>(Problem<V>, PhantomData<S>);
+pub struct ProblemBuilder<V: Variant, S: ProblemBuilderState> {
+    spaces: Spaces<V>,
+    vehicle_types: VehicleTypes<V>,
+    vehicles: Vehicles<V>,
+    commodities: Commodities<V>,
+    transports: Transports<V>,
+    connectivity: Connectivity,
+    costs: Costs<V>,
+    time_bounds: TimeBounds,
+    ori_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
+    des_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
+    ori_des_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
+    des_ori_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
+    sorted_ro_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
+    sorted_dd_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
+    p: PhantomData<S>,
+}
 
 impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
     pub fn new() -> Self {
-        Self(
-            Problem {
-                spaces: Default::default(),
-                vehicle_types: Default::default(),
-                vehicles: Default::default(),
-                commodities: Default::default(),
-                transports: Default::default(),
-                connectivity: Default::default(),
-                costs: Default::default(),
-                time_bounds: Default::default(),
-                ori_sorted_commodities: Default::default(),
-                des_sorted_commodities: Default::default(),
-                ori_des_sorted_transports: Default::default(),
-                des_ori_sorted_transports: Default::default(),
-                sorted_ro_commodities: Default::default(),
-                sorted_dd_commodities: Default::default(),
-            },
-            PhantomData,
-        )
+        Self {
+            spaces: Default::default(),
+            vehicle_types: Default::default(),
+            vehicles: Default::default(),
+            commodities: Default::default(),
+            transports: Default::default(),
+            connectivity: Default::default(),
+            costs: Default::default(),
+            time_bounds: Default::default(),
+            ori_sorted_commodities: Default::default(),
+            des_sorted_commodities: Default::default(),
+            ori_des_sorted_transports: Default::default(),
+            des_ori_sorted_transports: Default::default(),
+            sorted_ro_commodities: Default::default(),
+            sorted_dd_commodities: Default::default(),
+            p: PhantomData,
+        }
     }
 
     pub fn spaces(self) -> ProblemBuilder<V, DefiningProblem> {
-        ProblemBuilder(self.0, PhantomData)
+        ProblemBuilder {
+            spaces: self.spaces,
+            vehicle_types: self.vehicle_types,
+            vehicles: self.vehicles,
+            commodities: self.commodities,
+            transports: self.transports,
+            connectivity: self.connectivity,
+            costs: self.costs,
+            time_bounds: self.time_bounds,
+            ori_sorted_commodities: self.ori_sorted_commodities,
+            des_sorted_commodities: self.des_sorted_commodities,
+            ori_des_sorted_transports: self.ori_des_sorted_transports,
+            des_ori_sorted_transports: self.des_ori_sorted_transports,
+            sorted_ro_commodities: self.sorted_ro_commodities,
+            sorted_dd_commodities: self.sorted_dd_commodities,
+            p: PhantomData,
+        }
     }
 
     pub fn with_basic_spaces(
@@ -52,9 +90,25 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         spaces: impl IntoIterator<Item = V::S>,
     ) -> ProblemBuilder<V, DefiningProblem> {
         for s in spaces {
-            self.0.spaces.push(s, SpaceData::new(Location::Basic));
+            self.spaces.push(s, SpaceData::new(Location::Basic));
         }
-        ProblemBuilder(self.0, PhantomData)
+        ProblemBuilder {
+            spaces: self.spaces,
+            vehicle_types: self.vehicle_types,
+            vehicles: self.vehicles,
+            commodities: self.commodities,
+            transports: self.transports,
+            connectivity: self.connectivity,
+            costs: self.costs,
+            time_bounds: self.time_bounds,
+            ori_sorted_commodities: self.ori_sorted_commodities,
+            des_sorted_commodities: self.des_sorted_commodities,
+            ori_des_sorted_transports: self.ori_des_sorted_transports,
+            des_ori_sorted_transports: self.des_ori_sorted_transports,
+            sorted_ro_commodities: self.sorted_ro_commodities,
+            sorted_dd_commodities: self.sorted_dd_commodities,
+            p: PhantomData,
+        }
     }
 
     pub fn with_euclidean_spaces(
@@ -62,11 +116,26 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
     ) -> ProblemBuilder<V, DefiningProblem> {
         for (s, x, y) in spaces {
-            self.0
-                .spaces
+            self.spaces
                 .push(s, SpaceData::new(Location::Euclidean(Coordinate { x, y })));
         }
-        ProblemBuilder(self.0, PhantomData)
+        ProblemBuilder {
+            spaces: self.spaces,
+            vehicle_types: self.vehicle_types,
+            vehicles: self.vehicles,
+            commodities: self.commodities,
+            transports: self.transports,
+            connectivity: self.connectivity,
+            costs: self.costs,
+            time_bounds: self.time_bounds,
+            ori_sorted_commodities: self.ori_sorted_commodities,
+            des_sorted_commodities: self.des_sorted_commodities,
+            ori_des_sorted_transports: self.ori_des_sorted_transports,
+            des_ori_sorted_transports: self.des_ori_sorted_transports,
+            sorted_ro_commodities: self.sorted_ro_commodities,
+            sorted_dd_commodities: self.sorted_dd_commodities,
+            p: PhantomData,
+        }
     }
 
     pub fn with_geographic_spaces(
@@ -74,12 +143,28 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
     ) -> ProblemBuilder<V, DefiningProblem> {
         for (s, lat, lon) in spaces {
-            self.0.spaces.push(
+            self.spaces.push(
                 s,
                 SpaceData::new(Location::Geographic(Geocode { lat, lon })),
             );
         }
-        ProblemBuilder(self.0, PhantomData)
+        ProblemBuilder {
+            spaces: self.spaces,
+            vehicle_types: self.vehicle_types,
+            vehicles: self.vehicles,
+            commodities: self.commodities,
+            transports: self.transports,
+            connectivity: self.connectivity,
+            costs: self.costs,
+            time_bounds: self.time_bounds,
+            ori_sorted_commodities: self.ori_sorted_commodities,
+            des_sorted_commodities: self.des_sorted_commodities,
+            ori_des_sorted_transports: self.ori_des_sorted_transports,
+            des_ori_sorted_transports: self.des_ori_sorted_transports,
+            sorted_ro_commodities: self.sorted_ro_commodities,
+            sorted_dd_commodities: self.sorted_dd_commodities,
+            p: PhantomData,
+        }
     }
 }
 
@@ -87,72 +172,68 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
     pub fn finish(mut self) -> Problem<V> {
         // sort ori and des commodities by ready time and due time
 
-        let mut ori_sorted_commodities = Default::default();
-        core::mem::swap(
-            &mut ori_sorted_commodities,
-            &mut self.0.ori_sorted_commodities,
-        );
-
-        let mut des_sorted_commodities = Default::default();
-        core::mem::swap(
-            &mut des_sorted_commodities,
-            &mut self.0.des_sorted_commodities,
-        );
-
-        let sort_key = |c: &Commodity| self.0.commodity_by_idx(*c).origin().time();
-        for x in ori_sorted_commodities.values_mut() {
+        let commodities = &self.commodities;
+        for x in self.ori_sorted_commodities.values_mut() {
+            let sort_key = |c: &Commodity| {
+                commodities
+                    .get_by_idx(*c)
+                    .expect("validated problem")
+                    .origin()
+                    .time()
+            };
             x.sort_by_key(&sort_key);
         }
-        ori_sorted_commodities.preserve_key_order();
+        self.ori_sorted_commodities.preserve_key_order();
 
-        let sort_key = |c: &Commodity| self.0.commodity_by_idx(*c).destination().time();
-        for x in des_sorted_commodities.values_mut() {
+        for x in self.des_sorted_commodities.values_mut() {
+            let sort_key = |c: &Commodity| {
+                commodities
+                    .get_by_idx(*c)
+                    .expect("validated problem")
+                    .destination()
+                    .time()
+            };
             x.sort_by_key(&sort_key);
         }
-        des_sorted_commodities.preserve_key_order();
-
-        self.0.ori_sorted_commodities = ori_sorted_commodities;
-        self.0.des_sorted_commodities = des_sorted_commodities;
+        self.des_sorted_commodities.preserve_key_order();
 
         // sort ori&des and des&ori transports by departure time
 
-        let mut ori_des_sorted_transports = Default::default();
-        core::mem::swap(
-            &mut ori_des_sorted_transports,
-            &mut self.0.ori_des_sorted_transports,
-        );
-
-        let mut des_ori_sorted_transports = Default::default();
-        core::mem::swap(
-            &mut des_ori_sorted_transports,
-            &mut self.0.des_ori_sorted_transports,
-        );
-
-        let sort_key = |t: &Transport| self.0.transport_by_idx(*t).origin().time();
-
-        for des_sorted_transports in ori_des_sorted_transports.values_mut() {
+        let transports = &self.transports;
+        for des_sorted_transports in self.ori_des_sorted_transports.values_mut() {
             for x in des_sorted_transports.values_mut() {
+                let sort_key = |t: &Transport| {
+                    transports
+                        .get_by_idx(*t)
+                        .expect("validated problem")
+                        .origin()
+                        .time()
+                };
                 x.sort_by_key(&sort_key);
             }
             des_sorted_transports.preserve_key_order();
         }
-        ori_des_sorted_transports.preserve_key_order();
+        self.ori_des_sorted_transports.preserve_key_order();
 
-        for ori_sorted_transports in des_ori_sorted_transports.values_mut() {
+        for ori_sorted_transports in self.des_ori_sorted_transports.values_mut() {
             ori_sorted_transports.preserve_key_order();
             for x in ori_sorted_transports.values_mut() {
+                let sort_key = |t: &Transport| {
+                    transports
+                        .get_by_idx(*t)
+                        .expect("validated problem")
+                        .origin()
+                        .time()
+                };
                 x.sort_by_key(&sort_key);
             }
         }
-        des_ori_sorted_transports.preserve_key_order();
-
-        self.0.ori_des_sorted_transports = ori_des_sorted_transports;
-        self.0.des_ori_sorted_transports = des_ori_sorted_transports;
+        self.des_ori_sorted_transports.preserve_key_order();
 
         // sorted ro & dd commodities
         let mut ro_commodities: Map<_, Vec<_>> = Map::default();
         let mut dd_commodities: Map<_, Vec<_>> = Map::default();
-        for (c, x) in self.0.commodities.indices_values() {
+        for (c, x) in self.commodities.indices_values() {
             ro_commodities.entry(x.origin()).or_default().push(c);
             dd_commodities.entry(x.destination()).or_default().push(c);
         }
@@ -162,24 +243,39 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         for (_, commodities) in &mut ro_commodities {
             commodities.sort();
         }
-        self.0.sorted_ro_commodities = ro_commodities.into_iter().collect();
+        self.sorted_ro_commodities = ro_commodities.into_iter().collect();
 
         let mut dd_commodities: Vec<_> = dd_commodities.into_iter().collect();
         dd_commodities.sort();
         for (_, commodities) in &mut dd_commodities {
             commodities.sort();
         }
-        self.0.sorted_dd_commodities = dd_commodities.into_iter().collect();
+        self.sorted_dd_commodities = dd_commodities.into_iter().collect();
 
         // finish
 
-        self.0
+        Problem {
+            spaces: self.spaces,
+            vehicle_types: self.vehicle_types,
+            vehicles: self.vehicles,
+            commodities: self.commodities,
+            transports: self.transports,
+            connectivity: self.connectivity,
+            costs: self.costs,
+            time_bounds: self.time_bounds,
+            ori_sorted_commodities: self.ori_sorted_commodities,
+            des_sorted_commodities: self.des_sorted_commodities,
+            ori_des_sorted_transports: self.ori_des_sorted_transports,
+            des_ori_sorted_transports: self.des_ori_sorted_transports,
+            sorted_ro_commodities: self.sorted_ro_commodities,
+            sorted_dd_commodities: self.sorted_dd_commodities,
+        }
     }
 
     // build
 
     fn space_unwrap(&self, key: &V::S) -> Space {
-        match self.0.spaces.get_ind_by_key(key) {
+        match self.spaces.get_ind_by_key(key) {
             Some(s) => s,
             None => panic!("Missing space '{key}'"),
         }
@@ -200,14 +296,12 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         let des_space = self.space_unwrap(&destination);
         let des = SpaceTime::new(des_space, due_time.into());
 
-        let commodity = self.0.commodities.push(commodity_key, ori, des, amount);
+        let commodity = self.commodities.push(commodity_key, ori, des, amount);
 
-        self.0
-            .ori_sorted_commodities
+        self.ori_sorted_commodities
             .get_or_add_default_mut(ori_space)
             .push(commodity);
-        self.0
-            .des_sorted_commodities
+        self.des_sorted_commodities
             .get_or_add_default_mut(des_space)
             .push(commodity);
     }
@@ -223,8 +317,8 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         arrival_time: impl Into<Time>,
         capacity: V::F,
     ) {
-        let vehicle_type = self.0.vehicle_types.push(vehicle_type_key);
-        let vehicle = self.0.vehicles.push(vehicle_key, vehicle_type);
+        let vehicle_type = self.vehicle_types.push(vehicle_type_key);
+        let vehicle = self.vehicles.push(vehicle_key, vehicle_type);
 
         let ori_space = self.space_unwrap(&origin);
         let ori = SpaceTime::new(ori_space, departure_time.into());
@@ -233,64 +327,72 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         let des = SpaceTime::new(des_space, arrival_time.into());
 
         let transport = self
-            .0
             .transports
             .push(transport_key, vehicle, ori, des, capacity);
 
-        self.0
-            .ori_des_sorted_transports
+        self.ori_des_sorted_transports
             .get_or_add_default_mut(ori_space)
             .get_or_add_default_mut(des_space)
             .push(transport);
-        self.0
-            .des_ori_sorted_transports
+        self.des_ori_sorted_transports
             .get_or_add_default_mut(des_space)
             .get_or_add_default_mut(ori_space)
             .push(transport);
     }
 
     pub fn spatial_connectivity(&mut self) -> SpatialConnectivityBuilder<'_, V> {
-        let spatial =
-            unsafe { &mut *(&mut self.0.connectivity.spatial as *mut SpatialConnectivity) };
-        SpatialConnectivityBuilder::new(&self.0, spatial)
+        let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
+        let spatial = unsafe { &mut *(&mut self.connectivity.spatial as *mut SpatialConnectivity) };
+        SpatialConnectivityBuilder::new(spaces, spatial)
     }
 
     pub fn temporal_connectivity(&mut self) -> TemporalConnectivityBuilder<'_, V> {
+        let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
         let temporal =
-            unsafe { &mut *(&mut self.0.connectivity.temporal as *mut TemporalConnectivity) };
-        TemporalConnectivityBuilder::new(&self.0, temporal)
+            unsafe { &mut *(&mut self.connectivity.temporal as *mut TemporalConnectivity) };
+        TemporalConnectivityBuilder::new(spaces, temporal)
     }
 
     // costs
 
     pub fn earliness_cost(&mut self) -> &mut EarlinessCost<V> {
-        &mut self.0.costs.earliness
+        &mut self.costs.earliness
     }
 
     pub fn lateness_cost(&mut self) -> &mut LatenessCost<V> {
-        &mut self.0.costs.lateness
+        &mut self.costs.lateness
     }
 
     pub fn lost_revenue_cost<'a>(&'a mut self) -> LostRevenueBuilder<'a, V> {
-        let lost_revenue = unsafe { &mut *(&mut self.0.costs.lost_revenue as *mut LostRevenue<_>) };
-        LostRevenueBuilder::new(&self.0, lost_revenue)
+        let commodities = unsafe { &*(&self.commodities as *const Commodities<V>) };
+        let lost_revenue = unsafe { &mut *(&mut self.costs.lost_revenue as *mut LostRevenue<_>) };
+        LostRevenueBuilder::new(commodities, lost_revenue)
     }
 
     pub fn transport_cost(&mut self) -> &mut TransportCost<V> {
-        &mut self.0.costs.transport
+        &mut self.costs.transport
     }
 
     // time bounds
 
     pub fn max_lateness(&mut self) -> ArrivalTimeBoundsBuilder<'_, V> {
-        ArrivalTimeBoundsBuilder::lateness(&mut self.0)
+        let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
+        let commodities = unsafe { &*(&self.commodities as *const Commodities<V>) };
+        let time_bounds = unsafe { &mut *(&mut self.time_bounds as *mut TimeBounds) };
+        ArrivalTimeBoundsBuilder::lateness(spaces, commodities, time_bounds)
     }
 
     pub fn max_earliness(&mut self) -> ArrivalTimeBoundsBuilder<'_, V> {
-        ArrivalTimeBoundsBuilder::earliness(&mut self.0)
+        let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
+        let commodities = unsafe { &*(&self.commodities as *const Commodities<V>) };
+        let time_bounds = unsafe { &mut *(&mut self.time_bounds as *mut TimeBounds) };
+        ArrivalTimeBoundsBuilder::earliness(spaces, commodities, time_bounds)
     }
 
     pub fn max_waiting(&mut self) -> DepartureTimeBoundsBuilder<'_, V> {
-        DepartureTimeBoundsBuilder::new(&mut self.0)
+        let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
+        let commodities = unsafe { &*(&self.commodities as *const Commodities<V>) };
+        let time_bounds = unsafe { &mut *(&mut self.time_bounds as *mut TimeBounds) };
+        DepartureTimeBoundsBuilder::new(spaces, commodities, time_bounds)
     }
 }

@@ -1,4 +1,4 @@
-use crate::utils::std_utils::{Entry, Map, MapKey};
+use crate::utils::std_utils::{Map, MapKey};
 use alloc::vec::Vec;
 
 pub struct SortedKeyMap<K, V>
