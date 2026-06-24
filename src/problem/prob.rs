@@ -1,5 +1,5 @@
 use crate::IdxMap;
-use crate::commodities::{Commodities, CommoditiesByOdSt, Commodity, CommodityData};
+use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::costs::Costs;
 use crate::networks::{ConnWaitNw, ConnWaitNwSettings, SpaceTimeNw, SpaceTimeNwSettings};
 use crate::problem::connectivity::Connectivity;
@@ -112,12 +112,6 @@ impl<V: Variant> Problem<V> {
 
     pub(crate) fn vehicle_by_idx(&self, t: Vehicle) -> &VehicleData {
         self.vehicles.get_by_idx(t).expect("validated problem")
-    }
-
-    // commodity grouping
-
-    pub fn commodities_by_od_st(&self) -> CommoditiesByOdSt<'_, V> {
-        CommoditiesByOdSt::create(self)
     }
 
     // networks
