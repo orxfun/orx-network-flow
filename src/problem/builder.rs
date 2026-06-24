@@ -37,8 +37,6 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
                 des_sorted_commodities: Default::default(),
                 ori_des_sorted_transports: Default::default(),
                 des_ori_sorted_transports: Default::default(),
-                sorted_commodity_origins: Default::default(),
-                sorted_commodity_destinations: Default::default(),
                 sorted_ro_commodities: Default::default(),
                 sorted_dd_commodities: Default::default(),
             },
@@ -106,11 +104,13 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
         for x in ori_sorted_commodities.values_mut() {
             x.sort_by_key(&sort_key);
         }
+        ori_sorted_commodities.preserve_key_order();
 
         let sort_key = |c: &Commodity| self.0.commodity_by_idx(*c).destination().time();
         for x in des_sorted_commodities.values_mut() {
             x.sort_by_key(&sort_key);
         }
+        des_sorted_commodities.preserve_key_order();
 
         self.0.ori_sorted_commodities = ori_sorted_commodities;
         self.0.des_sorted_commodities = des_sorted_commodities;
@@ -135,25 +135,20 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
             for x in des_sorted_transports.values_mut() {
                 x.sort_by_key(&sort_key);
             }
+            des_sorted_transports.preserve_key_order();
         }
+        ori_des_sorted_transports.preserve_key_order();
 
         for ori_sorted_transports in des_ori_sorted_transports.values_mut() {
+            ori_sorted_transports.preserve_key_order();
             for x in ori_sorted_transports.values_mut() {
                 x.sort_by_key(&sort_key);
             }
         }
+        des_ori_sorted_transports.preserve_key_order();
 
         self.0.ori_des_sorted_transports = ori_des_sorted_transports;
         self.0.des_ori_sorted_transports = des_ori_sorted_transports;
-
-        // sorted commodity origins & destinations
-
-        self.0.sorted_commodity_origins = self.0.ori_sorted_commodities.keys().copied().collect();
-        self.0.sorted_commodity_origins.sort();
-
-        self.0.sorted_commodity_destinations =
-            self.0.des_sorted_commodities.keys().copied().collect();
-        self.0.sorted_commodity_destinations.sort();
 
         // sorted ro & dd commodities
         let mut ro_commodities: Map<_, Vec<_>> = Map::default();
@@ -210,13 +205,11 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
 
         self.0
             .ori_sorted_commodities
-            .entry(ori_space)
-            .or_default()
+            .get_or_add_default_mut(ori_space)
             .push(commodity);
         self.0
             .des_sorted_commodities
-            .entry(des_space)
-            .or_default()
+            .get_or_add_default_mut(des_space)
             .push(commodity);
     }
 
@@ -247,17 +240,13 @@ impl<V: Variant> ProblemBuilder<V, DefiningProblem> {
 
         self.0
             .ori_des_sorted_transports
-            .entry(ori_space)
-            .or_default()
-            .entry(des_space)
-            .or_default()
+            .get_or_add_default_mut(ori_space)
+            .get_or_add_default_mut(des_space)
             .push(transport);
         self.0
             .des_ori_sorted_transports
-            .entry(des_space)
-            .or_default()
-            .entry(ori_space)
-            .or_default()
+            .get_or_add_default_mut(des_space)
+            .get_or_add_default_mut(ori_space)
             .push(transport);
     }
 

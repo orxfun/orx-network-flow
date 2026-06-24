@@ -33,20 +33,18 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
     // vertices: ready-ori
     let mut ro_to_v: Map<SpaceTime, VIdx> = Default::default();
     let mut ori_to_sorted_ready: Map<Space, Set<Time>> = Default::default();
-    for ori in &p.sorted_commodity_origins {
-        if let Some(sorted_commodities) = p.ori_sorted_commodities.get(ori) {
-            for &c in sorted_commodities {
-                let com = p.commodity_by_idx(c);
-                debug_assert_eq!(*ori, com.origin().space());
+    for (ori, sorted_commodities) in p.ori_sorted_commodities.iter() {
+        for &c in sorted_commodities {
+            let com = p.commodity_by_idx(c);
+            debug_assert_eq!(*ori, com.origin().space());
 
-                let sorted_ready_set = ori_to_sorted_ready.entry(*ori).or_default();
-                sorted_ready_set.insert(com.origin().time());
+            let sorted_ready_set = ori_to_sorted_ready.entry(*ori).or_default();
+            sorted_ready_set.insert(com.origin().time());
 
-                let ro = com.origin();
-                if !ro_to_v.contains_key(&ro) {
-                    let v = b.vertex(ConnWaitVertex::ReadyOri(ro));
-                    ro_to_v.insert(ro, v);
-                }
+            let ro = com.origin();
+            if !ro_to_v.contains_key(&ro) {
+                let v = b.vertex(ConnWaitVertex::ReadyOri(ro));
+                ro_to_v.insert(ro, v);
             }
         }
     }
@@ -55,20 +53,18 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
     // vertices: due-des
     let mut dd_to_v: Map<SpaceTime, VIdx> = Default::default();
     let mut des_to_sorted_due: Map<Space, Set<Time>> = Default::default();
-    for des in &p.sorted_commodity_destinations {
-        if let Some(sorted_commodities) = p.des_sorted_commodities.get(des) {
-            for &c in sorted_commodities {
-                let com = p.commodity_by_idx(c);
-                debug_assert_eq!(*des, com.destination().space());
+    for (des, sorted_commodities) in p.des_sorted_commodities.iter() {
+        for &c in sorted_commodities {
+            let com = p.commodity_by_idx(c);
+            debug_assert_eq!(*des, com.destination().space());
 
-                let sorted_due_set = des_to_sorted_due.entry(*des).or_default();
-                sorted_due_set.insert(com.destination().time());
+            let sorted_due_set = des_to_sorted_due.entry(*des).or_default();
+            sorted_due_set.insert(com.destination().time());
 
-                let dd = com.destination();
-                if !dd_to_v.contains_key(&dd) {
-                    let v = b.vertex(ConnWaitVertex::DueDes(dd));
-                    dd_to_v.insert(dd, v);
-                }
+            let dd = com.destination();
+            if !dd_to_v.contains_key(&dd) {
+                let v = b.vertex(ConnWaitVertex::DueDes(dd));
+                dd_to_v.insert(dd, v);
             }
         }
     }

@@ -54,8 +54,19 @@ where
         self.map.values_mut()
     }
 
-    #[inline(always)]
-    pub fn entry(&mut self, key: K) -> Entry<'_, K, V> {
-        self.map.entry(key)
+    #[inline]
+    pub fn get_or_add_default_mut(&mut self, key: K) -> &mut V
+    where
+        V: Default,
+    {
+        if !self.map.contains_key(&key) {
+            self.sorted_keys.push(key.clone());
+        }
+        self.map.entry(key).or_default()
+    }
+
+    // TODO: this is not nice as the struct is not always in sorted state, move to builder pattern
+    pub fn preserve_key_order(&mut self) {
+        self.sorted_keys.sort();
     }
 }

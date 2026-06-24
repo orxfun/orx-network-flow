@@ -8,7 +8,6 @@ use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, SpaceTime, Spaces};
 use crate::time_bounds::TimeBounds;
 use crate::transports::{Transport, TransportData, Transports};
-use crate::utils::std_utils::Map;
 use crate::vehicle_types::{VehicleType, VehicleTypes};
 use crate::vehicles::{Vehicle, VehicleData, Vehicles};
 use alloc::vec::Vec;
@@ -22,12 +21,10 @@ pub struct Problem<V: Variant> {
     pub connectivity: Connectivity,
     pub costs: Costs<V>,
     pub time_bounds: TimeBounds,
-    pub ori_sorted_commodities: Map<Space, Vec<Commodity>>,
-    pub des_sorted_commodities: Map<Space, Vec<Commodity>>,
+    pub ori_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
+    pub des_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
     pub ori_des_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
     pub des_ori_sorted_transports: SortedKeyMap<Space, SortedKeyMap<Space, Vec<Transport>>>,
-    pub sorted_commodity_origins: Vec<Space>,
-    pub sorted_commodity_destinations: Vec<Space>,
     pub sorted_ro_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
     pub sorted_dd_commodities: IdxMap<SpaceTime, Vec<Commodity>, usize>,
 }
