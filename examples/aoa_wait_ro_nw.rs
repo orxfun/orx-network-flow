@@ -37,7 +37,7 @@ fn main() {
     let aoa_wait_sol = aoa_wait_solver.solve().expect("aoa_wait solution");
 
     let dot = dot.with_solution(&aoa_wait_sol).with_stats(stats);
-    dot.create_svg_file("target/aoa_wait_nw.dot", "target/aoa_wait_nw.svg")
+    dot.create_svg_file("target/aoa_wait_ro_nw.dot", "target/aoa_wait_ro_nw.svg")
         .unwrap();
 
     println!("=== Commodity Transported Flow (AonWait vs AoaWait) ===");

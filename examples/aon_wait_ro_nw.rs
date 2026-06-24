@@ -25,7 +25,7 @@ fn main() {
     let solution = solver.solve().unwrap();
 
     let dot = dot.with_solution(&solution).with_stats(stats);
-    dot.create_svg_file("target/aon_wait_nw.dot", "target/aon_wait_nw.svg")
+    dot.create_svg_file("target/aon_wait_ro_nw.dot", "target/aon_wait_ro_nw.svg")
         .unwrap();
 
     for (c, paths) in solution.commodity_paths().enumerated_iter() {
