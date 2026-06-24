@@ -1,10 +1,9 @@
 use crate::commodities::VecCommodity;
-use crate::common_ds::SortedKeyMap;
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
 use crate::networks::GraphStats;
 use crate::networks::aoa_wait_nw::visualization::dot::{AoaWaitDot, AoaWaitDotSettings};
 use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitVertex};
-use crate::utils::std_utils::{Map, Set};
+use crate::utils::std_utils::Map;
 use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
 
 pub struct AoaWaitNwSettings {
@@ -67,74 +66,21 @@ where
     V: Variant,
 {
     pub fn stats(p: &Problem<V>, settings: AoaWaitNwSettings) -> GraphStats {
-        let mut space_to_times: Map<Space, Set<Time>> = Default::default();
-        let mut insert_st = |st: SpaceTime| {
-            space_to_times
-                .entry(st.space())
-                .or_default()
-                .insert(st.time());
-        };
-
-        for t in p.transports.indices() {
-            let td = p.transport_by_idx(t);
-            insert_st(td.origin());
-            insert_st(td.destination());
+        let mut num_vertices = 0usize;
+        let mut num_wait_edges = 0usize;
+        for (space, _) in p.spaces.entries() {
+            let num_times = count_unique_times_at_space(p, space);
+            num_vertices += num_times;
+            num_wait_edges += num_times.saturating_sub(1);
         }
 
-        for c in p.commodities.indices() {
-            let com = p.commodity_by_idx(c);
-            insert_st(com.origin());
-            insert_st(com.destination());
-        }
-
-        let space_to_sorted_times = SortedKeyMap::from_sets_to_vecs(space_to_times);
-        let mut st_to_v: Map<SpaceTime, usize> = Default::default();
-
-        let mut next_v = 0usize;
-        for (space, times) in space_to_sorted_times.iter() {
-            for &time in times {
-                let st = SpaceTime::new(*space, time);
-                st_to_v.insert(st, next_v);
-                next_v += 1;
-            }
-        }
-
-        let mut num_edges = 0usize;
-
-        let mut add_edge = |_tail: usize, _head: usize| {
-            num_edges += 1;
-        };
-
-        // edges: wait arcs
-        for (space, sorted_times) in space_to_sorted_times.iter() {
-            let tails = sorted_times.iter().copied();
-            let heads = sorted_times.iter().copied().skip(1);
-            for (t1, t2) in tails.zip(heads) {
-                let tail = st_to_v[&SpaceTime::new(*space, t1)];
-                let head = st_to_v[&SpaceTime::new(*space, t2)];
-                add_edge(tail, head);
-            }
-        }
-
-        // edges: transport arcs
-        for t in p.transports.indices() {
-            let td = p.transport_by_idx(t);
-            let tail = st_to_v[&td.origin()];
-            let head = st_to_v[&td.destination()];
-            add_edge(tail, head);
-        }
-
-        // edges: bypass arcs
+        let mut num_edges = num_wait_edges + p.len_transports();
         if settings.add_bypass_edges {
-            for (_, com) in p.commodities.indices_values() {
-                let tail = st_to_v[&com.origin()];
-                let head = st_to_v[&com.destination()];
-                add_edge(tail, head);
-            }
+            num_edges += p.len_commodities();
         }
 
         GraphStats {
-            num_vertices: next_v,
+            num_vertices,
             num_edges,
         }
     }
@@ -154,4 +100,155 @@ where
     pub fn as_dot_graph(&'a self, settings: Option<AoaWaitDotSettings>) -> AoaWaitDot<'a, V> {
         AoaWaitDot::new(self, settings)
     }
+}
+
+fn count_unique_times_at_space<V: Variant>(p: &Problem<V>, space: Space) -> usize {
+    let mut count = 0usize;
+
+    // Source 1 (highest priority): origin times of transports that depart from `space`.
+    if let Some(des_sorted_transports) = p.ori_des_sorted_transports.get(&space) {
+        for (_, sorted_transports) in des_sorted_transports.iter() {
+            for &t in sorted_transports {
+                let time = p.transport_by_idx(t).origin().time();
+                if !has_origin_transport_time_before(p, space, t, time) {
+                    count += 1;
+                }
+            }
+        }
+    }
+
+    // Source 2: destination times of transports that arrive to `space`.
+    if let Some(ori_sorted_transports) = p.des_ori_sorted_transports.get(&space) {
+        for (_, sorted_transports) in ori_sorted_transports.iter() {
+            for &t in sorted_transports {
+                let time = p.transport_by_idx(t).destination().time();
+                if has_origin_transport_time(p, space, time) {
+                    continue;
+                }
+                if !has_destination_transport_time_before(p, space, t, time) {
+                    count += 1;
+                }
+            }
+        }
+    }
+
+    // Source 3: ready times of origin commodities at `space`.
+    if let Some(sorted_commodities) = p.ori_sorted_commodities.get(&space) {
+        let mut prev_ready = None;
+        for &c in sorted_commodities {
+            let ready = p.commodity_by_idx(c).origin().time();
+            if prev_ready == Some(ready) {
+                continue;
+            }
+            prev_ready = Some(ready);
+
+            if has_origin_transport_time(p, space, ready)
+                || has_destination_transport_time(p, space, ready)
+            {
+                continue;
+            }
+            count += 1;
+        }
+    }
+
+    // Source 4: due times of destination commodities at `space`.
+    if let Some(sorted_commodities) = p.des_sorted_commodities.get(&space) {
+        let mut prev_due = None;
+        for &c in sorted_commodities {
+            let due = p.commodity_by_idx(c).destination().time();
+            if prev_due == Some(due) {
+                continue;
+            }
+            prev_due = Some(due);
+
+            if has_origin_transport_time(p, space, due)
+                || has_destination_transport_time(p, space, due)
+                || has_origin_commodity_time(p, space, due)
+            {
+                continue;
+            }
+            count += 1;
+        }
+    }
+
+    count
+}
+
+fn has_origin_transport_time<V: Variant>(p: &Problem<V>, space: Space, time: Time) -> bool {
+    if let Some(des_sorted_transports) = p.ori_des_sorted_transports.get(&space) {
+        for (_, sorted_transports) in des_sorted_transports.iter() {
+            for &t in sorted_transports {
+                if p.transport_by_idx(t).origin().time() == time {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+fn has_destination_transport_time<V: Variant>(p: &Problem<V>, space: Space, time: Time) -> bool {
+    if let Some(ori_sorted_transports) = p.des_ori_sorted_transports.get(&space) {
+        for (_, sorted_transports) in ori_sorted_transports.iter() {
+            for &t in sorted_transports {
+                if p.transport_by_idx(t).destination().time() == time {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+fn has_origin_transport_time_before<V: Variant>(
+    p: &Problem<V>,
+    space: Space,
+    current_t: Transport,
+    time: Time,
+) -> bool {
+    if let Some(des_sorted_transports) = p.ori_des_sorted_transports.get(&space) {
+        for (_, sorted_transports) in des_sorted_transports.iter() {
+            for &t in sorted_transports {
+                if t == current_t {
+                    return false;
+                }
+                if p.transport_by_idx(t).origin().time() == time {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+fn has_destination_transport_time_before<V: Variant>(
+    p: &Problem<V>,
+    space: Space,
+    current_t: Transport,
+    time: Time,
+) -> bool {
+    if let Some(ori_sorted_transports) = p.des_ori_sorted_transports.get(&space) {
+        for (_, sorted_transports) in ori_sorted_transports.iter() {
+            for &t in sorted_transports {
+                if t == current_t {
+                    return false;
+                }
+                if p.transport_by_idx(t).destination().time() == time {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+fn has_origin_commodity_time<V: Variant>(p: &Problem<V>, space: Space, time: Time) -> bool {
+    if let Some(sorted_commodities) = p.ori_sorted_commodities.get(&space) {
+        for &c in sorted_commodities {
+            if p.commodity_by_idx(c).origin().time() == time {
+                return true;
+            }
+        }
+    }
+    false
 }
