@@ -1,9 +1,12 @@
 use crate::commodities::VecCommodity;
+use crate::common_ds::SortedKeyMap;
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
+use crate::networks::GraphStats;
 use crate::networks::aoa_wait_nw::visualization::dot::{AoaWaitDot, AoaWaitDotSettings};
 use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitVertex};
-use crate::utils::std_utils::Map;
-use crate::{Commodity, Problem, SpaceTime, Transport, Variant, VecTransport};
+use crate::utils::std_utils::{Map, Set};
+use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
+use alloc::vec;
 
 pub struct AoaWaitNwSettings {
     pub add_bypass_edges: bool,
@@ -64,6 +67,80 @@ impl<'a, V> AoaWaitNw<'a, V>
 where
     V: Variant,
 {
+    pub fn stats(p: &Problem<V>, settings: AoaWaitNwSettings) -> GraphStats {
+        let mut space_to_times: Map<Space, Set<Time>> = Default::default();
+        let mut insert_st = |st: SpaceTime| {
+            space_to_times
+                .entry(st.space())
+                .or_default()
+                .insert(st.time());
+        };
+
+        for t in p.transports.indices() {
+            let td = p.transport_by_idx(t);
+            insert_st(td.origin());
+            insert_st(td.destination());
+        }
+
+        for c in p.commodities.indices() {
+            let com = p.commodity_by_idx(c);
+            insert_st(com.origin());
+            insert_st(com.destination());
+        }
+
+        let space_to_sorted_times = SortedKeyMap::from_sets_to_vecs(space_to_times);
+        let mut st_to_v: Map<SpaceTime, usize> = Default::default();
+
+        let mut next_v = 0usize;
+        for (space, times) in space_to_sorted_times.iter() {
+            for &time in times {
+                let st = SpaceTime::new(*space, time);
+                st_to_v.insert(st, next_v);
+                next_v += 1;
+            }
+        }
+
+        let mut in_degrees = vec![0usize; next_v];
+        let mut out_degrees = vec![0usize; next_v];
+        let mut num_edges = 0usize;
+
+        let mut add_edge = |tail: usize, head: usize| {
+            out_degrees[tail] += 1;
+            in_degrees[head] += 1;
+            num_edges += 1;
+        };
+
+        // edges: wait arcs
+        for (space, sorted_times) in space_to_sorted_times.iter() {
+            let tails = sorted_times.iter().copied();
+            let heads = sorted_times.iter().copied().skip(1);
+            for (t1, t2) in tails.zip(heads) {
+                let tail = st_to_v[&SpaceTime::new(*space, t1)];
+                let head = st_to_v[&SpaceTime::new(*space, t2)];
+                add_edge(tail, head);
+            }
+        }
+
+        // edges: transport arcs
+        for t in p.transports.indices() {
+            let td = p.transport_by_idx(t);
+            let tail = st_to_v[&td.origin()];
+            let head = st_to_v[&td.destination()];
+            add_edge(tail, head);
+        }
+
+        // edges: bypass arcs
+        if settings.add_bypass_edges {
+            for (_, com) in p.commodities.indices_values() {
+                let tail = st_to_v[&com.origin()];
+                let head = st_to_v[&com.destination()];
+                add_edge(tail, head);
+            }
+        }
+
+        GraphStats::from_degrees(&in_degrees, &out_degrees, num_edges)
+    }
+
     pub fn construct(p: &'a Problem<V>, settings: AoaWaitNwSettings) -> Self {
         let output = super::construct::construct(p, settings);
         Self {

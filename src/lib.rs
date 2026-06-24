@@ -48,6 +48,7 @@ pub(crate) use indices::{IdxMap, IdxMapSubset};
 pub use mcnf::AoaWaitRoMcnfParams;
 pub use mcnf::{McnfSolution, McnfSolver};
 pub use networks::AoaWaitNwSettings;
+pub use networks::GraphStats;
 pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
 pub(crate) use time::Time;
 pub(crate) use transports::{Transport, TransportData, Transports, VecTransport};
