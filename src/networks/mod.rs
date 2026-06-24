@@ -1,6 +1,8 @@
-mod aon_wait_nw;
 mod aoa_wait_nw;
+mod aon_wait_nw;
+mod graph_stats;
 
-pub use aon_wait_nw::{AonWaitEdge, AonWaitGraph, AonWaitNw, AonWaitNwSettings, AonWaitVertex};
 pub use aoa_wait_nw::visualization::dot::{AoaWaitDot, AoaWaitDotSettings};
 pub use aoa_wait_nw::{AoaWaitEdge, AoaWaitNw, AoaWaitNwSettings, AoaWaitVertex};
+pub use aon_wait_nw::{AonWaitEdge, AonWaitGraph, AonWaitNw, AonWaitNwSettings, AonWaitVertex};
+pub use graph_stats::GraphStats;

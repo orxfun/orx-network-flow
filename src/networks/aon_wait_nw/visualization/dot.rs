@@ -2,6 +2,7 @@ use crate::graphs::visualization::dot::{
     DotGraph, EdgeSettings, VertexSettings, VertexShape, VertexStyle,
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
+use crate::mcnf::McnfStats;
 use crate::mcnf::Path;
 use crate::networks::aon_wait_nw::{AonWaitEdge, AonWaitGraph, AonWaitNw, AonWaitVertex};
 use crate::{
@@ -77,6 +78,7 @@ where
     edge_settings_by_edge: Option<VecEdge<EdgeSettings>>,
     flows_deprecated: Option<&'a VecEdge<V::F>>,
     solution: Option<&'a McnfSolution<V>>,
+    stats: Option<McnfStats>,
 }
 
 impl<'a, V> AonWaitDot<'a, V>
@@ -90,6 +92,7 @@ where
             edge_settings_by_edge: None,
             flows_deprecated: None,
             solution: None,
+            stats: None,
         }
     }
 
@@ -101,6 +104,11 @@ where
     pub fn with_solution(mut self, solution: &'a McnfSolution<V>) -> Self {
         self.edge_settings_by_edge = Some(self.edge_settings_with_solution(solution));
         self.solution = Some(solution);
+        self
+    }
+
+    pub fn with_stats(mut self, stats: McnfStats) -> Self {
+        self.stats = Some(stats);
         self
     }
 
@@ -372,6 +380,33 @@ where
         table.push_str("</TABLE>");
         Some(table)
     }
+
+    fn graph_info_table_label(&self) -> String {
+        match self.stats {
+            Some(stats) => format!(
+                "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\
+<TR><TD BGCOLOR=\"#f2f2f2\"><B>Metric</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Value</B></TD></TR>\
+<TR><TD>Vertices</TD><TD>{}</TD></TR>\
+<TR><TD>Edges</TD><TD>{}</TD></TR>\
+<TR><TD>Variables</TD><TD>{}</TD></TR>\
+<TR><TD>Constraints</TD><TD>{}</TD></TR>\
+</TABLE>",
+                stats.graph_stats.num_vertices,
+                stats.graph_stats.num_edges,
+                stats.num_variables,
+                stats.num_constraints,
+            ),
+            None => format!(
+                "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\
+<TR><TD BGCOLOR=\"#f2f2f2\"><B>Metric</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Value</B></TD></TR>\
+<TR><TD>Vertices</TD><TD>{}</TD></TR>\
+<TR><TD>Edges</TD><TD>{}</TD></TR>\
+</TABLE>",
+                self.graph().v(),
+                self.graph().e(),
+            ),
+        }
+    }
 }
 
 impl<'a, V> DotGraph for AonWaitDot<'a, V>
@@ -565,8 +600,21 @@ where
     }
 
     fn graph_label(&self) -> Option<impl core::fmt::Display> {
-        self.solution
+        let info = self.graph_info_table_label();
+        let label = match self
+            .solution
             .and_then(|solution| self.graph_path_table_label_from_solution(solution))
+        {
+            Some(path_table) => format!(
+                "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"8\" CELLPADDING=\"0\">\
+<TR><TD ALIGN=\"LEFT\">{}</TD></TR>\
+<TR><TD ALIGN=\"LEFT\">{}</TD></TR>\
+</TABLE>",
+                info, path_table
+            ),
+            None => info,
+        };
+        Some(label)
     }
 
     fn graph(&self) -> &Self::G {
