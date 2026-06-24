@@ -29,15 +29,14 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
             }
 
             let b = match vertex.data() {
-                ConnWaitVertex::ReadyOri(vertex_ro) => {
-                    if *vertex_ro != ro {
-                        0.0
-                    } else {
+                ConnWaitVertex::ReadyOri(vertex_ro) => match *vertex_ro == ro {
+                    true => {
                         let commodities = ro_commodities.iter().map(|&c| p.commodity_by_idx(c));
                         let demand = commodities.map(|c| c.amount());
                         FlowUnit::sum(demand).into_f64()
                     }
-                }
+                    false => 0.0,
+                },
                 ConnWaitVertex::DueDes(dd) => {
                     let commodities = ro_commodities.iter().map(|&c| p.commodity_by_idx(c));
                     let commodities = commodities.filter(|c| c.destination() == *dd);
