@@ -3,7 +3,7 @@ use lp_solvers::solvers::Cplex;
 use orx_network_flow::graphs::Graph;
 use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::{
-    McnfSolver, ProblemBuilder, AoaWaitNwSettings, AoaWaitRoMcnfParams, Variant,
+    AoaWaitNwSettings, AoaWaitRoMcnfParams, McnfSolver, ProblemBuilder, Variant,
 };
 
 #[derive(Clone, Copy, Default)]
