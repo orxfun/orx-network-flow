@@ -1,3 +1,4 @@
+#[path = "shared/shared_problem.rs"]
 mod shared_problem;
 
 use orx_network_flow::McnfSolver;
