@@ -70,3 +70,47 @@ where
         self.sorted_keys.sort();
     }
 }
+
+pub struct SortedKeyMapBuilder<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    map: Map<K, V>,
+    sorted_keys: Vec<K>,
+}
+
+impl<K, V> Default for SortedKeyMapBuilder<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    fn default() -> Self {
+        Self {
+            map: Default::default(),
+            sorted_keys: Default::default(),
+        }
+    }
+}
+
+impl<K, V> SortedKeyMapBuilder<K, V>
+where
+    K: Ord + Clone + MapKey,
+{
+    pub fn finish(mut self) -> SortedKeyMap<K, V> {
+        self.sorted_keys.sort();
+        SortedKeyMap {
+            map: self.map,
+            sorted_keys: self.sorted_keys,
+        }
+    }
+
+    #[inline]
+    pub fn get_or_add_default_mut(&mut self, key: K) -> &mut V
+    where
+        V: Default,
+    {
+        if !self.map.contains_key(&key) {
+            self.sorted_keys.push(key.clone());
+        }
+        self.map.entry(key).or_default()
+    }
+}
