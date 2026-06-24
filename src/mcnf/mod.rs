@@ -1,5 +1,6 @@
 mod factory;
 mod mcnf_solvers;
+mod mcnf_stats;
 mod solution;
 
 pub use factory::McnfSolver;
