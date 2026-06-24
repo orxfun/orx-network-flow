@@ -4,8 +4,8 @@ use std::string::ToString;
 use crate::flow_units::FlowUnit;
 use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
-use crate::networks::ConnWaitNw;
-use crate::networks::conn_wait_nw::ConnWaitEdge;
+use crate::networks::AonWaitNw;
+use crate::networks::aon_wait_nw::AonWaitEdge;
 use crate::{IdxCore, SolutionDeprecated, Time, Transport, Variant};
 use alloc::vec::Vec;
 use orx_priority_queue::{
@@ -18,7 +18,7 @@ pub struct Output<V: Variant> {
 }
 
 impl<V: Variant> Output<V> {
-    pub fn create(nw: &ConnWaitNw<'_, V>, edge_flows: VecEdge<V::F>) -> Self {
+    pub fn create(nw: &AonWaitNw<'_, V>, edge_flows: VecEdge<V::F>) -> Self {
         let solution = create_solution(nw, &edge_flows);
         Self {
             edge_flows,
@@ -28,7 +28,7 @@ impl<V: Variant> Output<V> {
 }
 
 fn create_solution<V: Variant>(
-    nw: &ConnWaitNw<'_, V>,
+    nw: &AonWaitNw<'_, V>,
     edge_flows: &VecEdge<V::F>,
 ) -> SolutionDeprecated<V> {
     let (p, g_orig) = (nw.p(), nw.g());
@@ -37,15 +37,15 @@ fn create_solution<V: Variant>(
 
     let tail = |e: EIdx| g_orig.vertex(g_orig.edge(e).tail());
     let tail_t = |e: EIdx| p.transport_by_idx(tail(e).data().get_t().expect("t"));
-    let edge_cost = |e: EIdx, x: &ConnWaitEdge| match x {
-        ConnWaitEdge::Connect | ConnWaitEdge::Exit => tail_t(e).duration(),
+    let edge_cost = |e: EIdx, x: &AonWaitEdge| match x {
+        AonWaitEdge::Connect | AonWaitEdge::Exit => tail_t(e).duration(),
         _ => Time::zero(),
     };
-    let edge_flow = |e: EIdx, x: &ConnWaitEdge| match x {
-        ConnWaitEdge::Bypass(_) => Default::default(),
+    let edge_flow = |e: EIdx, x: &AonWaitEdge| match x {
+        AonWaitEdge::Bypass(_) => Default::default(),
         _ => edge_flows[e],
     };
-    let map_edge = |e: EIdx, x: &ConnWaitEdge| EdgeData::new(edge_cost(e, x), edge_flow(e, x));
+    let map_edge = |e: EIdx, x: &AonWaitEdge| EdgeData::new(edge_cost(e, x), edge_flow(e, x));
 
     let mut g = g_orig.map(|_, _| (), map_edge);
     let mut heap = BinaryHeapOfIndices::with_index_bound(g.v());

@@ -1,11 +1,11 @@
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
-use crate::networks::ConnWaitNw;
+use crate::networks::AonWaitNw;
 use crate::{FlowUnit, Variant};
 use alloc::format;
 use good_lp::{Expression, Solver, SolverModel, constraint};
 
 pub fn add_capacity_constraints<'a, V: Variant, S: Solver>(
-    nw: &ConnWaitNw<'a, V>,
+    nw: &AonWaitNw<'a, V>,
     ro_vars: &RoVars<'a, V>,
     model: &mut S::Model,
 ) {

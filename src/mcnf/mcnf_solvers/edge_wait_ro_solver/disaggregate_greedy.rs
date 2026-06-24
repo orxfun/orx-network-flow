@@ -2,13 +2,13 @@ use crate::commodities::VecCommodity;
 use crate::graphs::core::GraphCore;
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, VecVertex, Vertex};
 use crate::mcnf::solution::{CommodityLoad, CommodityPaths, Path, PathFlow};
-use crate::networks::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
+use crate::networks::{AonWaitEdge, AonWaitNw, AonWaitVertex};
 use crate::{Commodity, FlowUnit, SpaceTime, Variant, VecTransport};
 use alloc::collections::{BTreeMap, VecDeque};
 use alloc::vec::Vec;
 
 pub fn disaggregate_ro_greedy<V: Variant>(
-    nw: &ConnWaitNw<'_, V>,
+    nw: &AonWaitNw<'_, V>,
     ro: SpaceTime,
     edge_flow: impl Fn(EIdx) -> V::F + Copy,
     transport_loads: &mut VecTransport<Vec<CommodityLoad<V>>>,
@@ -45,10 +45,10 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     let mut ro_vertex = None;
     for (v, vertex) in g.enumerated_vertices() {
         match vertex.data() {
-            ConnWaitVertex::DueDes(dd) => {
+            AonWaitVertex::DueDes(dd) => {
                 dd_to_vertex.insert(*dd, v);
             }
-            ConnWaitVertex::ReadyOri(x) if *x == ro => {
+            AonWaitVertex::ReadyOri(x) if *x == ro => {
                 ro_vertex = Some(v);
             }
             _ => {}
@@ -99,7 +99,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
 
     while let Some(head) = queue.pop_front() {
         let head_originating = match g.vertex(head).data() {
-            ConnWaitVertex::ReadyOri(x) if *x == ro => total_remaining,
+            AonWaitVertex::ReadyOri(x) if *x == ro => total_remaining,
             _ => FlowUnit::zero(),
         };
 
@@ -107,7 +107,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             .vertex(head)
             .in_edges()
             .filter(|&e| edge_flow(e).is_pos())
-            .filter(|&e| !matches!(g.edge(e).data(), ConnWaitEdge::Bypass(_)))
+            .filter(|&e| !matches!(g.edge(e).data(), AonWaitEdge::Bypass(_)))
             .collect();
 
         for e in in_edges {
@@ -169,7 +169,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
     for (v, vertex) in g.enumerated_vertices() {
         let out_edges: Vec<EIdx> = vertex
             .out_edges()
-            .filter(|&e| !matches!(g.edge(e).data(), ConnWaitEdge::Bypass(_)))
+            .filter(|&e| !matches!(g.edge(e).data(), AonWaitEdge::Bypass(_)))
             .collect();
         out_non_bypass_edges_by_vertex[v] = out_edges;
     }
@@ -233,7 +233,7 @@ pub fn disaggregate_ro_greedy<V: Variant>(
             debug_assert!(path_transports.is_empty());
             for &e in &path_edges {
                 let head = g.edge(e).head();
-                if let ConnWaitVertex::Transport(t) = g.vertex(head).data() {
+                if let AonWaitVertex::Transport(t) = g.vertex(head).data() {
                     path_transports.push(*t);
                 }
             }
@@ -321,7 +321,7 @@ fn subtract_assignments<F: FlowUnit>(
 }
 
 fn find_positive_path_dag<V: Variant>(
-    g: &GraphCore<ConnWaitVertex, ConnWaitEdge>,
+    g: &GraphCore<AonWaitVertex, AonWaitEdge>,
     out_non_bypass_edges_by_vertex: &VecVertex<Vec<EIdx>>,
     residual: &VecEdge<V::F>,
     next_out_edge_pos: &mut VecVertex<usize>,

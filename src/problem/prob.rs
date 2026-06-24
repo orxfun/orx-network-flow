@@ -2,7 +2,7 @@ use crate::IdxMap;
 use crate::commodities::{Commodities, Commodity, CommodityData};
 use crate::common_ds::SortedKeyMap;
 use crate::costs::Costs;
-use crate::networks::{ConnWaitNw, ConnWaitNwSettings, SpaceTimeNw, SpaceTimeNwSettings};
+use crate::networks::{AonWaitNw, AonWaitNwSettings, SpaceTimeNw, SpaceTimeNwSettings};
 use crate::problem::connectivity::Connectivity;
 use crate::problem::variant::Variant;
 use crate::spaces::{Space, SpaceData, SpaceTime, Spaces};
@@ -113,8 +113,8 @@ impl<V: Variant> Problem<V> {
 
     // networks
 
-    pub fn construct_wait_nw(&self, settings: ConnWaitNwSettings) -> ConnWaitNw<'_, V> {
-        ConnWaitNw::construct(self, settings)
+    pub fn construct_aon_wait_nw(&self, settings: AonWaitNwSettings) -> AonWaitNw<'_, V> {
+        AonWaitNw::construct(self, settings)
     }
 
     pub fn construct_space_time_nw(&self, settings: SpaceTimeNwSettings) -> SpaceTimeNw<'_, V> {

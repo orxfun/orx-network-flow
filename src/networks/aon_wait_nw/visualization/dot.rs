@@ -3,7 +3,7 @@ use crate::graphs::visualization::dot::{
 };
 use crate::graphs::{EIdx, Edge, Graph, VIdx, VecEdge, Vertex};
 use crate::mcnf::Path;
-use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitNw, ConnWaitVertex};
+use crate::networks::aon_wait_nw::{AonWaitEdge, AonWaitGraph, AonWaitNw, AonWaitVertex};
 use crate::{
     Commodity, CommodityData, FlowUnit, McnfSolution, Problem, Space, SpaceTime, Transport, Variant,
 };
@@ -15,7 +15,7 @@ const EDGE_WIDTH_UNIFORM: f64 = 1.4;
 const EDGE_WIDTH_WITH_FLOW: f64 = 2.8;
 const EDGE_WIDTH_WITHOUT_FLOW: f64 = 0.8;
 
-pub struct ConnWaitDotSettings {
+pub struct AonWaitDotSettings {
     transport: VertexSettings,
     ready_ori: VertexSettings,
     due_des: VertexSettings,
@@ -26,7 +26,7 @@ pub struct ConnWaitDotSettings {
     bypass: EdgeSettings,
 }
 
-impl Default for ConnWaitDotSettings {
+impl Default for AonWaitDotSettings {
     fn default() -> Self {
         Self {
             transport: VertexSettings {
@@ -68,22 +68,22 @@ impl Default for ConnWaitDotSettings {
     }
 }
 
-pub struct ConnWaitDot<'a, V>
+pub struct AonWaitDot<'a, V>
 where
     V: Variant,
 {
-    nw: &'a ConnWaitNw<'a, V>,
-    settings: ConnWaitDotSettings,
+    nw: &'a AonWaitNw<'a, V>,
+    settings: AonWaitDotSettings,
     edge_settings_by_edge: Option<VecEdge<EdgeSettings>>,
     flows_deprecated: Option<&'a VecEdge<V::F>>,
     solution: Option<&'a McnfSolution<V>>,
 }
 
-impl<'a, V> ConnWaitDot<'a, V>
+impl<'a, V> AonWaitDot<'a, V>
 where
     V: Variant,
 {
-    pub fn new(nw: &'a ConnWaitNw<'a, V>, settings: Option<ConnWaitDotSettings>) -> Self {
+    pub fn new(nw: &'a AonWaitNw<'a, V>, settings: Option<AonWaitDotSettings>) -> Self {
         Self {
             nw,
             settings: settings.unwrap_or_default(),
@@ -106,11 +106,11 @@ where
 
     fn edge_settings_default(&self, e: EIdx) -> &EdgeSettings {
         match self.graph().edge(e).data() {
-            ConnWaitEdge::Wait => &self.settings.wait,
-            ConnWaitEdge::Connect => &self.settings.connect,
-            ConnWaitEdge::Enter => &self.settings.enter,
-            ConnWaitEdge::Exit => &self.settings.exit,
-            ConnWaitEdge::Bypass(_) => &self.settings.bypass,
+            AonWaitEdge::Wait => &self.settings.wait,
+            AonWaitEdge::Connect => &self.settings.connect,
+            AonWaitEdge::Enter => &self.settings.enter,
+            AonWaitEdge::Exit => &self.settings.exit,
+            AonWaitEdge::Bypass(_) => &self.settings.bypass,
         }
     }
 
@@ -139,7 +139,7 @@ where
         let edge = self.graph().edge(e);
 
         match edge.data() {
-            ConnWaitEdge::Bypass(c) => {
+            AonWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount();
                 let served = FlowUnit::sum(
                     solution.commodity_paths()[*c]
@@ -152,7 +152,7 @@ where
                     false => FlowUnit::zero(),
                 }
             }
-            ConnWaitEdge::Enter => {
+            AonWaitEdge::Enter => {
                 let ro = self
                     .graph()
                     .vertex(edge.tail())
@@ -166,7 +166,7 @@ where
                 let matching = matching.filter(|pf| pf.path.first() == Some(t));
                 FlowUnit::sum(matching.map(|pf| pf.flow))
             }
-            ConnWaitEdge::Exit => {
+            AonWaitEdge::Exit => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let dd = self
                     .graph()
@@ -180,7 +180,7 @@ where
                 let matching = matching.filter(|pf| pf.path.last() == Some(t));
                 FlowUnit::sum(matching.map(|pf| pf.flow))
             }
-            ConnWaitEdge::Wait | ConnWaitEdge::Connect => {
+            AonWaitEdge::Wait | AonWaitEdge::Connect => {
                 let t1 = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let t2 = self.graph().vertex(edge.head()).data().get_t().expect("t");
                 let all_path_flows = solution
@@ -202,7 +202,7 @@ where
         let edge = self.graph().edge(e);
 
         match edge.data() {
-            ConnWaitEdge::Bypass(c) => {
+            AonWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount();
                 let served = FlowUnit::sum(
                     solution.commodity_paths()[*c]
@@ -217,7 +217,7 @@ where
                     Vec::new()
                 }
             }
-            ConnWaitEdge::Enter => {
+            AonWaitEdge::Enter => {
                 let ro = self
                     .graph()
                     .vertex(edge.tail())
@@ -250,7 +250,7 @@ where
                     })
                     .collect()
             }
-            ConnWaitEdge::Exit => {
+            AonWaitEdge::Exit => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let dd = self
                     .graph()
@@ -283,7 +283,7 @@ where
                     })
                     .collect()
             }
-            ConnWaitEdge::Wait | ConnWaitEdge::Connect => {
+            AonWaitEdge::Wait | AonWaitEdge::Connect => {
                 let t1 = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let t2 = self.graph().vertex(edge.head()).data().get_t().expect("t");
 
@@ -387,16 +387,16 @@ where
     }
 }
 
-impl<'a, V> DotGraph for ConnWaitDot<'a, V>
+impl<'a, V> DotGraph for AonWaitDot<'a, V>
 where
     V: Variant,
 {
-    type G = ConnWaitGraph;
+    type G = AonWaitGraph;
 
     fn vertex_label(&self, v: VIdx) -> impl core::fmt::Display {
         let p = self.nw.p();
         match self.graph().vertex(v).data() {
-            ConnWaitVertex::Transport(t) => {
+            AonWaitVertex::Transport(t) => {
                 let data = p.transport_by_idx(*t);
                 format!(
                     "{}\n{}-{}\n{}-{}",
@@ -407,14 +407,14 @@ where
                     data.destination().time()
                 )
             }
-            ConnWaitVertex::ReadyOri(ro) => {
+            AonWaitVertex::ReadyOri(ro) => {
                 let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
                 let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
                 let total_amount = FlowUnit::sum(amounts);
                 let ori = p.space_key(ro.space());
                 format!("{}\n{}-{}\n+{total_amount}", v, ori, ro.time())
             }
-            ConnWaitVertex::DueDes(dd) => {
+            AonWaitVertex::DueDes(dd) => {
                 let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
                 let amounts = commodities.iter().map(|&c| p.commodity_by_idx(c).amount());
                 let total_amount = FlowUnit::sum(amounts);
@@ -430,11 +430,11 @@ where
             let com_str = |(c, x): (Commodity, &CommodityData<V>)| com_str(p, c, x);
 
             match self.graph().vertex(v).data() {
-                ConnWaitVertex::Transport(t) => {
+                AonWaitVertex::Transport(t) => {
                     let capacity = p.transport_by_idx(*t).capacity();
                     format!("transport capacity = {capacity}")
                 }
-                ConnWaitVertex::ReadyOri(ro) => {
+                AonWaitVertex::ReadyOri(ro) => {
                     let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
                     let num_commodities = commodities.len();
                     let commodities = commodities.as_iterable();
@@ -446,7 +446,7 @@ where
                         "Source vertex per origin & ready\n{num_commodities} commodities\ntotal amount entering = {total_amount}\n\n{commodities}"
                     )
                 }
-                ConnWaitVertex::DueDes(dd) => {
+                AonWaitVertex::DueDes(dd) => {
                     let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
                     let num_commodities = commodities.len();
                     let commodities = commodities.as_iterable();
@@ -464,9 +464,9 @@ where
 
     fn vertex_settings(&self, v: VIdx) -> &VertexSettings {
         match self.graph().vertex(v).data() {
-            ConnWaitVertex::Transport(_) => &self.settings.transport,
-            ConnWaitVertex::ReadyOri(_) => &self.settings.ready_ori,
-            ConnWaitVertex::DueDes(_) => &self.settings.due_des,
+            AonWaitVertex::Transport(_) => &self.settings.transport,
+            AonWaitVertex::ReadyOri(_) => &self.settings.ready_ori,
+            AonWaitVertex::DueDes(_) => &self.settings.due_des,
             _ => todo!("vertex settings"),
         }
     }
@@ -493,28 +493,28 @@ where
         let space = |st: SpaceTime| self.nw.p().space_key(st.space());
 
         let base = match edge.data() {
-            ConnWaitEdge::Wait => {
+            AonWaitEdge::Wait => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let t = p.transport_by_idx(t);
                 let [o, d] = [space(t.origin()), space(t.destination())];
                 format!("Waiting edge at {o} among {o}-{d} transports")
             }
-            ConnWaitEdge::Connect => {
+            AonWaitEdge::Connect => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let t = p.transport_by_idx(t);
                 let [o, d] = [space(t.origin()), space(t.destination())];
                 let [dt, at] = [t.origin().time(), t.destination().time()];
                 format!("Transport edge using capacity of\n{o}-{d} at {dt}-{at}")
             }
-            ConnWaitEdge::Enter => format!("Entering transport network"),
-            ConnWaitEdge::Exit => {
+            AonWaitEdge::Enter => format!("Entering transport network"),
+            AonWaitEdge::Exit => {
                 let t = self.graph().vertex(edge.tail()).data().get_t().expect("t");
                 let t = p.transport_by_idx(t);
                 let [o, d] = [space(t.origin()), space(t.destination())];
                 let [dt, at] = [t.origin().time(), t.destination().time()];
                 format!("Transport edge using capacity of\n{o}-{d} at {dt}-{at}")
             }
-            ConnWaitEdge::Bypass(c) => {
+            AonWaitEdge::Bypass(c) => {
                 let com = p.commodity_by_idx(*c);
                 let com_str = com_str(p, *c, &com);
                 format!("Bypass edge with lost revenue cost\n{com_str}")

@@ -1,7 +1,7 @@
 use super::super::disaggregate_greedy::disaggregate_ro_greedy;
 use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
 use crate::mcnf::solution::{CommodityLoad, CommodityPaths, Path};
-use crate::networks::{ConnWaitEdge, ConnWaitNwSettings, ConnWaitVertex};
+use crate::networks::{AonWaitEdge, AonWaitNwSettings, AonWaitVertex};
 use crate::{
     Commodity, FlowUnit, ProblemBuilder, Variant, VecTransport, commodities::VecCommodity,
 };
@@ -37,7 +37,7 @@ fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transpo
     builder.push_transport(2, 2, "veh", "X", 3_i64, "C", 4_i64, 100);
 
     let p = builder.finish();
-    let nw = p.construct_wait_nw(ConnWaitNwSettings {
+    let nw = p.construct_aon_wait_nw(AonWaitNwSettings {
         add_bypass_edges: true,
     });
 
@@ -61,27 +61,27 @@ fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transpo
         let head_data = head.data();
 
         let flow = match (edge.data(), tail_data, head_data) {
-            (ConnWaitEdge::Enter, ConnWaitVertex::ReadyOri(x), ConnWaitVertex::Transport(t))
+            (AonWaitEdge::Enter, AonWaitVertex::ReadyOri(x), AonWaitVertex::Transport(t))
                 if *x == ro && *t == t_ax =>
             {
                 10
             }
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_ax && *t2 == t_xb => 4,
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_ax && *t2 == t_xc => 6,
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(dd))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_xb && *dd == dd_b =>
             {
                 4
             }
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(dd))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_xc && *dd == dd_c =>
             {
                 6
@@ -134,7 +134,7 @@ fn greedy_disaggregation_splits_within_same_destination_by_remaining_amount() {
     builder.push_transport(0, 0, "veh", "A", 1_i64, "B", 2_i64, 100);
 
     let p = builder.finish();
-    let nw = p.construct_wait_nw(ConnWaitNwSettings {
+    let nw = p.construct_aon_wait_nw(AonWaitNwSettings {
         add_bypass_edges: true,
     });
 
@@ -154,12 +154,12 @@ fn greedy_disaggregation_splits_within_same_destination_by_remaining_amount() {
         let head_data = head.data();
 
         let flow = match (edge.data(), tail_data, head_data) {
-            (ConnWaitEdge::Enter, ConnWaitVertex::ReadyOri(x), ConnWaitVertex::Transport(tt))
+            (AonWaitEdge::Enter, AonWaitVertex::ReadyOri(x), AonWaitVertex::Transport(tt))
                 if *x == ro && *tt == t =>
             {
                 10
             }
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(tt), ConnWaitVertex::DueDes(x))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(tt), AonWaitVertex::DueDes(x))
                 if *tt == t && *x == dd =>
             {
                 10
@@ -213,7 +213,7 @@ fn greedy_disaggregation_handles_larger_branching_instance() {
     builder.push_transport(4, 4, "veh", "X", 3_i64, "D", 4_i64, 100);
 
     let p = builder.finish();
-    let nw = p.construct_wait_nw(ConnWaitNwSettings {
+    let nw = p.construct_aon_wait_nw(AonWaitNwSettings {
         add_bypass_edges: true,
     });
 
@@ -241,42 +241,42 @@ fn greedy_disaggregation_handles_larger_branching_instance() {
         let head_data = head.data();
 
         let flow = match (edge.data(), tail_data, head_data) {
-            (ConnWaitEdge::Enter, ConnWaitVertex::ReadyOri(x), ConnWaitVertex::Transport(t))
+            (AonWaitEdge::Enter, AonWaitVertex::ReadyOri(x), AonWaitVertex::Transport(t))
                 if *x == ro && *t == t_ax =>
             {
                 16
             }
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_ax && *t2 == t_xy => 12,
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_ax && *t2 == t_xd => 4,
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_xy && *t2 == t_yb => 5,
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_xy && *t2 == t_yc => 7,
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(dd))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_yb && *dd == dd_b =>
             {
                 5
             }
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(dd))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_yc && *dd == dd_c =>
             {
                 7
             }
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(dd))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_xd && *dd == dd_d =>
             {
                 4
@@ -346,7 +346,7 @@ fn greedy_disaggregation_extracts_multiple_paths_for_single_commodity() {
     builder.push_transport(3, 3, "veh", "Y", 3_i64, "B", 4_i64, 100);
 
     let p = builder.finish();
-    let nw = p.construct_wait_nw(ConnWaitNwSettings {
+    let nw = p.construct_aon_wait_nw(AonWaitNwSettings {
         add_bypass_edges: true,
     });
 
@@ -368,32 +368,32 @@ fn greedy_disaggregation_extracts_multiple_paths_for_single_commodity() {
         let head_data = head.data();
 
         let flow = match (edge.data(), tail_data, head_data) {
-            (ConnWaitEdge::Enter, ConnWaitVertex::ReadyOri(x), ConnWaitVertex::Transport(t))
+            (AonWaitEdge::Enter, AonWaitVertex::ReadyOri(x), AonWaitVertex::Transport(t))
                 if *x == ro && *t == t_ax =>
             {
                 4
             }
-            (ConnWaitEdge::Enter, ConnWaitVertex::ReadyOri(x), ConnWaitVertex::Transport(t))
+            (AonWaitEdge::Enter, AonWaitVertex::ReadyOri(x), AonWaitVertex::Transport(t))
                 if *x == ro && *t == t_ay =>
             {
                 6
             }
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_ax && *t2 == t_xb => 4,
             (
-                ConnWaitEdge::Connect,
-                ConnWaitVertex::Transport(t1),
-                ConnWaitVertex::Transport(t2),
+                AonWaitEdge::Connect,
+                AonWaitVertex::Transport(t1),
+                AonWaitVertex::Transport(t2),
             ) if *t1 == t_ay && *t2 == t_yb => 6,
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(x))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(x))
                 if *t == t_xb && *x == dd =>
             {
                 4
             }
-            (ConnWaitEdge::Exit, ConnWaitVertex::Transport(t), ConnWaitVertex::DueDes(x))
+            (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(x))
                 if *t == t_yb && *x == dd =>
             {
                 6

@@ -2,7 +2,7 @@ use super::mcnf_solvers::edge_wait_ro_solver::{EdgeWaitRoMcnfParams, EdgeWaitRoM
 use super::mcnf_solvers::space_time_ro_solver::{SpaceTimeRoMcnfParams, SpaceTimeRoMcnfSolver};
 use crate::{
     Variant,
-    networks::{ConnWaitNw, SpaceTimeNw},
+    networks::{AonWaitNw, SpaceTimeNw},
 };
 use good_lp::Solver;
 
@@ -10,7 +10,7 @@ pub struct McnfSolver;
 
 impl McnfSolver {
     pub fn edge_wait_ro<'a, V, S>(
-        nw: &'a ConnWaitNw<'a, V>,
+        nw: &'a AonWaitNw<'a, V>,
         params: EdgeWaitRoMcnfParams,
         solver: S,
     ) -> EdgeWaitRoMcnfSolver<'a, V, S>

@@ -5,12 +5,12 @@ use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::params::DisaggregationStrate
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
 use crate::mcnf::solution::CommodityLoad;
 use crate::{FlowUnit, McnfSolution, Variant, VecTransport};
-use crate::{commodities::VecCommodity, networks::ConnWaitNw};
+use crate::{commodities::VecCommodity, networks::AonWaitNw};
 use alloc::vec::Vec;
 use good_lp::{Solution, Solver, SolverModel, Variable};
 
 pub fn create_solution<V: Variant, S: Solver>(
-    nw: &ConnWaitNw<'_, V>,
+    nw: &AonWaitNw<'_, V>,
     params: &EdgeWaitRoMcnfParams,
     ro_vars: &RoVars<'_, V>,
     solution: &<S::Model as SolverModel>::Solution,

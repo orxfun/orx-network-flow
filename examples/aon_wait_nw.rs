@@ -1,7 +1,7 @@
 use good_lp::LpSolver;
 use lp_solvers::solvers::Cplex;
 use orx_network_flow::graphs::visualization::dot::DotGraph;
-use orx_network_flow::networks::ConnWaitNwSettings;
+use orx_network_flow::networks::AonWaitNwSettings;
 use orx_network_flow::{McnfSolver, ProblemBuilder, Variant};
 
 #[derive(Clone, Copy, Default)]
@@ -91,22 +91,22 @@ fn main() {
 
     let problem = builder.finish();
 
-    let settings = ConnWaitNwSettings {
+    let settings = AonWaitNwSettings {
         add_bypass_edges: true,
     };
-    let nw = problem.construct_wait_nw(settings);
+    let nw = problem.construct_aon_wait_nw(settings);
 
     let dot = nw.as_dot_graph(None);
-    dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
+    dot.create_svg_file("target/aon_wait_nw.dot", "target/aon_wait_nw.svg")
         .unwrap();
 
     let solver = McnfSolver::edge_wait_ro(&nw, Default::default(), cplex_solver());
     solver.display_lp();
-    solver.export_lp("target/conn_wait_nw.lp").expect("lp");
+    solver.export_lp("target/aon_wait_nw.lp").expect("lp");
     let solution = solver.solve().unwrap();
 
     let dot = dot.with_solution(&solution);
-    dot.create_svg_file("target/conn_wait_nw.dot", "target/conn_wait_nw.svg")
+    dot.create_svg_file("target/aon_wait_nw.dot", "target/aon_wait_nw.svg")
         .unwrap();
 
     for (c, paths) in solution.commodity_paths().enumerated_iter() {

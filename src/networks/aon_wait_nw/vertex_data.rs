@@ -1,12 +1,12 @@
 use crate::{SpaceTime, Transport};
 
-pub enum ConnWaitVertex {
+pub enum AonWaitVertex {
     Transport(Transport),
     ReadyOri(SpaceTime),
     DueDes(SpaceTime),
 }
 
-impl ConnWaitVertex {
+impl AonWaitVertex {
     pub fn get_t(&self) -> Option<Transport> {
         match self {
             Self::Transport(t) => Some(*t),

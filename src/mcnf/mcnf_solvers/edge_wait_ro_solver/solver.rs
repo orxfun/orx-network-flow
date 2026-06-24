@@ -5,20 +5,20 @@ use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::obj::objective;
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::params::EdgeWaitRoMcnfParams;
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::sol::create_solution;
 use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::define_vars;
-use crate::networks::ConnWaitNw;
+use crate::networks::AonWaitNw;
 use crate::{Variant, mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars};
 use alloc::string::{String, ToString};
 use good_lp::{Solver, SolverModel};
 
 pub struct EdgeWaitRoMcnfSolver<'a, V: Variant, S: Solver> {
-    nw: &'a ConnWaitNw<'a, V>,
+    nw: &'a AonWaitNw<'a, V>,
     params: EdgeWaitRoMcnfParams,
     ro_vars: RoVars<'a, V>,
     model: S::Model,
 }
 
 impl<'a, V: Variant, S: Solver> EdgeWaitRoMcnfSolver<'a, V, S> {
-    pub fn build(nw: &'a ConnWaitNw<'a, V>, params: EdgeWaitRoMcnfParams, solver: S) -> Self {
+    pub fn build(nw: &'a AonWaitNw<'a, V>, params: EdgeWaitRoMcnfParams, solver: S) -> Self {
         let (pr_vars, ro_vars) = define_vars(nw);
         let obj = objective(nw, &ro_vars);
 

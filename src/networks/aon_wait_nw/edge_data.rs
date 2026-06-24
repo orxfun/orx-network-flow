@@ -1,6 +1,6 @@
 use crate::commodities::Commodity;
 
-pub enum ConnWaitEdge {
+pub enum AonWaitEdge {
     Wait,
     Connect,
     Enter,
@@ -8,7 +8,7 @@ pub enum ConnWaitEdge {
     Bypass(Commodity),
 }
 
-impl ConnWaitEdge {
+impl AonWaitEdge {
     pub fn get_bypass_c(&self) -> Option<Commodity> {
         match self {
             Self::Bypass(c) => Some(*c),

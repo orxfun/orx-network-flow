@@ -26,7 +26,7 @@ impl Variant for MyVariant {
 fn main() {
     let problem = sample_problem();
 
-    let conn_wait_nw = problem.construct_wait_nw(orx_network_flow::networks::ConnWaitNwSettings {
+    let aon_wait_nw = problem.construct_aon_wait_nw(orx_network_flow::networks::AonWaitNwSettings {
         add_bypass_edges: true,
     });
 
@@ -38,11 +38,11 @@ fn main() {
     dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
         .unwrap();
 
-    report_complexity(&problem, &conn_wait_nw, &space_time_nw, true);
+    report_complexity(&problem, &aon_wait_nw, &space_time_nw, true);
 
-    let conn_wait_solver =
-        McnfSolver::edge_wait_ro(&conn_wait_nw, Default::default(), cplex_solver());
-    let conn_wait_sol = conn_wait_solver.solve().expect("conn_wait solution");
+    let aon_wait_solver =
+        McnfSolver::edge_wait_ro(&aon_wait_nw, Default::default(), cplex_solver());
+    let aon_wait_sol = aon_wait_solver.solve().expect("aon_wait solution");
 
     let space_time_solver = McnfSolver::space_time_ro(
         &space_time_nw,
@@ -59,8 +59,8 @@ fn main() {
     dot.create_svg_file("target/space_time_nw.dot", "target/space_time_nw.svg")
         .unwrap();
 
-    println!("=== Commodity Transported Flow (ConnWait vs SpaceTime) ===");
-    for (c, com_paths_a) in conn_wait_sol.commodity_paths().enumerated_iter() {
+    println!("=== Commodity Transported Flow (AonWait vs SpaceTime) ===");
+    for (c, com_paths_a) in aon_wait_sol.commodity_paths().enumerated_iter() {
         let com_paths_b = &space_time_sol.commodity_paths()[c];
 
         let sum_a: u64 = com_paths_a.path_flows.iter().map(|x| x.flow).sum();
@@ -70,8 +70,8 @@ fn main() {
         println!("commodity {key}: {sum_a} vs {sum_b}");
     }
 
-    println!("\n=== Transport Loads (ConnWait vs SpaceTime) ===");
-    for (t, loads_a) in conn_wait_sol.transport_loads().enumerated_iter() {
+    println!("\n=== Transport Loads (AonWait vs SpaceTime) ===");
+    for (t, loads_a) in aon_wait_sol.transport_loads().enumerated_iter() {
         let loads_b = &space_time_sol.transport_loads()[t];
         let load_a: u64 = loads_a.iter().map(|x| x.load).sum();
         let load_b: u64 = loads_b.iter().map(|x| x.load).sum();
@@ -163,7 +163,7 @@ pub fn cplex_solver() -> LpSolver<Cplex> {
 
 fn report_complexity(
     problem: &orx_network_flow::Problem<MyVariant>,
-    conn_wait_nw: &orx_network_flow::networks::ConnWaitNw<'_, MyVariant>,
+    aon_wait_nw: &orx_network_flow::networks::AonWaitNw<'_, MyVariant>,
     space_time_nw: &orx_network_flow::networks::SpaceTimeNw<'_, MyVariant>,
     add_bypass_edges: bool,
 ) {
@@ -174,7 +174,7 @@ fn report_complexity(
         false => 0,
     };
 
-    let cw = conn_wait_nw.as_dot_graph(None);
+    let cw = aon_wait_nw.as_dot_graph(None);
     let st = space_time_nw.as_dot_graph(None);
 
     let cw_v = cw.graph().v();
@@ -199,7 +199,7 @@ fn report_complexity(
     println!("Transports (T): {transports}");
     println!("Bypass edges (B): {bypass_edges}");
 
-    println!("\nConnWait network size:");
+    println!("\nAonWait network size:");
     println!("* vertices: {cw_v}");
     println!("* edges:    {cw_e}");
 
@@ -207,7 +207,7 @@ fn report_complexity(
     println!("* vertices: {st_v}");
     println!("* edges:    {st_e}");
 
-    println!("\nEstimated RO LP size (ConnWait):");
+    println!("\nEstimated RO LP size (AonWait):");
     println!("* variables:   {cw_vars}");
     println!("* constraints: {cw_cons}");
 

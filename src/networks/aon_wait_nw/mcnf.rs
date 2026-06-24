@@ -1,8 +1,8 @@
 use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};
-use crate::networks::conn_wait_nw::output::Output;
-use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
+use crate::networks::aon_wait_nw::output::Output;
+use crate::networks::aon_wait_nw::{AonWaitEdge, AonWaitNw, AonWaitVertex};
 use crate::utils::math_model::{lp_solvers_model_to_lp_file, lp_solvers_model_to_problem};
 use crate::{TransportData, Variant};
 use alloc::{format, string::ToString};
@@ -20,7 +20,7 @@ pub fn cplex_solver() -> LpSolver<Cplex> {
     ))
 }
 
-pub fn solve<V>(nw: &ConnWaitNw<'_, V>, named: bool) -> Output<V>
+pub fn solve<V>(nw: &AonWaitNw<'_, V>, named: bool) -> Output<V>
 where
     V: Variant,
 {
@@ -34,7 +34,7 @@ where
     for e in g.edges() {
         let mut var = VariableDefinition::new().min(0);
 
-        if let ConnWaitEdge::Bypass(c) = e.data() {
+        if let AonWaitEdge::Bypass(c) = e.data() {
             let amount = p.commodity_by_idx(*c).amount().into_f64();
             var = var.max(amount);
         }
@@ -43,29 +43,29 @@ where
             let [i, j] = [e.tail(), e.head()].map(|x| g.vertex(x));
             let [tail, head] = [i.data(), j.data()];
             let name = match e.data() {
-                ConnWaitEdge::Enter => {
+                AonWaitEdge::Enter => {
                     let ro = tail.get_ro().expect("ro");
                     let ori = p.space_key(ro.space());
                     let t = p.transport_by_idx(head.get_t().expect("t"));
                     format!("enter__{ori}_{}__{}", ro.time(), t_str(t))
                 }
-                ConnWaitEdge::Connect => {
+                AonWaitEdge::Connect => {
                     let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
                     let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
                     format!("con__{}__{}", t_str(t1), t_str(t2))
                 }
-                ConnWaitEdge::Wait => {
+                AonWaitEdge::Wait => {
                     let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
                     let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
                     format!("wait__{}__{}", t_str(t1), t_str(t2))
                 }
-                ConnWaitEdge::Exit => {
+                AonWaitEdge::Exit => {
                     let dd = head.get_dd().expect("dd");
                     let des = p.space_key(dd.space());
                     let t = p.transport_by_idx(tail.get_t().expect("t"));
                     format!("exit__{}__{des}_{}", t_str(t), dd.time())
                 }
-                ConnWaitEdge::Bypass(c) => {
+                AonWaitEdge::Bypass(c) => {
                     let com = p.commodity_by_idx(*c);
                     format!("bypass__{}", com.var_str(p))
                 }
@@ -105,7 +105,7 @@ where
     Output::create(nw, edge_flows)
 }
 
-fn objective<V>(nw: &ConnWaitNw<'_, V>, vars: &VecEdge<Variable>) -> Expression
+fn objective<V>(nw: &AonWaitNw<'_, V>, vars: &VecEdge<Variable>) -> Expression
 where
     V: Variant,
 {
@@ -124,7 +124,7 @@ where
 }
 
 fn flow_balance<V: Variant, S: Solver>(
-    nw: &ConnWaitNw<'_, V>,
+    nw: &AonWaitNw<'_, V>,
     vars: &VecEdge<Variable>,
     model: &mut S::Model,
     named: bool,
@@ -143,34 +143,34 @@ fn flow_balance<V: Variant, S: Solver>(
         }
 
         let b = match vertex.data() {
-            ConnWaitVertex::ReadyOri(ro) => {
+            AonWaitVertex::ReadyOri(ro) => {
                 let commodities = p.sorted_ro_commodities.value_by_key_unc(ro);
                 let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
                 let demand = commodities.map(|c| c.amount());
                 FlowUnit::sum(demand).into_f64()
             }
-            ConnWaitVertex::DueDes(dd) => {
+            AonWaitVertex::DueDes(dd) => {
                 let commodities = p.sorted_dd_commodities.value_by_key_unc(dd);
                 let commodities = commodities.iter().map(|&c| p.commodity_by_idx(c));
                 let demand = commodities.map(|c| c.amount());
                 -FlowUnit::sum(demand).into_f64()
             }
-            ConnWaitVertex::Transport(_) => 0.0,
+            AonWaitVertex::Transport(_) => 0.0,
         };
 
         let mut constraint = constraint!(out_minus_in == b);
 
         if named {
             let name = match vertex.data() {
-                ConnWaitVertex::ReadyOri(ro) => {
+                AonWaitVertex::ReadyOri(ro) => {
                     let ori = p.space_key(ro.space());
                     format!("fb_exit__{ori}_{}", ro.time())
                 }
-                ConnWaitVertex::DueDes(dd) => {
+                AonWaitVertex::DueDes(dd) => {
                     let des = p.space_key(dd.space());
                     format!("fb_exit__{des}_{}", dd.time())
                 }
-                ConnWaitVertex::Transport(t) => {
+                AonWaitVertex::Transport(t) => {
                     let t = p.transport_by_idx(*t);
                     format!("fb_tra__{}", t.var_str(p))
                 }
@@ -183,7 +183,7 @@ fn flow_balance<V: Variant, S: Solver>(
 }
 
 fn capacity<V: Variant, S: Solver>(
-    nw: &ConnWaitNw<'_, V>,
+    nw: &AonWaitNw<'_, V>,
     vars: &VecEdge<Variable>,
     model: &mut S::Model,
     named: bool,

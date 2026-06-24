@@ -2,15 +2,15 @@ use crate::commodities::VecCommodity;
 use crate::common_ds::SortedKeyMap;
 use crate::graphs::EdgeRange;
 use crate::graphs::{EIdx, VIdx, core::GraphCoreBuilder};
-use crate::networks::ConnWaitNwSettings;
-use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitGraph, ConnWaitVertex};
+use crate::networks::AonWaitNwSettings;
+use crate::networks::aon_wait_nw::{AonWaitEdge, AonWaitGraph, AonWaitVertex};
 use crate::utils::std_utils::{Map, Set};
 use crate::{IdxCore, Problem, Space, SpaceTime, Time, Transport, Variant, VecTransport};
 use alloc::vec::Vec;
 use core::iter::Peekable;
 
 pub struct Output {
-    pub graph: ConnWaitGraph,
+    pub graph: AonWaitGraph,
     pub ro_to_v: Map<SpaceTime, VIdx>,
     pub dd_to_v: Map<SpaceTime, VIdx>,
     pub transport_edges: VecTransport<Vec<EIdx>>,
@@ -18,8 +18,8 @@ pub struct Output {
     pub bypass_edge_per_commodity: VecCommodity<Option<EIdx>>,
 }
 
-pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Output {
-    let mut builder = ConnWaitGraph::builder();
+pub fn construct<V: Variant>(p: &Problem<V>, settings: AonWaitNwSettings) -> Output {
+    let mut builder = AonWaitGraph::builder();
     let b = &mut builder;
     let mut transport_edges: VecTransport<_> =
         (0..p.len_transports()).map(|_| Vec::new()).collect();
@@ -27,7 +27,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
 
     // vertices: transport
     for t in p.transports.indices() {
-        b.vertex(ConnWaitVertex::Transport(t));
+        b.vertex(AonWaitVertex::Transport(t));
     }
 
     // vertices: ready-ori
@@ -43,7 +43,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
 
             let ro = com.origin();
             if !ro_to_v.contains_key(&ro) {
-                let v = b.vertex(ConnWaitVertex::ReadyOri(ro));
+                let v = b.vertex(AonWaitVertex::ReadyOri(ro));
                 ro_to_v.insert(ro, v);
             }
         }
@@ -63,7 +63,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
 
             let dd = com.destination();
             if !dd_to_v.contains_key(&dd) {
-                let v = b.vertex(ConnWaitVertex::DueDes(dd));
+                let v = b.vertex(AonWaitVertex::DueDes(dd));
                 dd_to_v.insert(dd, v);
             }
         }
@@ -76,7 +76,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
             let tails = transports.iter().copied();
             let heads = transports.iter().copied().skip(1);
             for (tail, head) in tails.zip(heads) {
-                b.edge(ConnWaitEdge::Wait, t_into_v(tail), t_into_v(head));
+                b.edge(AonWaitEdge::Wait, t_into_v(tail), t_into_v(head));
             }
         }
     }
@@ -142,7 +142,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: ConnWaitNwSettings) -> Ou
         for (c, com) in p.commodities.indices_values() {
             let ro = *ro_to_v.get(&com.origin()).expect("exists");
             let dd = *dd_to_v.get(&com.destination()).expect("exists");
-            let e = b.edge(ConnWaitEdge::Bypass(c), ro, dd);
+            let e = b.edge(AonWaitEdge::Bypass(c), ro, dd);
             bypass_edge_per_commodity[c] = Some(e);
         }
     }
@@ -165,7 +165,7 @@ fn t_into_v(t: Transport) -> VIdx {
 
 fn conn_t_t<V: Variant>(
     p: &Problem<V>,
-    b: &mut GraphCoreBuilder<ConnWaitVertex, ConnWaitEdge>,
+    b: &mut GraphCoreBuilder<AonWaitVertex, AonWaitEdge>,
     t_edges: &mut VecTransport<Vec<EIdx>>,
     mut tails_rev: impl Iterator<Item = Transport>,
     mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
@@ -180,7 +180,7 @@ fn conn_t_t<V: Variant>(
 
         match conn_t_t_find_head_for_tail(p, &mut heads_rev, curr_head, tail) {
             Some(head) => {
-                let e = b.edge(ConnWaitEdge::Connect, t_into_v(tail), t_into_v(head));
+                let e = b.edge(AonWaitEdge::Connect, t_into_v(tail), t_into_v(head));
                 t_edges[tail].push(e);
 
                 // same head can be assigned to prior tails
@@ -225,7 +225,7 @@ fn conn_t_t_find_head_for_tail<V: Variant>(
 
 fn conn_ro_t<V: Variant>(
     p: &Problem<V>,
-    b: &mut GraphCoreBuilder<ConnWaitVertex, ConnWaitEdge>,
+    b: &mut GraphCoreBuilder<AonWaitVertex, AonWaitEdge>,
     mut tails_rev: impl Iterator<Item = (Time, VIdx)>,
     mut heads_rev: Peekable<impl Iterator<Item = Transport>>,
 ) -> Option<()> {
@@ -239,7 +239,7 @@ fn conn_ro_t<V: Variant>(
 
         match conn_ro_t_find_head_for_tail(p, &mut heads_rev, curr_head, tail_time) {
             Some(head) => {
-                b.edge(ConnWaitEdge::Enter, tail_v, t_into_v(head));
+                b.edge(AonWaitEdge::Enter, tail_v, t_into_v(head));
 
                 // same head can be assigned to prior tails
                 curr_head = head;
@@ -282,7 +282,7 @@ fn conn_ro_t_find_head_for_tail<V: Variant>(
 
 fn conn_t_dd<V: Variant>(
     p: &Problem<V>,
-    b: &mut GraphCoreBuilder<ConnWaitVertex, ConnWaitEdge>,
+    b: &mut GraphCoreBuilder<AonWaitVertex, AonWaitEdge>,
     t_edges: &mut VecTransport<Vec<EIdx>>,
     mut tails: impl Iterator<Item = Transport>,
     mut heads: impl Iterator<Item = (Time, VIdx)>,
@@ -296,7 +296,7 @@ fn conn_t_dd<V: Variant>(
             true => {
                 // connect transport, and move to the next transport
                 // due & head can still be used by the next transport
-                let e = b.edge(ConnWaitEdge::Exit, t_into_v(tail), head_v);
+                let e = b.edge(AonWaitEdge::Exit, t_into_v(tail), head_v);
                 t_edges[tail].push(e);
                 tail = tails.next()?;
             }

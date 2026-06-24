@@ -1,7 +1,7 @@
 use crate::flow_units::FlowUnit;
 use crate::graphs::core::{EdgeCore, GraphCore};
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};
-use crate::networks::{ConnWaitEdge, ConnWaitNw, ConnWaitVertex};
+use crate::networks::{AonWaitEdge, AonWaitNw, AonWaitVertex};
 use crate::{Problem, SpaceTime, TransportData, Variant};
 use alloc::{format, string::String, vec::Vec};
 use good_lp::{ProblemVariables, Variable, VariableDefinition};
@@ -30,7 +30,7 @@ impl<V: Variant> RoVars<'_, V> {
     }
 }
 
-pub fn define_vars<'a, V: Variant>(nw: &'a ConnWaitNw<'_, V>) -> (ProblemVariables, RoVars<'a, V>) {
+pub fn define_vars<'a, V: Variant>(nw: &'a AonWaitNw<'_, V>) -> (ProblemVariables, RoVars<'a, V>) {
     let mut pr_vars = ProblemVariables::new();
     let mut ro_vars = Vec::new();
 
@@ -52,7 +52,7 @@ pub fn define_vars<'a, V: Variant>(nw: &'a ConnWaitNw<'_, V>) -> (ProblemVariabl
 
 fn define_vars_ro<V: Variant>(
     ro: SpaceTime,
-    nw: &ConnWaitNw<'_, V>,
+    nw: &AonWaitNw<'_, V>,
     pr_vars: &mut ProblemVariables,
     dummy: Variable,
 ) -> VecEdge<Variable> {
@@ -64,7 +64,7 @@ fn define_vars_ro<V: Variant>(
         let mut var = VariableDefinition::new().min(0);
 
         let include_in_ro = match e.data() {
-            ConnWaitEdge::Bypass(c) => {
+            AonWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount().into_f64();
                 var = var.max(amount);
 
@@ -90,9 +90,9 @@ fn define_vars_ro<V: Variant>(
 
 fn var_name<V: Variant>(
     p: &Problem<V>,
-    g: &GraphCore<ConnWaitVertex, ConnWaitEdge>,
+    g: &GraphCore<AonWaitVertex, AonWaitEdge>,
     ro: SpaceTime,
-    e: &EdgeCore<ConnWaitEdge>,
+    e: &EdgeCore<AonWaitEdge>,
 ) -> String {
     let t_str = |t: &TransportData<V>| t.var_str(p);
     let ro_str = format!("{}_{}", p.space_key(ro.space()), ro.time());
@@ -100,29 +100,29 @@ fn var_name<V: Variant>(
     let [i, j] = [e.tail(), e.head()].map(|x| g.vertex(x));
     let [tail, head] = [i.data(), j.data()];
     match e.data() {
-        ConnWaitEdge::Enter => {
+        AonWaitEdge::Enter => {
             let ro = tail.get_ro().expect("ro");
             let ori = p.space_key(ro.space());
             let t = p.transport_by_idx(head.get_t().expect("t"));
             format!("{ro_str}__enter__{ori}_{}__{}", ro.time(), t_str(t))
         }
-        ConnWaitEdge::Connect => {
+        AonWaitEdge::Connect => {
             let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
             let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
             format!("{ro_str}__con__{}__{}", t_str(t1), t_str(t2))
         }
-        ConnWaitEdge::Wait => {
+        AonWaitEdge::Wait => {
             let [i, j] = [tail, head].map(|x| x.get_t().expect("t"));
             let [t1, t2] = [i, j].map(|x| p.transport_by_idx(x));
             format!("{ro_str}__wait__{}__{}", t_str(t1), t_str(t2))
         }
-        ConnWaitEdge::Exit => {
+        AonWaitEdge::Exit => {
             let dd = head.get_dd().expect("dd");
             let des = p.space_key(dd.space());
             let t = p.transport_by_idx(tail.get_t().expect("t"));
             format!("{ro_str}__exit__{}__{des}_{}", t_str(t), dd.time())
         }
-        ConnWaitEdge::Bypass(c) => {
+        AonWaitEdge::Bypass(c) => {
             let com = p.commodity_by_idx(*c);
             format!("{ro_str}__bypass__{}", com.var_str(p))
         }

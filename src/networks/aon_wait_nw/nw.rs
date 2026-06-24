@@ -1,24 +1,24 @@
 use crate::commodities::VecCommodity;
 use crate::graphs::{EIdx, EdgeRange, VIdx, core::GraphCore};
-use crate::networks::conn_wait_nw::visualization::dot::{ConnWaitDot, ConnWaitDotSettings};
-use crate::networks::conn_wait_nw::{ConnWaitEdge, ConnWaitVertex};
-use crate::networks::conn_wait_nw::{mcnf::solve, output::Output};
+use crate::networks::aon_wait_nw::visualization::dot::{AonWaitDot, AonWaitDotSettings};
+use crate::networks::aon_wait_nw::{AonWaitEdge, AonWaitVertex};
+use crate::networks::aon_wait_nw::{mcnf::solve, output::Output};
 use crate::utils::std_utils::Map;
 use crate::{Commodity, IdxCore, Problem, SpaceTime, Transport, Variant, VecTransport};
 use alloc::vec::Vec;
 
-pub struct ConnWaitNwSettings {
+pub struct AonWaitNwSettings {
     pub add_bypass_edges: bool,
 }
 
-pub type ConnWaitGraph = GraphCore<ConnWaitVertex, ConnWaitEdge>;
+pub type AonWaitGraph = GraphCore<AonWaitVertex, AonWaitEdge>;
 
-pub struct ConnWaitNw<'a, V>
+pub struct AonWaitNw<'a, V>
 where
     V: Variant,
 {
     p: &'a Problem<V>,
-    g: ConnWaitGraph,
+    g: AonWaitGraph,
     ro_to_v: Map<SpaceTime, VIdx>,
     dd_to_v: Map<SpaceTime, VIdx>,
     transport_edges: VecTransport<Vec<EIdx>>,
@@ -27,7 +27,7 @@ where
 }
 
 // helpers
-impl<V> ConnWaitNw<'_, V>
+impl<V> AonWaitNw<'_, V>
 where
     V: Variant,
 {
@@ -39,7 +39,7 @@ where
         &self.p
     }
 
-    pub(crate) fn g(&self) -> &ConnWaitGraph {
+    pub(crate) fn g(&self) -> &AonWaitGraph {
         &self.g
     }
 
@@ -67,11 +67,11 @@ where
 }
 
 // api
-impl<'a, V> ConnWaitNw<'a, V>
+impl<'a, V> AonWaitNw<'a, V>
 where
     V: Variant,
 {
-    pub fn construct(p: &'a Problem<V>, settings: ConnWaitNwSettings) -> Self {
+    pub fn construct(p: &'a Problem<V>, settings: AonWaitNwSettings) -> Self {
         let output = super::construct::construct(p, settings);
         Self {
             p,
@@ -84,8 +84,8 @@ where
         }
     }
 
-    pub fn as_dot_graph(&'a self, settings: Option<ConnWaitDotSettings>) -> ConnWaitDot<'a, V> {
-        ConnWaitDot::new(self, settings)
+    pub fn as_dot_graph(&'a self, settings: Option<AonWaitDotSettings>) -> AonWaitDot<'a, V> {
+        AonWaitDot::new(self, settings)
     }
 
     pub fn solve(&self, named: bool) -> Output<V> {
