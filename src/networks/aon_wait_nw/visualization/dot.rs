@@ -372,6 +372,18 @@ where
         table.push_str("</TABLE>");
         Some(table)
     }
+
+    fn graph_info_table_label(&self) -> String {
+        format!(
+            "<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\
+<TR><TD BGCOLOR=\"#f2f2f2\"><B>Metric</B></TD><TD BGCOLOR=\"#f2f2f2\"><B>Value</B></TD></TR>\
+<TR><TD>Vertices</TD><TD>{}</TD></TR>\
+<TR><TD>Edges</TD><TD>{}</TD></TR>\
+</TABLE>",
+            self.graph().v(),
+            self.graph().e(),
+        )
+    }
 }
 
 impl<'a, V> DotGraph for AonWaitDot<'a, V>
@@ -565,8 +577,21 @@ where
     }
 
     fn graph_label(&self) -> Option<impl core::fmt::Display> {
-        self.solution
+        let info = self.graph_info_table_label();
+        let label = match self
+            .solution
             .and_then(|solution| self.graph_path_table_label_from_solution(solution))
+        {
+            Some(path_table) => format!(
+                "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"8\" CELLPADDING=\"0\">\
+<TR><TD ALIGN=\"LEFT\">{}</TD></TR>\
+<TR><TD ALIGN=\"LEFT\">{}</TD></TR>\
+</TABLE>",
+                info, path_table
+            ),
+            None => info,
+        };
+        Some(label)
     }
 
     fn graph(&self) -> &Self::G {
