@@ -26,9 +26,10 @@ impl Variant for MyVariant {
 fn main() {
     let problem = sample_problem();
 
-    let aon_wait_nw = problem.construct_aon_wait_nw(orx_network_flow::networks::AonWaitNwSettings {
-        add_bypass_edges: true,
-    });
+    let aon_wait_nw =
+        problem.construct_aon_wait_nw(orx_network_flow::networks::AonWaitNwSettings {
+            add_bypass_edges: true,
+        });
 
     let space_time_nw = problem.construct_space_time_nw(SpaceTimeNwSettings {
         add_bypass_edges: true,
@@ -40,8 +41,7 @@ fn main() {
 
     report_complexity(&problem, &aon_wait_nw, &space_time_nw, true);
 
-    let aon_wait_solver =
-        McnfSolver::edge_wait_ro(&aon_wait_nw, Default::default(), cplex_solver());
+    let aon_wait_solver = McnfSolver::aon_wait_ro(&aon_wait_nw, Default::default(), cplex_solver());
     let aon_wait_sol = aon_wait_solver.solve().expect("aon_wait solution");
 
     let space_time_solver = McnfSolver::space_time_ro(

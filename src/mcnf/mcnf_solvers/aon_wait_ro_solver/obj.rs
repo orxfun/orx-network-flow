@@ -1,5 +1,5 @@
 use crate::graphs::{Edge, Graph, Vertex};
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::vars::RoVars;
 use crate::networks::AonWaitNw;
 use crate::{Variant, cost::Cost};
 use good_lp::Expression;

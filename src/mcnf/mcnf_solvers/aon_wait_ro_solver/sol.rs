@@ -1,8 +1,8 @@
 use crate::graphs::EIdx;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::EdgeWaitRoMcnfParams;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::disaggregate_greedy::disaggregate_ro_greedy;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::params::DisaggregationStrategy;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::AonWaitRoMcnfParams;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::disaggregate_greedy::disaggregate_ro_greedy;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::params::DisaggregationStrategy;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::vars::RoVars;
 use crate::mcnf::solution::CommodityLoad;
 use crate::{FlowUnit, McnfSolution, Variant, VecTransport};
 use crate::{commodities::VecCommodity, networks::AonWaitNw};
@@ -11,7 +11,7 @@ use good_lp::{Solution, Solver, SolverModel, Variable};
 
 pub fn create_solution<V: Variant, S: Solver>(
     nw: &AonWaitNw<'_, V>,
-    params: &EdgeWaitRoMcnfParams,
+    params: &AonWaitRoMcnfParams,
     ro_vars: &RoVars<'_, V>,
     solution: &<S::Model as SolverModel>::Solution,
 ) -> McnfSolution<V> {

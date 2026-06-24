@@ -1,4 +1,4 @@
-use super::mcnf_solvers::edge_wait_ro_solver::{EdgeWaitRoMcnfParams, EdgeWaitRoMcnfSolver};
+use super::mcnf_solvers::aon_wait_ro_solver::{AonWaitRoMcnfParams, AonWaitRoMcnfSolver};
 use super::mcnf_solvers::space_time_ro_solver::{SpaceTimeRoMcnfParams, SpaceTimeRoMcnfSolver};
 use crate::{
     Variant,
@@ -9,16 +9,16 @@ use good_lp::Solver;
 pub struct McnfSolver;
 
 impl McnfSolver {
-    pub fn edge_wait_ro<'a, V, S>(
+    pub fn aon_wait_ro<'a, V, S>(
         nw: &'a AonWaitNw<'a, V>,
-        params: EdgeWaitRoMcnfParams,
+        params: AonWaitRoMcnfParams,
         solver: S,
-    ) -> EdgeWaitRoMcnfSolver<'a, V, S>
+    ) -> AonWaitRoMcnfSolver<'a, V, S>
     where
         V: Variant,
         S: Solver,
     {
-        EdgeWaitRoMcnfSolver::build(nw, params, solver)
+        AonWaitRoMcnfSolver::build(nw, params, solver)
     }
 
     pub fn space_time_ro<'a, V, S>(

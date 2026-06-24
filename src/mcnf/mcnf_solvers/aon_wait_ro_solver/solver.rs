@@ -1,24 +1,24 @@
 use crate::McnfSolution;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::capacity::add_capacity_constraints;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::flow_balance::add_flow_balance_constraints;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::obj::objective;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::params::EdgeWaitRoMcnfParams;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::sol::create_solution;
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::define_vars;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::capacity::add_capacity_constraints;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::flow_balance::add_flow_balance_constraints;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::obj::objective;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::params::AonWaitRoMcnfParams;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::sol::create_solution;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::vars::define_vars;
 use crate::networks::AonWaitNw;
-use crate::{Variant, mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars};
+use crate::{Variant, mcnf::mcnf_solvers::aon_wait_ro_solver::vars::RoVars};
 use alloc::string::{String, ToString};
 use good_lp::{Solver, SolverModel};
 
-pub struct EdgeWaitRoMcnfSolver<'a, V: Variant, S: Solver> {
+pub struct AonWaitRoMcnfSolver<'a, V: Variant, S: Solver> {
     nw: &'a AonWaitNw<'a, V>,
-    params: EdgeWaitRoMcnfParams,
+    params: AonWaitRoMcnfParams,
     ro_vars: RoVars<'a, V>,
     model: S::Model,
 }
 
-impl<'a, V: Variant, S: Solver> EdgeWaitRoMcnfSolver<'a, V, S> {
-    pub fn build(nw: &'a AonWaitNw<'a, V>, params: EdgeWaitRoMcnfParams, solver: S) -> Self {
+impl<'a, V: Variant, S: Solver> AonWaitRoMcnfSolver<'a, V, S> {
+    pub fn build(nw: &'a AonWaitNw<'a, V>, params: AonWaitRoMcnfParams, solver: S) -> Self {
         let (pr_vars, ro_vars) = define_vars(nw);
         let obj = objective(nw, &ro_vars);
 

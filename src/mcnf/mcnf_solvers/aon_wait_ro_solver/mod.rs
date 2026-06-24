@@ -10,5 +10,5 @@ mod sol;
 mod solver;
 mod vars;
 
-pub use params::EdgeWaitRoMcnfParams;
-pub use solver::EdgeWaitRoMcnfSolver;
+pub use params::AonWaitRoMcnfParams;
+pub use solver::AonWaitRoMcnfSolver;

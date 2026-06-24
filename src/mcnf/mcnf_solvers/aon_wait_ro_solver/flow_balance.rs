@@ -1,6 +1,6 @@
 use crate::graphs::core::VertexCore;
 use crate::graphs::{Graph, Vertex};
-use crate::mcnf::mcnf_solvers::edge_wait_ro_solver::vars::RoVars;
+use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::vars::RoVars;
 use crate::networks::{AonWaitNw, AonWaitVertex};
 use crate::{FlowUnit, Problem, SpaceTime, Variant};
 use alloc::{format, string::String};

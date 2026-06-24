@@ -1,5 +1,5 @@
 #[derive(Default)]
-pub struct EdgeWaitRoMcnfParams {
+pub struct AonWaitRoMcnfParams {
     pub disaggregation: DisaggregationStrategy,
 }
 

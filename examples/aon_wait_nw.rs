@@ -100,7 +100,7 @@ fn main() {
     dot.create_svg_file("target/aon_wait_nw.dot", "target/aon_wait_nw.svg")
         .unwrap();
 
-    let solver = McnfSolver::edge_wait_ro(&nw, Default::default(), cplex_solver());
+    let solver = McnfSolver::aon_wait_ro(&nw, Default::default(), cplex_solver());
     solver.display_lp();
     solver.export_lp("target/aon_wait_nw.lp").expect("lp");
     let solution = solver.solve().unwrap();
