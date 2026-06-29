@@ -2,7 +2,7 @@
 mod shared_problem;
 
 use orx_network_flow::graphs::visualization::dot::DotGraph;
-use orx_network_flow::{AoaWaitNwSettings, AoaWaitRoMcnfParams, McnfSolver};
+use orx_network_flow::{AoaWaitDdMcnfParams, AoaWaitNwSettings, McnfSolver};
 use shared_problem::{cplex_solver, sample_problem};
 
 fn main() {
@@ -17,14 +17,14 @@ fn main() {
     dot.create_svg_file("target/aoa_wait_nw.dot", "target/aoa_wait_nw.svg")
         .unwrap();
 
-    let solver = McnfSolver::aoa_wait_ro(&nw, AoaWaitRoMcnfParams::default(), cplex_solver());
+    let solver = McnfSolver::aoa_wait_dd(&nw, AoaWaitDdMcnfParams::default(), cplex_solver());
     let stats = solver.stats();
     solver.display_lp();
-    solver.export_lp("target/aoa_wait_nw.lp").expect("lp");
+    solver.export_lp("target/aoa_wait_dd_nw.lp").expect("lp");
     let solution = solver.solve().unwrap();
 
     let dot = dot.with_solution(&solution).with_stats(stats);
-    dot.create_svg_file("target/aoa_wait_ro_nw.dot", "target/aoa_wait_ro_nw.svg")
+    dot.create_svg_file("target/aoa_wait_dd_nw.dot", "target/aoa_wait_dd_nw.svg")
         .unwrap();
 
     for (c, paths) in solution.commodity_paths().enumerated_iter() {
