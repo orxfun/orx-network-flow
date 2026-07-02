@@ -8,10 +8,12 @@ use crate::mcnf::mcnf_solvers::aon_wait_dd_solver::params::AonWaitDdMcnfParams;
 use crate::mcnf::mcnf_solvers::aon_wait_dd_solver::sol::create_solution;
 use crate::mcnf::mcnf_solvers::aon_wait_dd_solver::vars::define_vars;
 use crate::networks::AonWaitNw;
+#[cfg(feature = "solver-lp-solvers")]
 use crate::utils::math_model::lp_solvers_model_to_problem;
 use crate::{Variant, mcnf::mcnf_solvers::aon_wait_dd_solver::vars::DdVars};
 use alloc::string::{String, ToString};
 use good_lp::{Solver, SolverModel};
+#[cfg(feature = "solver-lp-solvers")]
 use lp_solvers::lp_format::LpProblem;
 
 pub struct AonWaitDdMcnfSolver<'a, V: Variant, S: Solver> {
@@ -72,6 +74,7 @@ impl<'a, V: Variant, S: Solver> AonWaitDdMcnfSolver<'a, V, S> {
         }
     }
 
+    #[cfg(feature = "solver-lp-solvers")]
     pub fn stats(&self) -> McnfStats {
         let graph_stats = self.nw.stats();
 
@@ -88,7 +91,7 @@ impl<'a, V: Variant, S: Solver> AonWaitDdMcnfSolver<'a, V, S> {
         }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "solver-lp-solvers", feature = "std"))]
     pub fn display_lp(&self) {
         use crate::utils::math_model::lp_solvers_model_to_problem;
         use lp_solvers::lp_format::LpProblem;
@@ -98,7 +101,7 @@ impl<'a, V: Variant, S: Solver> AonWaitDdMcnfSolver<'a, V, S> {
         println!("{}", p.display_lp());
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "solver-lp-solvers", feature = "std"))]
     pub fn export_lp(&self, lp_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
         use crate::utils::math_model::lp_solvers_model_to_lp_file;
         unsafe { lp_solvers_model_to_lp_file::<S, _>(&self.model, lp_path) }

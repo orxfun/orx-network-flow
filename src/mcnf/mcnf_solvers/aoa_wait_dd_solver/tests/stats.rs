@@ -1,8 +1,11 @@
 use crate::mcnf::mcnf_solvers::aoa_wait_dd_solver::{AoaWaitDdMcnfParams, AoaWaitDdMcnfSolver};
 use crate::networks::AoaWaitNwSettings;
 use crate::{ProblemBuilder, Variant};
+#[cfg(feature = "solver-lp-solvers")]
 use alloc::string::ToString;
+#[cfg(feature = "solver-lp-solvers")]
 use good_lp::LpSolver;
+#[cfg(feature = "solver-lp-solvers")]
 use lp_solvers::solvers::Cplex;
 
 #[derive(Clone, Copy, Default)]
@@ -22,6 +25,7 @@ impl Variant for TestVariant {
     }
 }
 
+#[cfg(feature = "solver-lp-solvers")]
 #[test]
 fn precomputed_stats_match_built_model_stats() {
     let mut builder: ProblemBuilder<TestVariant, _> =

@@ -1,3 +1,5 @@
+#![cfg(feature = "solver-lp-solvers")]
+
 use crate::cost::Cost;
 use crate::flow_units::FlowUnit;
 use crate::graphs::{Edge, Graph, VecEdge, Vertex};

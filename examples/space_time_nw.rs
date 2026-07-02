@@ -1,7 +1,6 @@
-use good_lp::LpSolver;
-use lp_solvers::solvers::Cplex;
 use orx_network_flow::graphs::Graph;
 use orx_network_flow::graphs::visualization::dot::DotGraph;
+use orx_network_flow::solvers;
 use orx_network_flow::{
     AoaWaitNwSettings, AoaWaitRoMcnfParams, McnfSolver, ProblemBuilder, Variant,
 };
@@ -155,10 +154,8 @@ fn sample_problem() -> orx_network_flow::Problem<MyVariant> {
     builder.finish()
 }
 
-pub fn cplex_solver() -> LpSolver<Cplex> {
-    good_lp::LpSolver(Cplex::with_command(
-        "/usr/local/cplex/bin/x86-64_linux/cplex".to_string(),
-    ))
+pub fn cplex_solver() -> good_lp::LpSolver<lp_solvers::solvers::Cplex> {
+    solvers::cplex("/usr/local/cplex/bin/x86-64_linux/cplex")
 }
 
 fn report_complexity(

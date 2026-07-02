@@ -10,10 +10,8 @@ keywords = ["placeholder"]
 categories = ["placeholder"]
 
 [dependencies]
-good_lp = { version = "1.15.2", features = [
-    "lp-solvers",
-], default-features = false }
-lp-solvers = { version = "1.2", features = ["cplex"] }
+good_lp = { version = "1.15.2", default-features = false }
+lp-solvers = { version = "1.2", features = ["cplex"], optional = true }
 derive-new = { version = "0.7.0", default-features = false }
 num = { version = "0.4.3", default-features = false }
 orx-iterable = { version = "1.3.0", default-features = false }
@@ -26,6 +24,43 @@ serde_json = { version = "1", default-features = false, features = [
 orx-priority-queue = { version = "1.8.0", default-features = false }
 
 [features]
-default = ["std"]
+default = ["std", "solver-microlp"]
 std = []
 serde-export = ["dep:serde", "dep:serde_json"]
+
+# ── Solver features ───────────────────────────────────────────────────────────
+# Pure-Rust, zero external deps. Good default and for tests.
+solver-microlp = ["good_lp/microlp"]
+# HiGHS: free, fast, open-source MILP. Requires C++ compiler + cmake at build time.
+solver-highs = ["good_lp/highs"]
+# SCIP: best open-source MILP solver. Use solver-scip-bundled to skip manual install.
+solver-scip = ["good_lp/scip"]
+solver-scip-bundled = ["solver-scip", "good_lp/scip_bundled"]
+# CBC: COIN-OR branch-and-cut. Requires coinor-cbc system library.
+solver-cbc = ["good_lp/coin_cbc"]
+# lp-solvers: runtime bridge to external binaries (CPLEX, Gurobi, GLPK, CBC).
+solver-lp-solvers = ["good_lp/lp-solvers", "dep:lp-solvers"]
+# CPLEX via static Rust bindings. Requires local CPLEX install + clang.
+# Note: mutually exclusive with solver-cbc at the good_lp level.
+# Note: requires cplex-rs ^0.1.9 in artifactory registry.
+solver-cplex-rs = ["good_lp/cplex-rs"]
+
+[[example]]
+name = "aoa_wait_dd_nw"
+required-features = ["solver-lp-solvers", "std"]
+
+[[example]]
+name = "aoa_wait_ro_nw"
+required-features = ["solver-lp-solvers", "std"]
+
+[[example]]
+name = "aon_wait_dd_nw"
+required-features = ["solver-lp-solvers", "std"]
+
+[[example]]
+name = "aon_wait_ro_nw"
+required-features = ["solver-lp-solvers", "std"]
+
+[[example]]
+name = "space_time_nw"
+required-features = ["solver-lp-solvers", "std"]
