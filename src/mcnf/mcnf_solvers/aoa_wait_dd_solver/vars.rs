@@ -6,55 +6,55 @@ use crate::{Problem, SpaceTime, TransportData, Variant};
 use alloc::{format, string::String, vec::Vec};
 use good_lp::{ProblemVariables, Variable, VariableDefinition};
 
-pub struct RoVars<'a, V: Variant> {
+pub struct DdVars<'a, V: Variant> {
     p: &'a Problem<V>,
-    /// Variables per unique ready-origin space-time, parallel to
-    /// `sorted_ro_commodities` of the corresponding problem `p`.
+    /// Variables per unique due-destination space-time, parallel to
+    /// `sorted_dd_commodities` of the corresponding problem `p`.
     vars: Vec<VecEdge<Variable>>,
 }
 
-impl<V: Variant> RoVars<'_, V> {
-    pub fn ro(&self) -> impl Iterator<Item = SpaceTime> {
-        self.p.sorted_ro_commodities.keys().copied()
+impl<V: Variant> DdVars<'_, V> {
+    pub fn dd(&self) -> impl Iterator<Item = SpaceTime> {
+        self.p.sorted_dd_commodities.keys().copied()
     }
 
-    pub fn vars_of(&self, ro: SpaceTime) -> &VecEdge<Variable> {
-        let ro_idx = self
+    pub fn vars_of(&self, dd: SpaceTime) -> &VecEdge<Variable> {
+        let dd_idx = self
             .p
-            .sorted_ro_commodities
-            .key_to_idx(&ro)
+            .sorted_dd_commodities
+            .key_to_idx(&dd)
             .expect("exists");
-        &self.vars[ro_idx]
+        &self.vars[dd_idx]
     }
 
     pub fn iter(&self) -> impl Iterator<Item = (SpaceTime, &VecEdge<Variable>)> {
-        let ro_idx = self.p.sorted_ro_commodities.keys_indices();
-        ro_idx.map(|(ro, idx)| (*ro, &self.vars[idx]))
+        let dd_idx = self.p.sorted_dd_commodities.keys_indices();
+        dd_idx.map(|(dd, idx)| (*dd, &self.vars[idx]))
     }
 }
 
-pub fn define_vars<'a, V: Variant>(nw: &'a AoaWaitNw<'_, V>) -> (ProblemVariables, RoVars<'a, V>) {
+pub fn define_vars<'a, V: Variant>(nw: &'a AoaWaitNw<'_, V>) -> (ProblemVariables, DdVars<'a, V>) {
     let mut pr_vars = ProblemVariables::new();
-    let mut ro_vars = Vec::new();
+    let mut dd_vars = Vec::new();
 
     let dummy = VariableDefinition::new().min(0).max(0);
     let dummy = pr_vars.add(dummy);
 
-    for ro in nw.p().sorted_ro_commodities.keys() {
-        let vars = define_vars_ro(*ro, nw, &mut pr_vars, dummy);
-        ro_vars.push(vars);
+    for dd in nw.p().sorted_dd_commodities.keys() {
+        let vars = define_vars_dd(*dd, nw, &mut pr_vars, dummy);
+        dd_vars.push(vars);
     }
 
-    let ro_vars = RoVars {
+    let dd_vars = DdVars {
         p: nw.p(),
-        vars: ro_vars,
+        vars: dd_vars,
     };
 
-    (pr_vars, ro_vars)
+    (pr_vars, dd_vars)
 }
 
-fn define_vars_ro<V: Variant>(
-    ro: SpaceTime,
+fn define_vars_dd<V: Variant>(
+    dd: SpaceTime,
     nw: &AoaWaitNw<'_, V>,
     pr_vars: &mut ProblemVariables,
     dummy: Variable,
@@ -66,20 +66,19 @@ fn define_vars_ro<V: Variant>(
     for e in g.edges() {
         let mut var = VariableDefinition::new().min(0);
 
-        let include_in_ro = match e.data() {
+        let include_in_dd = match e.data() {
             AoaWaitEdge::Bypass(c) => {
                 let amount = p.commodity_by_idx(*c).amount().into_f64();
                 var = var.max(amount);
-                // only include bypass if this commodity belongs to this ro
-                p.commodity_by_idx(*c).origin() == ro
+                p.commodity_by_idx(*c).destination() == dd
             }
             _ => true,
         };
 
-        match include_in_ro {
+        match include_in_dd {
             true => {
                 if named {
-                    var = var.name(var_name(p, g, ro, e));
+                    var = var.name(var_name(p, g, dd, e));
                 }
                 vars.push(pr_vars.add(var))
             }
@@ -93,30 +92,30 @@ fn define_vars_ro<V: Variant>(
 fn var_name<V: Variant>(
     p: &Problem<V>,
     g: &GraphCore<AoaWaitVertex, AoaWaitEdge>,
-    ro: SpaceTime,
+    dd: SpaceTime,
     e: &EdgeCore<AoaWaitEdge>,
 ) -> String {
-    let ro_str = format!("{}_{}", p.space_key(ro.space()), ro.time());
+    let dd_str = format!("{}_{}", p.space_key(dd.space()), dd.time());
     let t_str = |t: &TransportData<V>| t.var_str(p);
 
     match e.data() {
         AoaWaitEdge::Transport(t) => {
             let td = p.transport_by_idx(*t);
-            format!("{ro_str}__arc__{}", t_str(td))
+            format!("{dd_str}__arc__{}", t_str(td))
         }
         AoaWaitEdge::Wait => {
             let tail_st = g.vertex(e.tail()).data().0;
             let head_st = g.vertex(e.head()).data().0;
             let tail_s = p.space_key(tail_st.space());
             format!(
-                "{ro_str}__wait__{tail_s}_{}__{}",
+                "{dd_str}__wait__{tail_s}_{}__{}",
                 tail_st.time(),
                 head_st.time()
             )
         }
         AoaWaitEdge::Bypass(c) => {
             let com = p.commodity_by_idx(*c);
-            format!("{ro_str}__bypass__{}", com.var_str(p))
+            format!("{dd_str}__bypass__{}", com.var_str(p))
         }
     }
 }

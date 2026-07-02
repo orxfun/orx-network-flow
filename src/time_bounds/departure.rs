@@ -1,6 +1,6 @@
-use crate::utils::std_utils::Map;
 use crate::spaces::Spaces;
 use crate::time_bounds::TimeBounds;
+use crate::utils::std_utils::Map;
 use crate::{Commodities, Problem, Variant, commodities::Commodity, spaces::Space, time::Time};
 
 pub struct DepartureBounds {

@@ -1,6 +1,6 @@
-use crate::utils::std_utils::Map;
 use crate::spaces::Spaces;
 use crate::time_bounds::TimeBounds;
+use crate::utils::std_utils::Map;
 use crate::{Commodities, Problem, Variant, commodities::Commodity, spaces::Space, time::Time};
 
 pub struct ArrivalBounds {
@@ -72,7 +72,12 @@ impl<'a, V: Variant> ArrivalTimeBoundsBuilder<'a, V> {
         commodities: &'a Commodities<V>,
         time_bounds: &'a mut TimeBounds,
     ) -> Self {
-        Self::new(spaces, commodities, time_bounds, ArrivalBoundType::Earliness)
+        Self::new(
+            spaces,
+            commodities,
+            time_bounds,
+            ArrivalBoundType::Earliness,
+        )
     }
 
     pub(crate) fn lateness(
