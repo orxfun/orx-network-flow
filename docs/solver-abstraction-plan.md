@@ -58,7 +58,7 @@ to depend on lower-level crates (`highs-sys`, `cplex-rs-sys`) directly.
 | `solver-scip`         | `scip` + `scip_bundled` | None (bundled binary) | Apache-2.0 | Yes | Best open-source MILP; easiest install via `scip_bundled` |
 | `solver-cbc`          | `coin_cbc`         | `coinor-cbc` system lib | EPL | Yes | Former default of `good_lp` |
 | `solver-lp-solvers`   | `lp-solvers`       | External binary (cplex, gurobi, glpk, cbc…) at runtime | MIT | Yes | Current approach; runtime overhead |
-| `solver-cplex-rs`     | `cplex-rs`         | Local CPLEX installation + clang/llvm | Commercial | Yes | Static link to CPLEX; fastest commercial option |
+| `solver-cplex-rs`     | `cplex-rs`         | Local CPLEX installation + clang/llvm | Commercial | Yes | Static link to CPLEX via `github.com/cplex-rs/cplex-rs`; fastest commercial option |
 
 ### Notes on the repos mentioned
 
@@ -71,13 +71,11 @@ to depend on lower-level crates (`highs-sys`, `cplex-rs-sys`) directly.
   unsafe FFI layer beneath `highs`. Useful only if you need low-level HiGHS
   control. Not needed here.
 
-- **`cplex-rs/cplex-rs` repo** (`github.com/cplex-rs/cplex-rs`): this is a
-  *different* crate from `mbiggio/cplex-rs` which `good_lp` uses. As of
-  `good_lp` 1.15, the supported CPLEX binding is `mbiggio/cplex-rs`
-  (enabled with `good_lp` feature `cplex-rs`). The `cplex-rs/cplex-rs` repo
-  would require a custom `good_lp` fork or a separate integration path; it is
-  not currently supported by `good_lp`. Using `good_lp`'s built-in `cplex-rs`
-  feature covers the same CPLEX integration need.
+- **`cplex-rs/cplex-rs` repo** (`github.com/cplex-rs/cplex-rs`): this **is**
+  the same crate that `good_lp` uses. The crate is published to crates.io as
+  `cplex-rs = "0.1.9"`, owned by Matteo Biggio (`mbiggio`), and hosted under
+  the `cplex-rs` GitHub organisation. Enabling `good_lp`'s `cplex-rs` feature
+  pulls it in directly — no custom fork or extra integration needed.
 
 - **`lp-solvers` + CPLEX** (current): writes the problem to a `.lp` file and
   spawns a CPLEX process. Adds hundreds of milliseconds per solve. Useful
