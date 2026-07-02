@@ -24,7 +24,9 @@ pub fn disaggregate_dd_greedy<V: Variant>(
     let commodities = p.sorted_dd_commodities.value_by_key_unc(&dd);
     for &c in commodities {
         let amount = p.commodity_by_idx(c).amount();
-        let bypass = bypass_edge_by_commodity[c].map(edge_flow).unwrap_or_default();
+        let bypass = bypass_edge_by_commodity[c]
+            .map(edge_flow)
+            .unwrap_or_default();
         let remaining = amount - bypass;
 
         if remaining.is_nonpos() {
@@ -54,7 +56,8 @@ pub fn disaggregate_dd_greedy<V: Variant>(
         return;
     };
 
-    let mut originating_by_vertex: VecVertex<V::F> = VecVertex::new_filled(g.v(), || FlowUnit::zero());
+    let mut originating_by_vertex: VecVertex<V::F> =
+        VecVertex::new_filled(g.v(), || FlowUnit::zero());
     for &commodity in commodities {
         let flow = remaining_by_commodity[commodity];
         if flow.is_nonpos() {
@@ -68,7 +71,9 @@ pub fn disaggregate_dd_greedy<V: Variant>(
     }
 
     let mut node_sunken_by_commodity: VecVertex<VecCommodity<V::F>> =
-        VecVertex::new_filled(g.v(), || VecCommodity::new_filled(num_commodities, || FlowUnit::zero()));
+        VecVertex::new_filled(g.v(), || {
+            VecCommodity::new_filled(num_commodities, || FlowUnit::zero())
+        });
     let mut node_total_sunken: VecVertex<V::F> = VecVertex::new_filled(g.v(), || FlowUnit::zero());
 
     for &commodity in commodities {
@@ -83,7 +88,10 @@ pub fn disaggregate_dd_greedy<V: Variant>(
 
     let mut nonzero_out_degree: VecVertex<usize> = VecVertex::new_filled(g.v(), || 0);
     for (v, vertex) in g.enumerated_vertices() {
-        let count = vertex.out_edges().filter(|&e| edge_flow(e).is_pos()).count();
+        let count = vertex
+            .out_edges()
+            .filter(|&e| edge_flow(e).is_pos())
+            .count();
         nonzero_out_degree[v] = count;
     }
 
@@ -94,8 +102,9 @@ pub fn disaggregate_dd_greedy<V: Variant>(
         }
     }
 
-    let mut assigned_by_edge: VecEdge<VecCommodity<V::F>> =
-        VecEdge::new_filled(g.e(), || VecCommodity::new_filled(num_commodities, || FlowUnit::zero()));
+    let mut assigned_by_edge: VecEdge<VecCommodity<V::F>> = VecEdge::new_filled(g.e(), || {
+        VecCommodity::new_filled(num_commodities, || FlowUnit::zero())
+    });
 
     while let Some(head) = queue.pop_front() {
         let head_originating = originating_by_vertex[head];
@@ -136,7 +145,8 @@ pub fn disaggregate_dd_greedy<V: Variant>(
     }
 
     for (t, edges) in nw.transport_edges() {
-        let mut load_by_commodity = VecCommodity::new_filled(num_commodities, || <V::F as FlowUnit>::zero());
+        let mut load_by_commodity =
+            VecCommodity::new_filled(num_commodities, || <V::F as FlowUnit>::zero());
 
         for &e in edges {
             for &commodity in commodities {
@@ -160,7 +170,8 @@ pub fn disaggregate_dd_greedy<V: Variant>(
         }
     }
 
-    let mut out_non_bypass_edges_by_vertex: VecVertex<Vec<EIdx>> = VecVertex::new_filled(g.v(), Vec::new);
+    let mut out_non_bypass_edges_by_vertex: VecVertex<Vec<EIdx>> =
+        VecVertex::new_filled(g.v(), Vec::new);
     for (v, vertex) in g.enumerated_vertices() {
         let out_edges: Vec<EIdx> = vertex
             .out_edges()
@@ -289,7 +300,11 @@ fn total_assignment<F: FlowUnit>(assigned: &VecCommodity<F>, commodities: &[Comm
     FlowUnit::sum(commodities.iter().map(|&c| assigned[c]))
 }
 
-fn add_assignments<F: FlowUnit>(dst: &mut VecCommodity<F>, src: &VecCommodity<F>, commodities: &[Commodity]) {
+fn add_assignments<F: FlowUnit>(
+    dst: &mut VecCommodity<F>,
+    src: &VecCommodity<F>,
+    commodities: &[Commodity],
+) {
     for &commodity in commodities {
         let flow = src[commodity];
         if flow.is_pos() {

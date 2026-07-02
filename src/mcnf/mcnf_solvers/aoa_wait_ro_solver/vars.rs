@@ -33,9 +33,7 @@ impl<V: Variant> RoVars<'_, V> {
     }
 }
 
-pub fn define_vars<'a, V: Variant>(
-    nw: &'a AoaWaitNw<'_, V>,
-) -> (ProblemVariables, RoVars<'a, V>) {
+pub fn define_vars<'a, V: Variant>(nw: &'a AoaWaitNw<'_, V>) -> (ProblemVariables, RoVars<'a, V>) {
     let mut pr_vars = ProblemVariables::new();
     let mut ro_vars = Vec::new();
 

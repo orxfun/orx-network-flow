@@ -1,9 +1,7 @@
 use crate::commodities::VecCommodity;
 use crate::common_ds::SortedKeyMap;
 use crate::graphs::{EIdx, EdgeRange, VIdx};
-use crate::networks::aoa_wait_nw::{
-    AoaWaitEdge, AoaWaitGraph, AoaWaitNwSettings, AoaWaitVertex,
-};
+use crate::networks::aoa_wait_nw::{AoaWaitEdge, AoaWaitGraph, AoaWaitNwSettings, AoaWaitVertex};
 use crate::utils::std_utils::{Map, Set};
 use crate::{Problem, Space, SpaceTime, Time, Variant, VecTransport};
 

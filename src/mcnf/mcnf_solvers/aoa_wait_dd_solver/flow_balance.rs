@@ -16,7 +16,11 @@ pub fn add_flow_balance_constraints<'a, V: Variant, S: Solver>(
 
     for (dd, vars) in dd_vars.iter() {
         let dd_commodities = p.sorted_dd_commodities.value_by_key_unc(&dd);
-        let total_demand = FlowUnit::sum(dd_commodities.iter().map(|&c| p.commodity_by_idx(c).amount()));
+        let total_demand = FlowUnit::sum(
+            dd_commodities
+                .iter()
+                .map(|&c| p.commodity_by_idx(c).amount()),
+        );
 
         for vertex in g.vertices() {
             let mut out_minus_in = Expression::default();

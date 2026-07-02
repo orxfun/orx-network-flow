@@ -66,16 +66,16 @@ fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transpo
             {
                 10
             }
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_ax && *t2 == t_xb => 4,
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_ax && *t2 == t_xc => 6,
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_ax && *t2 == t_xb =>
+            {
+                4
+            }
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_ax && *t2 == t_xc =>
+            {
+                6
+            }
             (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_xb && *dd == dd_b =>
             {
@@ -246,26 +246,26 @@ fn greedy_disaggregation_handles_larger_branching_instance() {
             {
                 16
             }
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_ax && *t2 == t_xy => 12,
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_ax && *t2 == t_xd => 4,
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_xy && *t2 == t_yb => 5,
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_xy && *t2 == t_yc => 7,
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_ax && *t2 == t_xy =>
+            {
+                12
+            }
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_ax && *t2 == t_xd =>
+            {
+                4
+            }
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_xy && *t2 == t_yb =>
+            {
+                5
+            }
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_xy && *t2 == t_yc =>
+            {
+                7
+            }
             (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(dd))
                 if *t == t_yb && *dd == dd_b =>
             {
@@ -378,16 +378,16 @@ fn greedy_disaggregation_extracts_multiple_paths_for_single_commodity() {
             {
                 6
             }
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_ax && *t2 == t_xb => 4,
-            (
-                AonWaitEdge::Connect,
-                AonWaitVertex::Transport(t1),
-                AonWaitVertex::Transport(t2),
-            ) if *t1 == t_ay && *t2 == t_yb => 6,
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_ax && *t2 == t_xb =>
+            {
+                4
+            }
+            (AonWaitEdge::Connect, AonWaitVertex::Transport(t1), AonWaitVertex::Transport(t2))
+                if *t1 == t_ay && *t2 == t_yb =>
+            {
+                6
+            }
             (AonWaitEdge::Exit, AonWaitVertex::Transport(t), AonWaitVertex::DueDes(x))
                 if *t == t_xb && *x == dd =>
             {

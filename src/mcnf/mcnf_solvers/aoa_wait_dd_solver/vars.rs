@@ -19,7 +19,11 @@ impl<V: Variant> DdVars<'_, V> {
     }
 
     pub fn vars_of(&self, dd: SpaceTime) -> &VecEdge<Variable> {
-        let dd_idx = self.p.sorted_dd_commodities.key_to_idx(&dd).expect("exists");
+        let dd_idx = self
+            .p
+            .sorted_dd_commodities
+            .key_to_idx(&dd)
+            .expect("exists");
         &self.vars[dd_idx]
     }
 
@@ -29,9 +33,7 @@ impl<V: Variant> DdVars<'_, V> {
     }
 }
 
-pub fn define_vars<'a, V: Variant>(
-    nw: &'a AoaWaitNw<'_, V>,
-) -> (ProblemVariables, DdVars<'a, V>) {
+pub fn define_vars<'a, V: Variant>(nw: &'a AoaWaitNw<'_, V>) -> (ProblemVariables, DdVars<'a, V>) {
     let mut pr_vars = ProblemVariables::new();
     let mut dd_vars = Vec::new();
 
