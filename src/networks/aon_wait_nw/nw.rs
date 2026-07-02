@@ -1,11 +1,9 @@
 use crate::commodities::VecCommodity;
 use crate::graphs::{EIdx, EdgeRange, Graph, VIdx, core::GraphCore};
 use crate::networks::GraphStats;
+use crate::networks::aon_wait_nw::output::Output;
 use crate::networks::aon_wait_nw::visualization::dot::{AonWaitDot, AonWaitDotSettings};
 use crate::networks::aon_wait_nw::{AonWaitEdge, AonWaitVertex};
-use crate::networks::aon_wait_nw::output::Output;
-#[cfg(feature = "solver-lp-solvers")]
-use crate::networks::aon_wait_nw::mcnf::solve;
 use crate::utils::std_utils::Map;
 use crate::{Commodity, IdxCore, Problem, SpaceTime, Transport, Variant, VecTransport};
 use alloc::vec::Vec;
@@ -269,10 +267,5 @@ where
 
     pub fn as_dot_graph(&'a self, settings: Option<AonWaitDotSettings>) -> AonWaitDot<'a, V> {
         AonWaitDot::new(self, settings)
-    }
-
-    #[cfg(feature = "solver-lp-solvers")]
-    pub fn solve(&self, named: bool) -> Output<V> {
-        solve(self, named)
     }
 }
