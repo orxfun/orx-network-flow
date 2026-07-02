@@ -4,13 +4,15 @@
 //!
 //! | Feature | Solver | External requirement |
 //! |---|---|---|
-//! | `solver-microlp` *(default)* | microlp | none — pure Rust |
+//! | `solver-microlp` | microlp | none — pure Rust |
 //! | `solver-highs` | HiGHS | C++ compiler + cmake at build time |
 //! | `solver-scip` | SCIP | local SCIP install |
 //! | `solver-scip-bundled` | SCIP | none — ships a bundled binary |
 //! | `solver-cbc` | CBC | `coinor-cbc` system library |
-//! | `solver-lp-solvers` | external binary (CPLEX, Gurobi …) | solver binary at runtime |
+//! | `solver-lp-solvers` *(default)* | external binary (CPLEX, Gurobi …) | solver binary at runtime |
 //! | `solver-cplex-rs` | CPLEX (static) | local CPLEX install + clang |
+
+use alloc::string::ToString;
 
 /// The [microlp](https://docs.rs/microlp) pure-Rust solver.
 /// Available with feature `solver-microlp` (enabled by default).
@@ -44,17 +46,6 @@ pub fn cplex(binary_path: &str) -> good_lp::LpSolver<lp_solvers::solvers::Cplex>
     good_lp::LpSolver(lp_solvers::solvers::Cplex::with_command(
         binary_path.to_string(),
     ))
-}
-
-/// Returns an [`lp-solvers`](https://docs.rs/lp-solvers) runtime bridge to
-/// any external solver binary that accepts `.lp` files (e.g. Gurobi, GLPK, CBC).
-///
-/// `solver` must be an `lp_solvers::solvers::*` value.
-///
-/// Available with feature `solver-lp-solvers`.
-#[cfg(feature = "solver-lp-solvers")]
-pub fn lp_solver<S: lp_solvers::solvers::SolverProgram>(solver: S) -> good_lp::LpSolver<S> {
-    good_lp::LpSolver(solver)
 }
 
 /// The [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio)

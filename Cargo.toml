@@ -24,7 +24,7 @@ serde_json = { version = "1", default-features = false, features = [
 orx-priority-queue = { version = "1.8.0", default-features = false }
 
 [features]
-default = ["std", "solver-microlp"]
+default = ["std", "solver-lp-solvers"]
 std = []
 serde-export = ["dep:serde", "dep:serde_json"]
 
