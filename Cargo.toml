@@ -47,20 +47,20 @@ solver-cplex-rs = ["good_lp/cplex-rs"]
 
 [[example]]
 name = "aoa_wait_dd_nw"
-required-features = ["solver-lp-solvers", "std"]
+required-features = ["std"]
 
 [[example]]
 name = "aoa_wait_ro_nw"
-required-features = ["solver-lp-solvers", "std"]
+required-features = ["std"]
 
 [[example]]
 name = "aon_wait_dd_nw"
-required-features = ["solver-lp-solvers", "std"]
+required-features = ["std"]
 
 [[example]]
 name = "aon_wait_ro_nw"
-required-features = ["solver-lp-solvers", "std"]
+required-features = ["std"]
 
 [[example]]
 name = "space_time_nw"
-required-features = ["solver-lp-solvers", "std"]
+required-features = ["std"]

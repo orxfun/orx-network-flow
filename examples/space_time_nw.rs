@@ -48,10 +48,13 @@ fn main() {
         AoaWaitRoMcnfParams::default(),
         cplex_solver(),
     );
-    space_time_solver.display_lp();
-    space_time_solver
-        .export_lp("target/space_time_nw.lp")
-        .expect("lp");
+    #[cfg(feature = "solver-lp-solvers")]
+    {
+        space_time_solver.display_lp();
+        space_time_solver
+            .export_lp("target/space_time_nw.lp")
+            .expect("lp");
+    }
     let space_time_sol = space_time_solver.solve().expect("space_time solution");
 
     let dot = dot.with_solution(&space_time_sol);
@@ -154,8 +157,19 @@ fn sample_problem() -> orx_network_flow::Problem<MyVariant> {
     builder.finish()
 }
 
+/// Returns a CPLEX solver via lp-solvers runtime bridge.
+/// Available when compiled with `solver-lp-solvers` feature.
+#[cfg(feature = "solver-lp-solvers")]
 pub fn cplex_solver() -> good_lp::LpSolver<lp_solvers::solvers::Cplex> {
     solvers::cplex("/usr/local/cplex/bin/x86-64_linux/cplex")
+}
+
+/// Returns a microlp solver (pure Rust, no external dependencies).
+/// Available when compiled with `solver-microlp` feature.
+#[cfg(feature = "solver-microlp")]
+pub fn cplex_solver()
+-> fn(good_lp::variable::UnsolvedProblem) -> good_lp::solvers::microlp::MicroLpProblem {
+    solvers::microlp
 }
 
 fn report_complexity(
