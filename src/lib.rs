@@ -28,6 +28,7 @@ mod mcnf;
 pub mod networks;
 mod problem;
 mod solution_deprecated;
+pub mod solvers;
 mod spaces;
 mod time;
 mod time_bounds;

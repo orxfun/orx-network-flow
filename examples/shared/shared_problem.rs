@@ -1,5 +1,4 @@
-use good_lp::LpSolver;
-use lp_solvers::solvers::Cplex;
+use orx_network_flow::solvers;
 use orx_network_flow::{ProblemBuilder, Variant};
 
 #[derive(Clone, Copy, Default)]
@@ -81,8 +80,17 @@ pub fn sample_problem() -> orx_network_flow::Problem<MyVariant> {
     builder.finish()
 }
 
-pub fn cplex_solver() -> LpSolver<Cplex> {
-    good_lp::LpSolver(Cplex::with_command(
-        "/usr/local/cplex/bin/x86-64_linux/cplex".to_string(),
-    ))
+/// Returns a CPLEX solver via lp-solvers runtime bridge.
+/// Available when compiled with `solver-lp-solvers` feature.
+#[cfg(feature = "solver-lp-solvers")]
+pub fn solver() -> good_lp::LpSolver<lp_solvers::solvers::Cplex> {
+    solvers::cplex("/usr/local/cplex/bin/x86-64_linux/cplex")
+}
+
+/// Returns a microlp solver (pure Rust, no external dependencies).
+/// Available when compiled with `solver-microlp` feature.
+#[cfg(feature = "solver-microlp")]
+pub fn solver()
+-> fn(good_lp::variable::UnsolvedProblem) -> good_lp::solvers::microlp::MicroLpProblem {
+    solvers::microlp
 }

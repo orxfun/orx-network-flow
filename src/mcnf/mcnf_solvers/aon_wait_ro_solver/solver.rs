@@ -8,10 +8,12 @@ use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::params::AonWaitRoMcnfParams;
 use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::sol::create_solution;
 use crate::mcnf::mcnf_solvers::aon_wait_ro_solver::vars::define_vars;
 use crate::networks::AonWaitNw;
+#[cfg(feature = "solver-lp-solvers")]
 use crate::utils::math_model::lp_solvers_model_to_problem;
 use crate::{Variant, mcnf::mcnf_solvers::aon_wait_ro_solver::vars::RoVars};
 use alloc::string::{String, ToString};
 use good_lp::{Solver, SolverModel};
+#[cfg(feature = "solver-lp-solvers")]
 use lp_solvers::lp_format::LpProblem;
 
 pub struct AonWaitRoMcnfSolver<'a, V: Variant, S: Solver> {
@@ -73,22 +75,10 @@ impl<'a, V: Variant, S: Solver> AonWaitRoMcnfSolver<'a, V, S> {
     }
 
     pub fn stats(&self) -> McnfStats {
-        let graph_stats = self.nw.stats();
-
-        // SAFETY: The model type is produced by good_lp's lp-solvers backend and
-        // is layout-compatible with lp_solvers::problem::Problem.
-        let p = unsafe { lp_solvers_model_to_problem::<S>(&self.model) };
-        let num_variables = p.variables().count();
-        let num_constraints = p.constraints().count();
-
-        McnfStats {
-            graph_stats,
-            num_variables,
-            num_constraints,
-        }
+        Self::compute_stats(self.nw, self.params.clone())
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "solver-lp-solvers", feature = "std"))]
     pub fn display_lp(&self) {
         use crate::utils::math_model::lp_solvers_model_to_problem;
         use lp_solvers::lp_format::LpProblem;
@@ -98,7 +88,7 @@ impl<'a, V: Variant, S: Solver> AonWaitRoMcnfSolver<'a, V, S> {
         println!("{}", p.display_lp());
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "solver-lp-solvers", feature = "std"))]
     pub fn export_lp(&self, lp_path: impl AsRef<std::path::Path>) -> Result<(), std::io::Error> {
         use crate::utils::math_model::lp_solvers_model_to_lp_file;
         unsafe { lp_solvers_model_to_lp_file::<S, _>(&self.model, lp_path) }

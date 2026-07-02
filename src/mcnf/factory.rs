@@ -7,7 +7,9 @@ use crate::mcnf::McnfStats;
 use crate::networks::{AoaWaitNw, AonWaitNw};
 use good_lp::Solver;
 
-type StatsSolver = good_lp::solvers::lp_solvers::LpSolver<lp_solvers::solvers::Cplex>;
+#[cfg(feature = "solver-microlp")]
+type StatsSolver =
+    fn(good_lp::variable::UnsolvedProblem) -> good_lp::solvers::microlp::MicroLpProblem;
 
 pub struct McnfSolver;
 
@@ -26,6 +28,7 @@ impl McnfSolver {
         AonWaitRoMcnfSolver::build(nw, params, solver)
     }
 
+    #[cfg(feature = "solver-microlp")]
     pub fn aon_wait_ro_stats<'a, V>(
         nw: &'a AonWaitNw<'a, V>,
         params: AonWaitRoMcnfParams,
@@ -48,6 +51,7 @@ impl McnfSolver {
         AonWaitDdMcnfSolver::build(nw, params, solver)
     }
 
+    #[cfg(feature = "solver-microlp")]
     pub fn aon_wait_dd_stats<'a, V>(
         nw: &'a AonWaitNw<'a, V>,
         params: AonWaitDdMcnfParams,
@@ -72,6 +76,7 @@ impl McnfSolver {
         AoaWaitRoMcnfSolver::build(nw, params, solver)
     }
 
+    #[cfg(feature = "solver-microlp")]
     pub fn aoa_wait_ro_stats<'a, V>(
         nw: &'a AoaWaitNw<'a, V>,
         params: AoaWaitRoMcnfParams,
@@ -94,6 +99,7 @@ impl McnfSolver {
         AoaWaitDdMcnfSolver::build(nw, params, solver)
     }
 
+    #[cfg(feature = "solver-microlp")]
     pub fn aoa_wait_dd_stats<'a, V>(
         nw: &'a AoaWaitNw<'a, V>,
         params: AoaWaitDdMcnfParams,

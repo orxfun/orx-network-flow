@@ -3,7 +3,7 @@ mod shared_problem;
 
 use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::{AoaWaitDdMcnfParams, AoaWaitNwSettings, McnfSolver};
-use shared_problem::{cplex_solver, sample_problem};
+use shared_problem::{sample_problem, solver};
 
 fn main() {
     let problem = sample_problem();
@@ -17,10 +17,13 @@ fn main() {
     dot.create_svg_file("target/aoa_wait_nw.dot", "target/aoa_wait_nw.svg")
         .unwrap();
 
-    let solver = McnfSolver::aoa_wait_dd(&nw, AoaWaitDdMcnfParams::default(), cplex_solver());
+    let solver = McnfSolver::aoa_wait_dd(&nw, AoaWaitDdMcnfParams::default(), solver());
     let stats = solver.stats();
-    solver.display_lp();
-    solver.export_lp("target/aoa_wait_dd_nw.lp").expect("lp");
+    #[cfg(feature = "solver-lp-solvers")]
+    {
+        solver.display_lp();
+        solver.export_lp("target/aoa_wait_dd_nw.lp").expect("lp");
+    }
     let solution = solver.solve().unwrap();
 
     let dot = dot.with_solution(&solution).with_stats(stats);
