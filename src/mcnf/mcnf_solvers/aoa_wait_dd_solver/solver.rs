@@ -68,21 +68,8 @@ impl<'a, V: Variant, S: Solver> AoaWaitDdMcnfSolver<'a, V, S> {
         }
     }
 
-    #[cfg(feature = "solver-lp-solvers")]
     pub fn stats(&self) -> McnfStats {
-        let graph_stats = self.nw.stats();
-
-        // SAFETY: The model type is produced by good_lp's lp-solvers backend and
-        // is layout-compatible with lp_solvers::problem::Problem.
-        let p = unsafe { lp_solvers_model_to_problem::<S>(&self.model) };
-        let num_variables = p.variables().count();
-        let num_constraints = p.constraints().count();
-
-        McnfStats {
-            graph_stats,
-            num_variables,
-            num_constraints,
-        }
+        Self::compute_stats(self.nw, self.params.clone())
     }
 
     #[cfg(all(feature = "solver-lp-solvers", feature = "std"))]
