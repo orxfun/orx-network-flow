@@ -327,7 +327,6 @@ input[type="radio"] {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 /* Solution Details */
 .solution-details {
   margin-top: 30px;
@@ -352,10 +351,92 @@ input[type="radio"] {
 
 .commodities-list,
 .transports-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   margin-bottom: 15px;
+}
+
+.commodity-group {
+  background: #f8f9fa;
+  border-left: 3px solid #667eea;
+  border-radius: 4px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.commodity-header {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.commodity-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.paths-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-left: 12px;
+}
+
+.path-detail {
+  background: white;
+  border-left: 2px solid #764ba2;
+  padding: 8px 12px;
+  border-radius: 2px;
+  font-size: 0.85em;
+}
+
+.path-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.path-label {
+  color: #333;
+}
+
+.path-transports {
+  color: #999;
+  font-size: 0.9em;
+}
+
+.path-display {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  font-family: monospace;
+}
+
+.path-title {
+  color: #666;
+  margin-right: 6px;
+  font-weight: 500;
+  font-family: sans-serif;
+}
+
+.path-value {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: #333;
+  word-break: break-all;
+}
+
+.path-placeholder {
+  color: #999;
+  font-style: italic;
+  background: transparent;
 }
 
 .commodity-item,
@@ -368,13 +449,6 @@ input[type="radio"] {
   border-left: 3px solid #667eea;
   border-radius: 4px;
   font-size: 0.9em;
-}
-
-.commodity-label,
-.transport-label {
-  font-weight: 600;
-  color: #333;
-  min-width: 120px;
 }
 
 .commodity-stat,
@@ -420,5 +494,19 @@ input[type="radio"] {
   .commodities-list,
   .transports-list {
     grid-template-columns: 1fr;
+  }
+
+  .path-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .path-display {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .path-title {
+    margin-bottom: 4px;
   }
 }

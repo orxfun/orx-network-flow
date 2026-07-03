@@ -877,22 +877,83 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                             <div class="solution-details">
                                 <h3>"Commodity Routing"</h3>
                                 <div class="commodities-list">
-                                    {if let Some(commodities) = sol_data.get("commodity_solutions").and_then(|v| v.as_array()) {
+                                    {sol_data.get("commodity_solutions").and_then(|v| v.as_array()).map(|commodities| {
                                         commodities.iter().enumerate().map(|(idx, commodity)| {
                                             let com_id = commodity.get("commodity_id").and_then(|v| v.as_u64()).unwrap_or(idx as u64);
                                             let total_flow = commodity.get("total_flow").and_then(|v| v.as_u64()).unwrap_or(0);
-                                            let num_paths = commodity.get("paths").and_then(|v| v.as_array().map(|a| a.len())).unwrap_or(0);
 
                                             view! {
-                                                <div class="commodity-item">
-                                                    <span class="commodity-label">{format!("Commodity {}", com_id)}</span>
-                                                    <span class="commodity-stat">{format!("Flow: {} | Paths: {}", total_flow, num_paths)}</span>
+                                                <div class="commodity-group">
+                                                    <div class="commodity-header">
+                                                        <span class="commodity-label">{format!("Commodity {}: Total Flow {}", com_id, total_flow)}</span>
+                                                    </div>
+                                                    <div class="paths-list">
+                                                        {commodity.get("paths").and_then(|v| v.as_array()).map(|paths| {
+                                                            paths.iter().enumerate().map(|(path_idx, path)| {
+                                                                let flow = path.get("flow").and_then(|v| v.as_u64()).unwrap_or(0);
+                                                                let transport_path = path.get("transport_path")
+                                                                    .and_then(|v| v.as_str())
+                                                                    .map(|s| s.to_string())
+                                                                    .unwrap_or_else(|| "?".to_string());
+                                                                let space_path = path.get("space_path")
+                                                                    .and_then(|v| v.as_str())
+                                                                    .map(|s| s.to_string())
+                                                                    .unwrap_or_default();
+                                                                let vertex_path = path.get("vertex_path")
+                                                                    .and_then(|v| v.as_str())
+                                                                    .map(|s| s.to_string())
+                                                                    .unwrap_or_default();
+                                                                let num_transports = path.get("num_transports").and_then(|v| v.as_u64()).unwrap_or(0);
+
+                                                                view! {
+                                                                    <div class="path-detail">
+                                                                        <div class="path-info">
+                                                                            <span class="path-label">{format!("Path {}: Flow {}", path_idx + 1, flow)}</span>
+                                                                            <span class="path-transports">{format!("({} transports)", num_transports)}</span>
+                                                                        </div>
+                                                                        <div class="path-display">
+                                                                            <span class="path-title">"Transport indices: "</span>
+                                                                            <span class="path-value">{transport_path}</span>
+                                                                        </div>
+                                                                        {if !space_path.is_empty() {
+                                                                            view! {
+                                                                                <div class="path-display">
+                                                                                    <span class="path-title">"Spaces: "</span>
+                                                                                    <span class="path-value">{space_path}</span>
+                                                                                </div>
+                                                                            }.into_view()
+                                                                        } else {
+                                                                            view! {
+                                                                                <div class="path-display">
+                                                                                    <span class="path-title">"Spaces: "</span>
+                                                                                    <span class="path-value path-placeholder">"(not resolved)"</span>
+                                                                                </div>
+                                                                            }.into_view()
+                                                                        }}
+                                                                        {if !vertex_path.is_empty() {
+                                                                            view! {
+                                                                                <div class="path-display">
+                                                                                    <span class="path-title">"Vertices: "</span>
+                                                                                    <span class="path-value">{vertex_path}</span>
+                                                                                </div>
+                                                                            }.into_view()
+                                                                        } else {
+                                                                            view! {
+                                                                                <div class="path-display">
+                                                                                    <span class="path-title">"Vertices: "</span>
+                                                                                    <span class="path-value path-placeholder">"(not resolved)"</span>
+                                                                                </div>
+                                                                            }.into_view()
+                                                                        }}
+                                                                    </div>
+                                                                }
+                                                            }).collect_view()
+                                                        }).unwrap_or_else(|| view! { <p>"No paths"</p> }.into_view())}
+                                                    </div>
                                                 </div>
                                             }
                                         }).collect_view()
-                                    } else {
-                                        view! { <p>"No routing data"</p> }.into_view()
-                                    }}
+                                    }).unwrap_or_else(|| view! { <p>"No routing data"</p> }.into_view())}
                                 </div>
 
                                 <h3>"Transport Utilization"</h3>

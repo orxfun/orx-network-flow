@@ -61,6 +61,12 @@ pub struct CommodityPath {
     pub path_index: usize,
     pub flow: u64,
     pub num_transports: usize,
+    /// Path represented as transport indices: "0-1-2"
+    pub transport_path: String,
+    /// Path represented as space sequence: "AMS-BRU-LEJ"
+    pub space_path: String,
+    /// Path represented as vertex indices (space-time nodes): "0-1-2-3"
+    pub vertex_path: String,
 }
 
 /// Commodity routing solution

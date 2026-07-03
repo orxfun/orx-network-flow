@@ -70,7 +70,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
-            let solution_data = extract_solution_data(&solution);
+            let solution_data = extract_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -98,7 +98,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
-            let solution_data = extract_solution_data(&solution);
+            let solution_data = extract_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -129,7 +129,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
-            let solution_data = extract_solution_data(&solution);
+            let solution_data = extract_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -160,7 +160,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
-            let solution_data = extract_solution_data(&solution);
+            let solution_data = extract_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -194,10 +194,134 @@ fn compute_objective_value<V: Variant>(solution: &McnfSolution<V>) -> f64 {
     total_flow
 }
 
+/// Extract transport indices from the Path enum's Debug representation
+fn extract_transport_indices_from_path(path_debug: &str) -> Vec<usize> {
+    // Path enum formats: OneLeg([...]), TwoLegs([...]), ThreeLegs([...]), Long([...])
+    // Extract all numbers, being careful about word boundaries
+    
+    let mut indices = Vec::new();
+    let mut current_num = String::new();
+    let mut prev_was_digit = false;
+
+    for ch in path_debug.chars() {
+        match ch {
+            '0'..='9' => {
+                current_num.push(ch);
+                prev_was_digit = true;
+            }
+            _ => {
+                // Non-digit: clear the buffer if we have a number
+                if !current_num.is_empty() && prev_was_digit {
+                    if let Ok(num) = current_num.parse::<usize>() {
+                        indices.push(num);
+                    }
+                    current_num.clear();
+                }
+                prev_was_digit = false;
+            }
+        }
+    }
+
+    // Parse any remaining number
+    if !current_num.is_empty() {
+        if let Ok(num) = current_num.parse::<usize>() {
+            indices.push(num);
+        }
+    }
+
+    indices
+}
+
+/// Build space sequence string from transport indices
+/// Extracts space names by following the transport path
+fn build_space_sequence<V: Variant>(problem: &Problem<V>, transport_indices: &[usize]) -> String
+where
+    V::S: ToString,
+    V::T: From<usize>,
+{
+    if transport_indices.is_empty() {
+        return String::new();
+    }
+
+    let mut spaces = Vec::new();
+
+    // Add the origin of the first transport
+    if let Some(&first_t_idx) = transport_indices.first() {
+        let first_transport_key = V::T::from(first_t_idx);
+        if let Some(first_transport) = problem.transports.get_by_key(&first_transport_key) {
+            let origin_space_idx = first_transport.origin().space();
+            if let Some(origin_space_name) = problem.spaces.key(origin_space_idx) {
+                spaces.push(origin_space_name.to_string());
+            }
+        }
+    }
+
+    // Add destinations of all transports
+    for &t_idx in transport_indices {
+        let transport_key = V::T::from(t_idx);
+        if let Some(transport) = problem.transports.get_by_key(&transport_key) {
+            let dest_space_idx = transport.destination().space();
+            if let Some(dest_space_name) = problem.spaces.key(dest_space_idx) {
+                spaces.push(dest_space_name.to_string());
+            }
+        }
+    }
+
+    spaces.join("-")
+}
+
+/// Build vertex sequence string from transport indices
+/// Each vertex represents a space-time pair (S{space_idx}-T{time})
+fn build_vertex_sequence<V: Variant>(problem: &Problem<V>, transport_indices: &[usize]) -> String
+where
+    V::T: From<usize>,
+{
+    use orx_network_flow::IdxCore;
+
+    if transport_indices.is_empty() {
+        return String::new();
+    }
+
+    let mut vertices = Vec::new();
+
+    // Add the origin vertex of the first transport
+    if let Some(&first_t_idx) = transport_indices.first() {
+        let first_transport_key = V::T::from(first_t_idx);
+        if let Some(first_transport) = problem.transports.get_by_key(&first_transport_key) {
+            let origin_st = first_transport.origin();
+            vertices.push(format!(
+                "S{}-T{}",
+                origin_st.space().into_inner(),
+                origin_st.time()
+            ));
+        }
+    }
+
+    // Add destination vertex of each transport
+    for &t_idx in transport_indices {
+        let transport_key = V::T::from(t_idx);
+        if let Some(transport) = problem.transports.get_by_key(&transport_key) {
+            let dest_st = transport.destination();
+            vertices.push(format!(
+                "S{}-T{}",
+                dest_st.space().into_inner(),
+                dest_st.time()
+            ));
+        }
+    }
+
+    vertices.join("-")
+}
+
 /// Extract solution data (commodity paths and transport utilization)
-fn extract_solution_data<V: Variant>(solution: &McnfSolution<V>) -> SolutionData
+fn extract_solution_data<V: Variant>(
+    problem: &Problem<V>,
+    solution: &McnfSolution<V>,
+) -> SolutionData
 where
     V::F: Into<u64>,
+    V::S: ToString,
+    V::T: From<usize>,
 {
     // Extract commodity routing information
     let mut commodity_solutions = Vec::new();
@@ -213,10 +337,38 @@ where
             let flow_u64: u64 = path_flow.flow.into();
             total_flow_u64 += flow_u64;
 
+            // Extract transport indices from Debug representation
+            let path_debug = format!("{:?}", path_flow.path);
+            let transport_indices = extract_transport_indices_from_path(&path_debug);
+            let num_transports = transport_indices.len();
+
+            // Build transport index string (e.g., "0-1-2")
+            let transport_path = if num_transports > 0 {
+                let indices_str = transport_indices
+                    .iter()
+                    .map(|i| i.to_string())
+                    .collect::<Vec<_>>()
+                    .join("-");
+                // Add debug info: show what we parsed
+                format!("{} [parsed from: {:?}]", indices_str, path_debug)
+            } else {
+                // Debug: show what we got
+                format!("DEBUG: {:?}", path_debug)
+            };
+
+            // Build space sequence string (e.g., "AMS-BRU-LEJ")
+            let space_path = build_space_sequence(problem, &transport_indices);
+
+            // Build vertex sequence string (e.g., "S0-T0-S1-T5-S2-T10")
+            let vertex_path = build_vertex_sequence(problem, &transport_indices);
+
             commodity_paths.push(CommodityPath {
                 path_index: path_idx,
                 flow: flow_u64,
-                num_transports: 1, // Placeholder - ideally count from path structure
+                num_transports,
+                transport_path,
+                space_path,
+                vertex_path,
             });
 
             path_idx += 1;
