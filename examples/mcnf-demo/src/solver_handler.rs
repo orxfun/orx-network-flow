@@ -526,9 +526,7 @@ where
         let transport_key = V::T::from(transport_index);
         let transport_data = problem.transports.get_by_key(&transport_key);
 
-        let capacity: u64 = transport_data
-            .map(|t| t.capacity().into())
-            .unwrap_or(0u64);
+        let capacity: u64 = transport_data.map(|t| t.capacity().into()).unwrap_or(0u64);
 
         let (origin_space, destination_space, departure_time, arrival_time) =
             if let Some(t) = transport_data {
@@ -577,9 +575,7 @@ where
                         cd.paths
                             .iter()
                             .filter(|p| {
-                                p.transport_path
-                                    .split('-')
-                                    .any(|seg| seg == t_str.as_str())
+                                p.transport_path.split('-').any(|seg| seg == t_str.as_str())
                             })
                             .count()
                     })

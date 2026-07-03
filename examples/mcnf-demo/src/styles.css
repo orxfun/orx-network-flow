@@ -510,3 +510,236 @@ input[type="radio"] {
     margin-bottom: 4px;
   }
 }
+
+/* ── Phase 5C: Interactive Solution Tables ───────────────────────── */
+
+.solution-section {
+  margin-top: 30px;
+}
+
+.solution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.solution-header h3 {
+  margin: 0;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 6px;
+}
+
+.meta-badge {
+  background: #f0f0fa;
+  border: 1px solid #b0b8ee;
+  border-radius: 16px;
+  padding: 4px 14px;
+  font-size: 0.9em;
+  color: #444;
+}
+
+/* Perspective toggle */
+.perspective-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  padding: 8px 20px;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  background: white;
+  color: #667eea;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.toggle-btn:hover {
+  background: #f0f0fa;
+}
+
+.toggle-btn.active {
+  background: #667eea;
+  color: white;
+}
+
+/* Focus bar */
+.focus-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.focus-bar label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.focus-bar select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+  min-width: 220px;
+}
+
+.clear-focus {
+  padding: 5px 12px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.clear-focus:hover {
+  background: #e05555;
+}
+
+/* Solution table */
+.solution-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 20px;
+}
+
+.solution-table th {
+  background: #667eea;
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.solution-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.solution-table tbody tr:hover {
+  background: #f5f6ff;
+  cursor: pointer;
+}
+
+.solution-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.focused-row {
+  background: #eef0ff !important;
+  border-left: 3px solid #667eea;
+}
+
+.path-row {
+  background: #fafafe !important;
+  font-size: 0.87em;
+  color: #555;
+}
+
+.path-row:hover {
+  background: #f0f2ff !important;
+}
+
+.path-idx {
+  color: #888;
+  padding-left: 24px !important;
+}
+
+.num-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mono-cell {
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+/* Path tags */
+.path-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.82em;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.transport-tag {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.space-tag {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.vertex-tag {
+  background: #fce4ec;
+  color: #880e4f;
+}
+
+/* Utilization bar */
+.util-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.util-bar {
+  height: 8px;
+  background: #667eea;
+  border-radius: 4px;
+  min-width: 2px;
+  transition: width 0.3s;
+}
+
+.util-high { color: #2e7d32; font-weight: 700; }
+.util-mid  { color: #e65100; font-weight: 700; }
+.util-low  { color: #b71c1c; font-weight: 700; }
+
+/* Cross-reference section */
+.cross-ref {
+  margin-top: 18px;
+  padding: 16px;
+  background: #fafbff;
+  border: 1px solid #d0d4f5;
+  border-radius: 6px;
+}
+
+.cross-ref h4 {
+  margin: 0 0 12px;
+  color: #4a4faa;
+  font-size: 0.95em;
+}
+
+.cross-ref-table th {
+  background: #4a4faa;
+}
+
+.perspective-view {
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
