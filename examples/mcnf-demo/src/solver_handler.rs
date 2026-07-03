@@ -344,16 +344,13 @@ where
 
             // Build transport index string (e.g., "0-1-2")
             let transport_path = if num_transports > 0 {
-                let indices_str = transport_indices
+                transport_indices
                     .iter()
                     .map(|i| i.to_string())
                     .collect::<Vec<_>>()
-                    .join("-");
-                // Add debug info: show what we parsed
-                format!("{} [parsed from: {:?}]", indices_str, path_debug)
+                    .join("-")
             } else {
-                // Debug: show what we got
-                format!("DEBUG: {:?}", path_debug)
+                "[No path]".to_string()
             };
 
             // Build space sequence string (e.g., "AMS-BRU-LEJ")
