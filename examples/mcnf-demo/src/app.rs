@@ -1,14 +1,155 @@
 use leptos::*;
 use serde_json::{Value, json};
 
+/// Generate demo data from shared_problem.rs
+fn demo_data() -> (Vec<SpaceInput>, Vec<CommodityInput>, Vec<TransportInput>) {
+    let spaces = vec![
+        SpaceInput {
+            name: "AMS".to_string(),
+            latitude: 52.308_613,
+            longitude: 4.763_889,
+        },
+        SpaceInput {
+            name: "BRU".to_string(),
+            latitude: 50.901_389,
+            longitude: 4.484_444,
+        },
+        SpaceInput {
+            name: "LEJ".to_string(),
+            latitude: 51.25,
+            longitude: 12.14,
+        },
+        SpaceInput {
+            name: "CVG".to_string(),
+            latitude: 39.0488,
+            longitude: -84.6678,
+        },
+        SpaceInput {
+            name: "SIN".to_string(),
+            latitude: 1.350_189,
+            longitude: 103.994_433,
+        },
+        SpaceInput {
+            name: "EMA".to_string(),
+            latitude: 52.831_111,
+            longitude: -1.328_056,
+        },
+    ];
+
+    let commodities = vec![
+        CommodityInput {
+            id: 0,
+            origin: "AMS".to_string(),
+            ready_time: 0,
+            destination: "BRU".to_string(),
+            due_time: 20,
+            quantity: 100,
+        },
+        CommodityInput {
+            id: 1,
+            origin: "AMS".to_string(),
+            ready_time: 0,
+            destination: "CVG".to_string(),
+            due_time: 20,
+            quantity: 100,
+        },
+        CommodityInput {
+            id: 2,
+            origin: "AMS".to_string(),
+            ready_time: 0,
+            destination: "LEJ".to_string(),
+            due_time: 20,
+            quantity: 100,
+        },
+        CommodityInput {
+            id: 3,
+            origin: "AMS".to_string(),
+            ready_time: 0,
+            destination: "LEJ".to_string(),
+            due_time: 20,
+            quantity: 100,
+        },
+        CommodityInput {
+            id: 4,
+            origin: "LEJ".to_string(),
+            ready_time: 0,
+            destination: "CVG".to_string(),
+            due_time: 20,
+            quantity: 100,
+        },
+    ];
+
+    let transports = vec![
+        TransportInput {
+            id: 0,
+            vehicle_type: "77X".to_string(),
+            origin: "AMS".to_string(),
+            departure_time: 1,
+            destination: "BRU".to_string(),
+            arrival_time: 2,
+            capacity: 10,
+        },
+        TransportInput {
+            id: 1,
+            vehicle_type: "77X".to_string(),
+            origin: "AMS".to_string(),
+            departure_time: 4,
+            destination: "BRU".to_string(),
+            arrival_time: 5,
+            capacity: 10,
+        },
+        TransportInput {
+            id: 2,
+            vehicle_type: "77X".to_string(),
+            origin: "AMS".to_string(),
+            departure_time: 4,
+            destination: "LEJ".to_string(),
+            arrival_time: 5,
+            capacity: 10,
+        },
+        TransportInput {
+            id: 3,
+            vehicle_type: "77X".to_string(),
+            origin: "LEJ".to_string(),
+            departure_time: 1,
+            destination: "BRU".to_string(),
+            arrival_time: 2,
+            capacity: 10,
+        },
+        TransportInput {
+            id: 4,
+            vehicle_type: "77X".to_string(),
+            origin: "LEJ".to_string(),
+            departure_time: 4,
+            destination: "BRU".to_string(),
+            arrival_time: 5,
+            capacity: 10,
+        },
+        TransportInput {
+            id: 5,
+            vehicle_type: "77X".to_string(),
+            origin: "BRU".to_string(),
+            departure_time: 7,
+            destination: "CVG".to_string(),
+            arrival_time: 12,
+            capacity: 10,
+        },
+    ];
+
+    (spaces, commodities, transports)
+}
+
 #[component]
 pub fn App() -> impl IntoView {
     let (error_message, set_error) = create_signal::<Option<String>>(None);
     let (problem_built, set_problem_built) = create_signal(false);
     let (show_stats, set_show_stats) = create_signal(false);
     let (stats_data, set_stats) = create_signal::<Option<Value>>(None);
+    let (problem_input, set_problem_input) =
+        create_signal::<Option<crate::serialization::ProblemInput>>(None);
 
-    let on_problem_built = move |_| {
+    let on_problem_built = move |input: crate::serialization::ProblemInput| {
+        set_problem_input.set(Some(input));
         set_problem_built.set(true);
         set_error.set(None);
     };
@@ -53,6 +194,7 @@ pub fn App() -> impl IntoView {
                         view! {
                             <section class="selector-section">
                                 <NetworkSelector
+                                    problem_input=problem_input
                                     on_stats_loaded=on_stats_loaded
                                     on_error=on_error
                                 />
@@ -89,7 +231,7 @@ pub fn App() -> impl IntoView {
 
 #[component]
 fn ProblemForm(
-    on_built: impl Fn(()) + 'static,
+    on_built: impl Fn(crate::serialization::ProblemInput) + 'static,
     on_error: impl Fn(String) + 'static,
 ) -> impl IntoView {
     let (spaces, set_spaces) = create_signal(vec![SpaceInput::default()]);
@@ -138,14 +280,63 @@ fn ProblemForm(
             return;
         }
 
-        // Here you would call the backend command
-        // For now, just trigger the event
-        on_built(());
+        // Convert form inputs to serialization types
+        let problem_input = crate::serialization::ProblemInput {
+            spaces: spaces
+                .get()
+                .into_iter()
+                .map(|s| crate::serialization::FormGeographicSpace {
+                    name: s.name,
+                    latitude: s.latitude,
+                    longitude: s.longitude,
+                })
+                .collect(),
+            commodities: commodities
+                .get()
+                .into_iter()
+                .map(|c| crate::serialization::FormCommodity {
+                    id: c.id,
+                    origin: c.origin,
+                    ready_time: c.ready_time,
+                    destination: c.destination,
+                    due_time: c.due_time,
+                    quantity: c.quantity,
+                })
+                .collect(),
+            transports: transports
+                .get()
+                .into_iter()
+                .map(|t| crate::serialization::FormTransport {
+                    id: t.id,
+                    vehicle_type: t.vehicle_type,
+                    origin: t.origin,
+                    departure_time: t.departure_time,
+                    destination: t.destination,
+                    arrival_time: t.arrival_time,
+                    capacity: t.capacity,
+                })
+                .collect(),
+            lost_revenue_costs: vec![], // TODO: Add lost revenue UI
+        };
+
+        on_built(problem_input);
+    };
+
+    let load_demo_input = move |_| {
+        let (demo_spaces, demo_commodities, demo_transports) = demo_data();
+        set_spaces.set(demo_spaces);
+        set_commodities.set(demo_commodities);
+        set_transports.set(demo_transports);
     };
 
     view! {
         <div class="problem-form">
-            <h2>"Define Problem"</h2>
+            <div class="form-header">
+                <h2>"Define Problem"</h2>
+                <button class="btn-demo" on:click=load_demo_input>
+                    "📋 Demo Input"
+                </button>
+            </div>
 
             <fieldset>
                 <legend>"Geographic Spaces"</legend>
@@ -158,9 +349,48 @@ fn ProblemForm(
                             .map(|(idx, _)| {
                                 view! {
                                     <div class="form-row">
-                                        <input type="text" placeholder="Space name" />
-                                        <input type="number" placeholder="Latitude" step="0.001" />
-                                        <input type="number" placeholder="Longitude" step="0.001" />
+                                        <input
+                                            type="text"
+                                            placeholder="Space name"
+                                            prop:value=move || spaces.get().get(idx).map(|s| s.name.clone()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_spaces.update(|s| {
+                                                    if let Some(space) = s.get_mut(idx) {
+                                                        space.name = event_target_value(&e);
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Latitude"
+                                            step="0.001"
+                                            prop:value=move || spaces.get().get(idx).map(|s| s.latitude.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_spaces.update(|s| {
+                                                    if let Some(space) = s.get_mut(idx) {
+                                                        if let Ok(lat) = event_target_value(&e).parse::<f64>() {
+                                                            space.latitude = lat;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Longitude"
+                                            step="0.001"
+                                            prop:value=move || spaces.get().get(idx).map(|s| s.longitude.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_spaces.update(|s| {
+                                                    if let Some(space) = s.get_mut(idx) {
+                                                        if let Ok(lon) = event_target_value(&e).parse::<f64>() {
+                                                            space.longitude = lon;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
                                         {move || {
                                             (spaces.get().len() > 1).then(|| {
                                                 view! {
@@ -195,12 +425,86 @@ fn ProblemForm(
                             .map(|(idx, _)| {
                                 view! {
                                     <div class="form-row">
-                                        <input type="number" placeholder="Commodity ID" />
-                                        <input type="text" placeholder="Origin" />
-                                        <input type="number" placeholder="Ready time" />
-                                        <input type="text" placeholder="Destination" />
-                                        <input type="number" placeholder="Due time" />
-                                        <input type="number" placeholder="Quantity" />
+                                        <input
+                                            type="number"
+                                            placeholder="Commodity ID"
+                                            prop:value=move || commodities.get().get(idx).map(|c| c.id.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_commodities.update(|c| {
+                                                    if let Some(commodity) = c.get_mut(idx) {
+                                                        if let Ok(id) = event_target_value(&e).parse::<usize>() {
+                                                            commodity.id = id;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Origin"
+                                            prop:value=move || commodities.get().get(idx).map(|c| c.origin.clone()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_commodities.update(|c| {
+                                                    if let Some(commodity) = c.get_mut(idx) {
+                                                        commodity.origin = event_target_value(&e);
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Ready time"
+                                            prop:value=move || commodities.get().get(idx).map(|c| c.ready_time.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_commodities.update(|c| {
+                                                    if let Some(commodity) = c.get_mut(idx) {
+                                                        if let Ok(rt) = event_target_value(&e).parse::<i64>() {
+                                                            commodity.ready_time = rt;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Destination"
+                                            prop:value=move || commodities.get().get(idx).map(|c| c.destination.clone()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_commodities.update(|c| {
+                                                    if let Some(commodity) = c.get_mut(idx) {
+                                                        commodity.destination = event_target_value(&e);
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Due time"
+                                            prop:value=move || commodities.get().get(idx).map(|c| c.due_time.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_commodities.update(|c| {
+                                                    if let Some(commodity) = c.get_mut(idx) {
+                                                        if let Ok(due) = event_target_value(&e).parse::<i64>() {
+                                                            commodity.due_time = due;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Quantity"
+                                            prop:value=move || commodities.get().get(idx).map(|c| c.quantity.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_commodities.update(|c| {
+                                                    if let Some(commodity) = c.get_mut(idx) {
+                                                        if let Ok(qty) = event_target_value(&e).parse::<u64>() {
+                                                            commodity.quantity = qty;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
                                         <button
                                             class="btn-remove"
                                             on:click=move |_| remove_commodity(idx)
@@ -229,13 +533,98 @@ fn ProblemForm(
                             .map(|(idx, _)| {
                                 view! {
                                     <div class="form-row">
-                                        <input type="number" placeholder="Transport ID" />
-                                        <input type="text" placeholder="Vehicle type" />
-                                        <input type="text" placeholder="Origin" />
-                                        <input type="number" placeholder="Departure time" />
-                                        <input type="text" placeholder="Destination" />
-                                        <input type="number" placeholder="Arrival time" />
-                                        <input type="number" placeholder="Capacity" />
+                                        <input
+                                            type="number"
+                                            placeholder="Transport ID"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.id.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        if let Ok(id) = event_target_value(&e).parse::<usize>() {
+                                                            transport.id = id;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Vehicle type"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.vehicle_type.clone()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        transport.vehicle_type = event_target_value(&e);
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Origin"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.origin.clone()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        transport.origin = event_target_value(&e);
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Departure time"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.departure_time.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        if let Ok(dt) = event_target_value(&e).parse::<i64>() {
+                                                            transport.departure_time = dt;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Destination"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.destination.clone()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        transport.destination = event_target_value(&e);
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Arrival time"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.arrival_time.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        if let Ok(at) = event_target_value(&e).parse::<i64>() {
+                                                            transport.arrival_time = at;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Capacity"
+                                            prop:value=move || transports.get().get(idx).map(|t| t.capacity.to_string()).unwrap_or_default()
+                                            on:input=move |e| {
+                                                set_transports.update(|t| {
+                                                    if let Some(transport) = t.get_mut(idx) {
+                                                        if let Ok(cap) = event_target_value(&e).parse::<u64>() {
+                                                            transport.capacity = cap;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        />
                                         <button
                                             class="btn-remove"
                                             on:click=move |_| remove_transport(idx)
@@ -262,6 +651,7 @@ fn ProblemForm(
 
 #[component]
 fn NetworkSelector(
+    problem_input: ReadSignal<Option<crate::serialization::ProblemInput>>,
     on_stats_loaded: impl Fn(Value) + 'static,
     on_error: impl Fn(String) + 'static,
 ) -> impl IntoView {
@@ -270,15 +660,30 @@ fn NetworkSelector(
     let (solver_backend, set_solver_backend) = create_signal("microlp");
 
     let on_solve = move |_| {
-        // Mock stats response
-        let stats = json!({
-            "num_variables": 100,
-            "num_constraints": 50,
-            "num_commodities": 1,
-            "num_spaces": 1,
-            "num_transports": 0,
-        });
-        on_stats_loaded(stats);
+        if let Some(input) = problem_input.get() {
+            let network_choice = crate::serialization::NetworkChoice {
+                network_type: network_type.get().to_string(),
+                grouping_strategy: grouping_strategy.get().to_string(),
+                solver_backend: solver_backend.get().to_string(),
+            };
+
+            // Call backend to solve
+            match crate::solver_handler::solve_network_from_input(&input, &network_choice) {
+                Ok(stats) => {
+                    let stats_json = json!({
+                        "num_variables": stats.num_variables,
+                        "num_constraints": stats.num_constraints,
+                        "num_commodities": stats.num_commodities,
+                        "num_spaces": stats.num_spaces,
+                        "num_transports": stats.num_transports,
+                    });
+                    on_stats_loaded(stats_json);
+                }
+                Err(e) => on_error(format!("Solve error: {}", e)),
+            }
+        } else {
+            on_error("No problem data available".into());
+        }
     };
 
     view! {

@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
 
 pub mod app;

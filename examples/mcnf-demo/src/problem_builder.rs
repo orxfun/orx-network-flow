@@ -1,10 +1,5 @@
-use crate::serialization::{
-    FormCommodity, FormGeographicSpace, FormLostRevenueItem, FormTransport, ProblemInput,
-};
+use crate::serialization::ProblemInput;
 use orx_network_flow::{ProblemBuilder, Variant};
-use std::collections::HashSet;
-
-/// Demo variant matching shared_problem.rs
 #[derive(Clone, Copy, Default)]
 pub struct MyVariant;
 
@@ -114,6 +109,9 @@ pub fn build_problem_from_input(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::serialization::{
+        FormCommodity, FormGeographicSpace, FormLostRevenueItem, FormTransport,
+    };
 
     #[test]
     fn test_build_empty_problem() {
