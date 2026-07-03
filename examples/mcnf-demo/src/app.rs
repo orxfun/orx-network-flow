@@ -237,6 +237,7 @@ fn ProblemForm(
     let (spaces, set_spaces) = create_signal(vec![SpaceInput::default()]);
     let (commodities, set_commodities) = create_signal(vec![]);
     let (transports, set_transports) = create_signal(vec![]);
+    let (lost_revenue_items, set_lost_revenue_items) = create_signal::<Vec<(usize, i64)>>(vec![]);
 
     let add_space = move |_| {
         set_spaces.update(|s| s.push(SpaceInput::default()));
@@ -316,7 +317,16 @@ fn ProblemForm(
                     capacity: t.capacity,
                 })
                 .collect(),
-            lost_revenue_costs: vec![], // TODO: Add lost revenue UI
+            lost_revenue_costs: lost_revenue_items
+                .get()
+                .into_iter()
+                .map(
+                    |(commodity_id, cost_per_unit)| crate::serialization::FormLostRevenueItem {
+                        commodity_id,
+                        cost_per_unit,
+                    },
+                )
+                .collect(),
         };
 
         on_built(problem_input);
@@ -327,6 +337,8 @@ fn ProblemForm(
         set_spaces.set(demo_spaces);
         set_commodities.set(demo_commodities);
         set_transports.set(demo_transports);
+        // Demo lost revenue costs from shared_problem.rs
+        set_lost_revenue_items.set(vec![(0, 1), (1, 3), (2, 10), (3, 2), (4, 8)]);
     };
 
     view! {
@@ -642,6 +654,57 @@ fn ProblemForm(
                 </div>
             </fieldset>
 
+            <fieldset>
+                <legend>"Lost Revenue Costs (per unrouted unit)"</legend>
+                <div class="form-group">
+                    {move || {
+                        lost_revenue_items.get().into_iter().enumerate().map(|(idx, _)| {
+                            view! {
+                                <div class="form-row">
+                                    <label>"Commodity ID:"</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Commodity ID"
+                                        prop:value=move || lost_revenue_items.get().get(idx).map(|(id, _)| id.to_string()).unwrap_or_default()
+                                        on:input=move |e| {
+                                            set_lost_revenue_items.update(|items| {
+                                                if let Some(item) = items.get_mut(idx) {
+                                                    if let Ok(id) = event_target_value(&e).parse::<usize>() {
+                                                        item.0 = id;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    />
+                                    <label>"Cost per unit:"</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Revenue per unit"
+                                        prop:value=move || lost_revenue_items.get().get(idx).map(|(_, cost)| cost.to_string()).unwrap_or_default()
+                                        on:input=move |e| {
+                                            set_lost_revenue_items.update(|items| {
+                                                if let Some(item) = items.get_mut(idx) {
+                                                    if let Ok(cost) = event_target_value(&e).parse::<i64>() {
+                                                        item.1 = cost;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    />
+                                    <button
+                                        class="btn-remove"
+                                        on:click=move |_| set_lost_revenue_items.update(|items| { items.remove(idx); })
+                                    >"Remove"</button>
+                                </div>
+                            }
+                        }).collect::<Vec<_>>()
+                    }}
+                    <button class="btn-add" on:click=move |_| set_lost_revenue_items.update(|items| items.push((0, 1)))>
+                        "+ Add Lost Revenue Cost"
+                    </button>
+                </div>
+            </fieldset>
+
             <button class="btn-submit" on:click=on_submit>
                 "Build Problem"
             </button>
@@ -857,7 +920,7 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                         <div class="stat-value">
                                             {format!("{:.2}", ov)}
                                         </div>
-                                        <div class="stat-label">"Objective Value"</div>
+                                        <div class="stat-label">"Lost Revenue"</div>
                                     </div>
                                 }
                             })}

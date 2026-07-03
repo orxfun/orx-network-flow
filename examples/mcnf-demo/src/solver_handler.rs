@@ -69,7 +69,7 @@ pub fn solve_network(
                 .map_err(|e| format!("Solver error: {}", e))?;
 
             // Compute objective value from solution
-            let objective_value = compute_objective_value(&solution);
+            let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
             esd.commodity_dot = generate_commodity_dot(&esd);
@@ -101,7 +101,7 @@ pub fn solve_network(
                 .map_err(|e| format!("Solver error: {}", e))?;
 
             // Compute objective value from solution
-            let objective_value = compute_objective_value(&solution);
+            let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
             esd.commodity_dot = generate_commodity_dot(&esd);
@@ -136,7 +136,7 @@ pub fn solve_network(
                 .map_err(|e| format!("Solver error: {}", e))?;
 
             // Compute objective value from solution
-            let objective_value = compute_objective_value(&solution);
+            let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
             esd.commodity_dot = generate_commodity_dot(&esd);
@@ -171,7 +171,7 @@ pub fn solve_network(
                 .map_err(|e| format!("Solver error: {}", e))?;
 
             // Compute objective value from solution
-            let objective_value = compute_objective_value(&solution);
+            let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
             esd.commodity_dot = generate_commodity_dot(&esd);
@@ -194,20 +194,47 @@ pub fn solve_network(
 }
 
 /// Compute objective value from solution by summing flows
-fn compute_objective_value<V: Variant>(solution: &McnfSolution<V>) -> f64 {
-    let mut total_flow = 0.0;
+fn compute_objective_value<V: Variant>(
+    problem: &Problem<V>,
+    solution: &McnfSolution<V>,
+) -> f64
+where
+    V::F: Into<u64>,
+    V::C: Into<i64>,
+{
+    use orx_network_flow::IdxCore;
 
-    // Iterate through all transport loads and sum the flows
+    // Objective = sum over each commodity of (unrouted_flow * lost_revenue_cost_per_unit)
+    // Unrouted flow = commodity amount - sum of all routed flows for that commodity
+    let mut total_cost: i64 = 0;
+
+    // Sum routed flow per commodity from transport_loads
+    let mut routed_per_commodity: std::collections::HashMap<usize, u64> =
+        std::collections::HashMap::new();
     for loads in solution.transport_loads().iter() {
-        for _load in loads {
-            // Sum all flows across all transports
-            // _load.load is of type V::F, typically u64
-            // For now, we count each commodity load as 1 unit
-            total_flow += 1.0;
+        for load in loads {
+            let flow: u64 = load.load.into();
+            if flow > 0 {
+                *routed_per_commodity
+                    .entry(load.commodity.into_inner())
+                    .or_insert(0) += flow;
+            }
         }
     }
 
-    total_flow
+    // For each commodity compute unrouted flow × lost revenue cost
+    for (c_idx, _key, c_data) in problem.commodities.entries() {
+        let quantity: u64 = c_data.amount().into();
+        let routed = *routed_per_commodity.get(&c_idx.into_inner()).unwrap_or(&0);
+        let unrouted = quantity.saturating_sub(routed);
+        if unrouted > 0 {
+            // lost_revenue.cost() returns a negative cost (penalty); negate it to get the revenue
+            let cost_per_unit: i64 = problem.costs.lost_revenue.cost(c_idx).into();
+            total_cost += (unrouted as i64) * (-cost_per_unit);
+        }
+    }
+
+    total_cost as f64
 }
 
 /// Extract transport indices from the Path enum's Debug representation
