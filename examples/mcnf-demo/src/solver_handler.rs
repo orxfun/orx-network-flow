@@ -81,6 +81,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
+                enhanced_solution_data: None,
             })
         }
         ("aon", "ro") => {
@@ -109,6 +110,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
+                enhanced_solution_data: None,
             })
         }
         ("aoa", "dd") => {
@@ -140,6 +142,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
+                enhanced_solution_data: None,
             })
         }
         ("aoa", "ro") => {
@@ -171,6 +174,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
+                enhanced_solution_data: None,
             })
         }
         _ => Err("Unreachable: network type and grouping should have been validated".into()),

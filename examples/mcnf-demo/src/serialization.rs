@@ -93,6 +93,47 @@ pub struct SolutionData {
     pub total_flow_routed: u64,
 }
 
+/// Single commodity's flow assignment on a transport
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct CommodityAssignment {
+    pub commodity_id: usize,
+    pub assigned_flow: u64,
+    pub num_paths: usize,
+}
+
+/// Commodity-centric solution view
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct CommodityDetail {
+    pub commodity_id: usize,
+    pub total_flow: u64,
+    pub paths: Vec<CommodityPath>,
+    pub transport_ids: Vec<usize>, // All transports used by this commodity
+    pub origin_space: String,
+    pub destination_space: String,
+}
+
+/// Transport-centric solution view
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct TransportDetail {
+    pub transport_id: usize,
+    pub capacity: u64,
+    pub utilized_capacity: u64,
+    pub utilization_rate: f64, // utilized / capacity (0.0 to 1.0)
+    pub assigned_commodities: Vec<CommodityAssignment>,
+    pub origin_space: String,
+    pub destination_space: String,
+    pub departure_time: i64,
+    pub arrival_time: i64,
+}
+
+/// Enhanced solution data with both commodity and transport perspectives
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct EnhancedSolutionData {
+    pub total_flow_routed: u64,
+    pub commodity_details: Vec<CommodityDetail>,
+    pub transport_details: Vec<TransportDetail>,
+}
+
 /// Network response with statistics and solution data
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct McnfResponse {
@@ -107,6 +148,8 @@ pub struct McnfResponse {
     pub status: Option<String>,
     #[serde(default)]
     pub solution_data: Option<SolutionData>,
+    #[serde(default)]
+    pub enhanced_solution_data: Option<EnhancedSolutionData>,
 }
 
 /// Solution response
