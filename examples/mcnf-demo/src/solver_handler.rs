@@ -1,7 +1,7 @@
 use crate::problem_builder::MyVariant;
 use crate::serialization::{
-    CommodityPath, CommoditySolution, McnfResponse, NetworkChoice, ProblemInput, SolutionData,
-    TransportUtilization,
+    CommodityAssignment, CommodityDetail, CommodityPath, CommoditySolution, EnhancedSolutionData,
+    McnfResponse, NetworkChoice, ProblemInput, SolutionData, TransportDetail, TransportUtilization,
 };
 use orx_network_flow::McnfSolver;
 use orx_network_flow::Problem;
@@ -71,6 +71,7 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
+            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -81,7 +82,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: None,
+                enhanced_solution_data: Some(enhanced_solution_data),
             })
         }
         ("aon", "ro") => {
@@ -100,6 +101,7 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
+            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -110,7 +112,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: None,
+                enhanced_solution_data: Some(enhanced_solution_data),
             })
         }
         ("aoa", "dd") => {
@@ -132,6 +134,7 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
+            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -142,7 +145,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: None,
+                enhanced_solution_data: Some(enhanced_solution_data),
             })
         }
         ("aoa", "ro") => {
@@ -164,6 +167,7 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
+            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -174,7 +178,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: None,
+                enhanced_solution_data: Some(enhanced_solution_data),
             })
         }
         _ => Err("Unreachable: network type and grouping should have been validated".into()),
@@ -412,5 +416,205 @@ where
         commodity_solutions,
         transport_utilizations,
         total_flow_routed,
+    }
+}
+
+/// Extract enhanced solution data with commodity-centric and transport-centric perspectives
+fn extract_enhanced_solution_data<V: Variant>(
+    problem: &Problem<V>,
+    solution: &McnfSolution<V>,
+) -> EnhancedSolutionData
+where
+    V::F: Into<u64> + Copy,
+    V::S: ToString,
+    V::T: From<usize>,
+{
+    use orx_network_flow::IdxCore;
+
+    // ── Commodity-centric view ───────────────────────────────────────────────
+    let mut commodity_details = Vec::new();
+    let mut commodity_index = 0usize;
+
+    for paths in solution.commodity_paths().iter() {
+        let mut commodity_paths = Vec::new();
+        let mut total_flow_u64 = 0u64;
+        let mut all_transport_ids: Vec<usize> = Vec::new();
+        let mut path_idx = 0usize;
+
+        for path_flow in paths.into_iter() {
+            let flow_u64: u64 = path_flow.flow.into();
+            total_flow_u64 += flow_u64;
+
+            let path_debug = format!("{:?}", path_flow.path);
+            let transport_indices = extract_transport_indices_from_path(&path_debug);
+            let num_transports = transport_indices.len();
+
+            let transport_path = if num_transports > 0 {
+                transport_indices
+                    .iter()
+                    .map(|i| i.to_string())
+                    .collect::<Vec<_>>()
+                    .join("-")
+            } else {
+                "[No path]".to_string()
+            };
+            let space_path = build_space_sequence(problem, &transport_indices);
+            let vertex_path = build_vertex_sequence(problem, &transport_indices);
+
+            for &t in &transport_indices {
+                if !all_transport_ids.contains(&t) {
+                    all_transport_ids.push(t);
+                }
+            }
+
+            commodity_paths.push(CommodityPath {
+                path_index: path_idx,
+                flow: flow_u64,
+                num_transports,
+                transport_path,
+                space_path,
+                vertex_path,
+            });
+            path_idx += 1;
+        }
+
+        // Resolve origin/destination space names from the problem
+        // Commodity internal index matches iteration order
+        let commodity_idx_key = problem
+            .commodities
+            .entries()
+            .nth(commodity_index)
+            .map(|(idx, _key, _data)| idx);
+        let (origin_space, destination_space) = if let Some(c_idx) = commodity_idx_key {
+            if let Some(c_data) = problem.commodities.get_by_idx(c_idx) {
+                let ori = problem
+                    .spaces
+                    .key(c_data.origin().space())
+                    .map(|s| s.to_string())
+                    .unwrap_or_default();
+                let des = problem
+                    .spaces
+                    .key(c_data.destination().space())
+                    .map(|s| s.to_string())
+                    .unwrap_or_default();
+                (ori, des)
+            } else {
+                (String::new(), String::new())
+            }
+        } else {
+            (String::new(), String::new())
+        };
+
+        all_transport_ids.sort_unstable();
+        commodity_details.push(CommodityDetail {
+            commodity_id: commodity_index,
+            total_flow: total_flow_u64,
+            paths: commodity_paths,
+            transport_ids: all_transport_ids,
+            origin_space,
+            destination_space,
+        });
+        commodity_index += 1;
+    }
+
+    // ── Transport-centric view ───────────────────────────────────────────────
+    let mut transport_details = Vec::new();
+    let mut total_flow_routed = 0u64;
+    let mut transport_index = 0usize;
+
+    for loads in solution.transport_loads().iter() {
+        let transport_key = V::T::from(transport_index);
+        let transport_data = problem.transports.get_by_key(&transport_key);
+
+        let capacity: u64 = transport_data
+            .map(|t| t.capacity().into())
+            .unwrap_or(0u64);
+
+        let (origin_space, destination_space, departure_time, arrival_time) =
+            if let Some(t) = transport_data {
+                let ori = problem
+                    .spaces
+                    .key(t.origin().space())
+                    .map(|s| s.to_string())
+                    .unwrap_or_default();
+                let des = problem
+                    .spaces
+                    .key(t.destination().space())
+                    .map(|s| s.to_string())
+                    .unwrap_or_default();
+                let dep: i64 = format!("{}", t.origin().time()).parse().unwrap_or(0);
+                let arr: i64 = format!("{}", t.destination().time()).parse().unwrap_or(0);
+                (ori, des, dep, arr)
+            } else {
+                (String::new(), String::new(), 0i64, 0i64)
+            };
+
+        let mut per_commodity: std::collections::HashMap<usize, u64> =
+            std::collections::HashMap::new();
+        let mut utilized_capacity = 0u64;
+
+        for load in loads {
+            let flow_u64: u64 = load.load.into();
+            if flow_u64 > 0 {
+                let c_id = load.commodity.into_inner();
+                *per_commodity.entry(c_id).or_insert(0) += flow_u64;
+                utilized_capacity += flow_u64;
+                total_flow_routed += flow_u64;
+            }
+        }
+
+        let mut commodity_ids: Vec<usize> = per_commodity.keys().copied().collect();
+        commodity_ids.sort_unstable();
+
+        let assigned_commodities = commodity_ids
+            .into_iter()
+            .map(|c_id| {
+                let assigned_flow = per_commodity[&c_id];
+                let num_paths = commodity_details
+                    .get(c_id)
+                    .map(|cd| {
+                        let t_str = transport_index.to_string();
+                        cd.paths
+                            .iter()
+                            .filter(|p| {
+                                p.transport_path
+                                    .split('-')
+                                    .any(|seg| seg == t_str.as_str())
+                            })
+                            .count()
+                    })
+                    .unwrap_or(0);
+                CommodityAssignment {
+                    commodity_id: c_id,
+                    assigned_flow,
+                    num_paths,
+                }
+            })
+            .collect();
+
+        let utilization_rate = if capacity > 0 {
+            utilized_capacity as f64 / capacity as f64
+        } else {
+            0.0
+        };
+
+        transport_details.push(TransportDetail {
+            transport_id: transport_index,
+            capacity,
+            utilized_capacity,
+            utilization_rate,
+            assigned_commodities,
+            origin_space,
+            destination_space,
+            departure_time,
+            arrival_time,
+        });
+        transport_index += 1;
+    }
+
+    EnhancedSolutionData {
+        total_flow_routed,
+        commodity_details,
+        transport_details,
     }
 }
