@@ -198,7 +198,7 @@ fn compute_objective_value<V: Variant>(solution: &McnfSolution<V>) -> f64 {
 fn extract_transport_indices_from_path(path_debug: &str) -> Vec<usize> {
     // Path enum formats: OneLeg([...]), TwoLegs([...]), ThreeLegs([...]), Long([...])
     // Extract all numbers, being careful about word boundaries
-    
+
     let mut indices = Vec::new();
     let mut current_num = String::new();
     let mut prev_was_digit = false;
