@@ -55,6 +55,38 @@ pub struct NetworkChoice {
     pub solver_backend: String,    // "cplex" or "microlp"
 }
 
+/// Path routing information for a commodity
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct CommodityPath {
+    pub path_index: usize,
+    pub flow: u64,
+    pub num_transports: usize,
+}
+
+/// Commodity routing solution
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct CommoditySolution {
+    pub commodity_id: usize,
+    pub paths: Vec<CommodityPath>,
+    pub total_flow: u64,
+}
+
+/// Transport utilization information
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct TransportUtilization {
+    pub transport_id: usize,
+    pub total_load: u64,
+    pub num_commodities: usize,
+}
+
+/// Complete solution data
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SolutionData {
+    pub commodity_solutions: Vec<CommoditySolution>,
+    pub transport_utilizations: Vec<TransportUtilization>,
+    pub total_flow_routed: u64,
+}
+
 /// Network response with statistics and solution data
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct McnfResponse {
@@ -67,6 +99,8 @@ pub struct McnfResponse {
     pub objective_value: Option<f64>,
     #[serde(default)]
     pub status: Option<String>,
+    #[serde(default)]
+    pub solution_data: Option<SolutionData>,
 }
 
 /// Solution response

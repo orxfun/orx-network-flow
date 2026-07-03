@@ -679,6 +679,7 @@ fn NetworkSelector(
                         "num_transports": response.num_transports,
                         "objective_value": response.objective_value,
                         "status": response.status,
+                        "solution_data": response.solution_data,
                     });
                     on_stats_loaded(stats_json);
                 }
@@ -866,6 +867,64 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                             })}
                         </div>
                     }
+                })
+            }}
+
+            {move || {
+                stats.get().and_then(|s| {
+                    s.get("solution_data").map(|sol_data| {
+                        view! {
+                            <div class="solution-details">
+                                <h3>"Commodity Routing"</h3>
+                                <div class="commodities-list">
+                                    {if let Some(commodities) = sol_data.get("commodity_solutions").and_then(|v| v.as_array()) {
+                                        commodities.iter().enumerate().map(|(idx, commodity)| {
+                                            let com_id = commodity.get("commodity_id").and_then(|v| v.as_u64()).unwrap_or(idx as u64);
+                                            let total_flow = commodity.get("total_flow").and_then(|v| v.as_u64()).unwrap_or(0);
+                                            let num_paths = commodity.get("paths").and_then(|v| v.as_array().map(|a| a.len())).unwrap_or(0);
+
+                                            view! {
+                                                <div class="commodity-item">
+                                                    <span class="commodity-label">{format!("Commodity {}", com_id)}</span>
+                                                    <span class="commodity-stat">{format!("Flow: {} | Paths: {}", total_flow, num_paths)}</span>
+                                                </div>
+                                            }
+                                        }).collect_view()
+                                    } else {
+                                        view! { <p>"No routing data"</p> }.into_view()
+                                    }}
+                                </div>
+
+                                <h3>"Transport Utilization"</h3>
+                                <div class="transports-list">
+                                    {if let Some(transports) = sol_data.get("transport_utilizations").and_then(|v| v.as_array()) {
+                                        transports.iter().enumerate().map(|(idx, transport)| {
+                                            let t_id = transport.get("transport_id").and_then(|v| v.as_u64()).unwrap_or(idx as u64);
+                                            let total_load = transport.get("total_load").and_then(|v| v.as_u64()).unwrap_or(0);
+                                            let num_com = transport.get("num_commodities").and_then(|v| v.as_u64()).unwrap_or(0);
+
+                                            view! {
+                                                <div class="transport-item">
+                                                    <span class="transport-label">{format!("Transport {}", t_id)}</span>
+                                                    <span class="transport-stat">{format!("Load: {} | Commodities: {}", total_load, num_com)}</span>
+                                                </div>
+                                            }
+                                        }).collect_view()
+                                    } else {
+                                        view! { <p>"No utilization data"</p> }.into_view()
+                                    }}
+                                </div>
+
+                                {sol_data.get("total_flow_routed").and_then(|v| v.as_u64()).map(|tf| {
+                                    view! {
+                                        <div class="flow-summary">
+                                            <strong>"Total Flow Routed: " {tf}</strong>
+                                        </div>
+                                    }
+                                })}
+                            </div>
+                        }
+                    })
                 })
             }}
         </div>

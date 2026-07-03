@@ -1,5 +1,8 @@
 use crate::problem_builder::MyVariant;
-use crate::serialization::{McnfResponse, NetworkChoice, ProblemInput};
+use crate::serialization::{
+    CommodityPath, CommoditySolution, McnfResponse, NetworkChoice, ProblemInput, SolutionData,
+    TransportUtilization,
+};
 use orx_network_flow::McnfSolver;
 use orx_network_flow::Problem;
 use orx_network_flow::networks::{AoaWaitNwSettings, AonWaitNwSettings};
@@ -67,6 +70,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
+            let solution_data = extract_solution_data(&solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -76,6 +80,7 @@ pub fn solve_network(
                 num_transports: problem.len_transports(),
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
+                solution_data: Some(solution_data),
             })
         }
         ("aon", "ro") => {
@@ -93,6 +98,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
+            let solution_data = extract_solution_data(&solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -102,6 +108,7 @@ pub fn solve_network(
                 num_transports: problem.len_transports(),
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
+                solution_data: Some(solution_data),
             })
         }
         ("aoa", "dd") => {
@@ -122,6 +129,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
+            let solution_data = extract_solution_data(&solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -131,6 +139,7 @@ pub fn solve_network(
                 num_transports: problem.len_transports(),
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
+                solution_data: Some(solution_data),
             })
         }
         ("aoa", "ro") => {
@@ -151,6 +160,7 @@ pub fn solve_network(
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
+            let solution_data = extract_solution_data(&solution);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -160,6 +170,7 @@ pub fn solve_network(
                 num_transports: problem.len_transports(),
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
+                solution_data: Some(solution_data),
             })
         }
         _ => Err("Unreachable: network type and grouping should have been validated".into()),
@@ -181,4 +192,72 @@ fn compute_objective_value<V: Variant>(solution: &McnfSolution<V>) -> f64 {
     }
 
     total_flow
+}
+
+/// Extract solution data (commodity paths and transport utilization)
+fn extract_solution_data<V: Variant>(solution: &McnfSolution<V>) -> SolutionData
+where
+    V::F: Into<u64>,
+{
+    // Extract commodity routing information
+    let mut commodity_solutions = Vec::new();
+    let mut commodity_index = 0;
+
+    for paths in solution.commodity_paths().iter() {
+        let mut commodity_paths = Vec::new();
+        let mut total_flow_u64 = 0u64;
+        let mut path_idx = 0;
+
+        for path_flow in paths.into_iter() {
+            // Convert flow to u64
+            let flow_u64: u64 = path_flow.flow.into();
+            total_flow_u64 += flow_u64;
+
+            commodity_paths.push(CommodityPath {
+                path_index: path_idx,
+                flow: flow_u64,
+                num_transports: 1, // Placeholder - ideally count from path structure
+            });
+
+            path_idx += 1;
+        }
+
+        commodity_solutions.push(CommoditySolution {
+            commodity_id: commodity_index,
+            paths: commodity_paths,
+            total_flow: total_flow_u64,
+        });
+
+        commodity_index += 1;
+    }
+
+    // Extract transport utilization information
+    let mut transport_utilizations = Vec::new();
+    let mut transport_index = 0;
+    let mut total_flow_routed = 0u64;
+
+    for loads in solution.transport_loads().iter() {
+        let mut total_load = 0u64;
+        let num_commodities = loads.len();
+
+        for load in loads {
+            let load_u64: u64 = load.load.into();
+            total_load += load_u64;
+            total_flow_routed += load_u64;
+        }
+
+        transport_utilizations.push(TransportUtilization {
+            transport_id: transport_index,
+            total_load,
+            num_commodities,
+        });
+
+        transport_index += 1;
+    }
+
+    SolutionData {
+        commodity_solutions,
+        transport_utilizations,
+        total_flow_routed,
+    }
 }
