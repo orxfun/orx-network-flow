@@ -55,9 +55,9 @@ pub struct NetworkChoice {
     pub solver_backend: String,    // "cplex" or "microlp"
 }
 
-/// Network statistics response with optional solution
+/// Network response with statistics and solution data
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct McnfStatsResponse {
+pub struct McnfResponse {
     pub num_variables: usize,
     pub num_constraints: usize,
     pub num_commodities: usize,

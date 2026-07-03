@@ -669,13 +669,16 @@ fn NetworkSelector(
 
             // Call backend to solve
             match crate::solver_handler::solve_network_from_input(&input, &network_choice) {
-                Ok(stats) => {
+                Ok(response) => {
+                    // Include all response fields: stats + solution data
                     let stats_json = json!({
-                        "num_variables": stats.num_variables,
-                        "num_constraints": stats.num_constraints,
-                        "num_commodities": stats.num_commodities,
-                        "num_spaces": stats.num_spaces,
-                        "num_transports": stats.num_transports,
+                        "num_variables": response.num_variables,
+                        "num_constraints": response.num_constraints,
+                        "num_commodities": response.num_commodities,
+                        "num_spaces": response.num_spaces,
+                        "num_transports": response.num_transports,
+                        "objective_value": response.objective_value,
+                        "status": response.status,
                     });
                     on_stats_loaded(stats_json);
                 }
