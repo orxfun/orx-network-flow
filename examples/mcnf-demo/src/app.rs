@@ -680,6 +680,7 @@ fn NetworkSelector(
                         "objective_value": response.objective_value,
                         "status": response.status,
                         "solution_data": response.solution_data,
+                        "enhanced_solution_data": response.enhanced_solution_data,
                     });
                     on_stats_loaded(stats_json);
                 }
