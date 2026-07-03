@@ -800,6 +800,7 @@ fn NetworkSelector(
 
 #[component]
 fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
+    let (view_mode, set_view_mode) = create_signal("tabular".to_string());
     let (perspective, set_perspective) = create_signal("commodity".to_string());
     let (focused_commodity, set_focused_commodity) = create_signal::<Option<u64>>(None);
     let (focused_transport, set_focused_transport) = create_signal::<Option<u64>>(None);
@@ -897,6 +898,18 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                     </div>
                                 </div>
 
+                                // ── View mode toggle (Tabular / Graph) ──────
+                                <div class="view-toggle">
+                                    <button
+                                        class=move || if view_mode.get() == "tabular" { "toggle-btn active" } else { "toggle-btn" }
+                                        on:click=move |_| set_view_mode.set("tabular".to_string())
+                                    >"Tabular"</button>
+                                    <button
+                                        class=move || if view_mode.get() == "graph" { "toggle-btn active" } else { "toggle-btn" }
+                                        on:click=move |_| set_view_mode.set("graph".to_string())
+                                    >"Graph"</button>
+                                </div>
+
                                 // ── Perspective toggle ───────────────────────
                                 <div class="perspective-toggle">
                                     <button
@@ -915,12 +928,47 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                     >"Transport Perspective"</button>
                                 </div>
 
+                                // ── Graph view ──────────────────────────────
+                                {
+                                    let commodity_dot_g = esd.get("commodity_dot").and_then(|v| v.as_str()).map(|s| s.to_string()).unwrap_or_default();
+                                    let transport_dot_g = esd.get("transport_dot").and_then(|v| v.as_str()).map(|s| s.to_string()).unwrap_or_default();
+                                    move || {
+                                        if view_mode.get() != "graph" { return view! { <div></div> }.into_view(); }
+                                        let cdot = commodity_dot_g.clone();
+                                        let tdot = transport_dot_g.clone();
+                                        let pers = perspective.get();
+                                        let dot_src = if pers == "transport" { tdot.clone() } else { cdot.clone() };
+                                        let container_id = if pers == "transport" { "graph-transport" } else { "graph-commodity" };
+                                        // Trigger JS rendering on next tick via effect
+                                        let dot_for_effect = dot_src.clone();
+                                        let cid_for_effect = container_id;
+                                        create_effect(move |_| {
+                                            let dot = dot_for_effect.clone();
+                                            let cid = cid_for_effect;
+                                            leptos::request_animation_frame(move || {
+                                                let _ = js_sys::eval(&format!(
+                                                    "window.renderDot('{}', {})",
+                                                    cid,
+                                                    serde_json::to_string(&dot).unwrap_or_default()
+                                                ));
+                                            });
+                                        });
+                                        view! {
+                                            <div class="graph-view">
+                                                <div id={container_id} class="graph-container">
+                                                    <p class="graph-loading">"Rendering graph..."</p>
+                                                </div>
+                                            </div>
+                                        }.into_view()
+                                    }
+                                }
+
                                 // ── Commodity perspective ────────────────────
                                 {
                                     let commodity_details_c = commodity_details.clone();
                                     let transport_details_c = transport_details.clone();
                                     move || {
-                                        if perspective.get() != "commodity" { return view! { <div></div> }.into_view(); }
+                                        if perspective.get() != "commodity" || view_mode.get() != "tabular" { return view! { <div></div> }.into_view(); }
                                         let items = commodity_details_c.clone();
                                         let t_items = transport_details_c.clone();
                                         view! {
@@ -1077,7 +1125,7 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                     let transport_details_t = transport_details.clone();
                                     let commodity_details_t = commodity_details.clone();
                                     move || {
-                                        if perspective.get() != "transport" { return view! { <div></div> }.into_view(); }
+                                        if perspective.get() != "transport" || view_mode.get() != "tabular" { return view! { <div></div> }.into_view(); }
                                         let t_items = transport_details_t.clone();
                                         let c_items = commodity_details_t.clone();
                                         view! {

@@ -511,7 +511,42 @@ input[type="radio"] {
   }
 }
 
-/* ── Phase 5C: Interactive Solution Tables ───────────────────────── */
+/* ── View mode toggle ──────────────────────────────────────── */
+.view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* ── Graph view ──────────────────────────────────────────── */
+.graph-view {
+  margin-top: 10px;
+  animation: fadeIn 0.2s ease;
+}
+
+.graph-container {
+  width: 100%;
+  min-height: 300px;
+  background: white;
+  border: 1px solid #dde;
+  border-radius: 6px;
+  overflow-x: auto;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.graph-container svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.graph-loading {
+  color: #aaa;
+  font-style: italic;
+  text-align: center;
+  padding: 40px;
+}
 
 .solution-section {
   margin-top: 30px;

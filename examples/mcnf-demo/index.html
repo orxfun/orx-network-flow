@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MCNF Interactive Demo</title>
     <link rel="stylesheet" href="/src/styles.css" />
+    <script src="https://unpkg.com/@viz-js/viz@3.11.0/lib/viz-standalone.js"></script>
+    <script>
+      // Initialize Viz.js once and store globally
+      window.__vizInstance = null;
+      Viz.instance().then(function(viz) {
+        window.__vizInstance = viz;
+      });
+
+      // Render a dot string to an SVG and inject into element by id
+      window.renderDot = function(containerId, dotSource) {
+        var viz = window.__vizInstance;
+        if (!viz) { console.warn('Viz.js not ready'); return; }
+        try {
+          var svg = viz.renderSVGElement(dotSource);
+          svg.setAttribute('width', '100%');
+          svg.setAttribute('height', 'auto');
+          var el = document.getElementById(containerId);
+          if (el) {
+            el.innerHTML = '';
+            el.appendChild(svg);
+          }
+        } catch(e) {
+          console.error('Dot render error:', e);
+        }
+      };
+    </script>
   </head>
   <body>
     <div id="app"></div>

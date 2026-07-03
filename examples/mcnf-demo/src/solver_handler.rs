@@ -71,7 +71,9 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
-            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
+            let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.commodity_dot = generate_commodity_dot(&esd);
+            esd.transport_dot = generate_transport_dot(&esd);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -82,7 +84,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: Some(enhanced_solution_data),
+                enhanced_solution_data: Some(esd),
             })
         }
         ("aon", "ro") => {
@@ -101,7 +103,9 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
-            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
+            let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.commodity_dot = generate_commodity_dot(&esd);
+            esd.transport_dot = generate_transport_dot(&esd);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -112,7 +116,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: Some(enhanced_solution_data),
+                enhanced_solution_data: Some(esd),
             })
         }
         ("aoa", "dd") => {
@@ -134,7 +138,9 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
-            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
+            let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.commodity_dot = generate_commodity_dot(&esd);
+            esd.transport_dot = generate_transport_dot(&esd);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -145,7 +151,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: Some(enhanced_solution_data),
+                enhanced_solution_data: Some(esd),
             })
         }
         ("aoa", "ro") => {
@@ -167,7 +173,9 @@ pub fn solve_network(
             // Compute objective value from solution
             let objective_value = compute_objective_value(&solution);
             let solution_data = extract_solution_data(&problem, &solution);
-            let enhanced_solution_data = extract_enhanced_solution_data(&problem, &solution);
+            let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.commodity_dot = generate_commodity_dot(&esd);
+            esd.transport_dot = generate_transport_dot(&esd);
 
             Ok(McnfResponse {
                 num_variables: stats.num_variables,
@@ -178,7 +186,7 @@ pub fn solve_network(
                 objective_value: Some(objective_value),
                 status: Some("optimal".to_string()),
                 solution_data: Some(solution_data),
-                enhanced_solution_data: Some(enhanced_solution_data),
+                enhanced_solution_data: Some(esd),
             })
         }
         _ => Err("Unreachable: network type and grouping should have been validated".into()),
@@ -612,5 +620,147 @@ where
         total_flow_routed,
         commodity_details,
         transport_details,
+        commodity_dot: String::new(), // populated below
+        transport_dot: String::new(), // populated below
     }
+}
+
+/// Generate a Graphviz dot string for the commodity ↔ transport bipartite graph
+pub fn generate_commodity_dot(esd: &EnhancedSolutionData) -> String {
+    let mut out = String::from(
+        "digraph CommodityNetwork {\n  rankdir=LR;\n  \
+         node [fontname=\"Helvetica\",fontsize=11];\n  \
+         edge [fontsize=10];\n\n",
+    );
+
+    // Commodity nodes (left)
+    out.push_str("  { rank=same;\n");
+    for cd in &esd.commodity_details {
+        let label = format!(
+            "C{}\\n{}→{}\\nflow={}",
+            cd.commodity_id, cd.origin_space, cd.destination_space, cd.total_flow
+        );
+        let color = if cd.total_flow > 0 {
+            "#d0e8ff"
+        } else {
+            "#f5f5f5"
+        };
+        out.push_str(&format!(
+            "    C{} [label=\"{}\",shape=box,style=filled,fillcolor=\"{}\"];\n",
+            cd.commodity_id, label, color
+        ));
+    }
+    out.push_str("  }\n\n");
+
+    // Transport nodes (right) — only those with activity
+    out.push_str("  { rank=same;\n");
+    for td in &esd.transport_details {
+        if td.assigned_commodities.is_empty() {
+            continue;
+        }
+        let pct = (td.utilization_rate * 100.0).round() as u64;
+        let fill = if td.utilization_rate >= 0.8 {
+            "#c8e6c9"
+        } else if td.utilization_rate >= 0.4 {
+            "#fff9c4"
+        } else {
+            "#ffcdd2"
+        };
+        let label = format!(
+            "T{}\\n{}→{}\\n{}/{}  ({}%)",
+            td.transport_id,
+            td.origin_space,
+            td.destination_space,
+            td.utilized_capacity,
+            td.capacity,
+            pct
+        );
+        out.push_str(&format!(
+            "    T{} [label=\"{}\",shape=ellipse,style=filled,fillcolor=\"{}\"];\n",
+            td.transport_id, label, fill
+        ));
+    }
+    out.push_str("  }\n\n");
+
+    // Edges: commodity → transport (labeled with flow)
+    for td in &esd.transport_details {
+        for ca in &td.assigned_commodities {
+            out.push_str(&format!(
+                "  C{} -> T{} [label=\"{}\",penwidth={:.1}];\n",
+                ca.commodity_id,
+                td.transport_id,
+                ca.assigned_flow,
+                1.0 + ca.assigned_flow as f64 * 0.3
+            ));
+        }
+    }
+
+    out.push_str("}\n");
+    out
+}
+
+/// Generate a Graphviz dot string for the transport ↔ commodity bipartite graph
+pub fn generate_transport_dot(esd: &EnhancedSolutionData) -> String {
+    let mut out = String::from(
+        "digraph TransportNetwork {\n  rankdir=LR;\n  \
+         node [fontname=\"Helvetica\",fontsize=11];\n  \
+         edge [fontsize=10];\n\n",
+    );
+
+    // Transport nodes (left)
+    out.push_str("  { rank=same;\n");
+    for td in &esd.transport_details {
+        let pct = (td.utilization_rate * 100.0).round() as u64;
+        let fill = if td.utilization_rate >= 0.8 {
+            "#c8e6c9"
+        } else if td.utilization_rate >= 0.4 {
+            "#fff9c4"
+        } else if td.capacity == 0 {
+            "#f5f5f5"
+        } else {
+            "#ffcdd2"
+        };
+        let label = format!(
+            "T{}\\n{}→{}\\n@{} {}%",
+            td.transport_id, td.origin_space, td.destination_space, td.departure_time, pct
+        );
+        out.push_str(&format!(
+            "    T{} [label=\"{}\",shape=ellipse,style=filled,fillcolor=\"{}\"];\n",
+            td.transport_id, label, fill
+        ));
+    }
+    out.push_str("  }\n\n");
+
+    // Commodity nodes (right) — only those with flow
+    out.push_str("  { rank=same;\n");
+    for cd in &esd.commodity_details {
+        if cd.total_flow == 0 {
+            continue;
+        }
+        let label = format!(
+            "C{}\\n{}→{}\\nflow={}",
+            cd.commodity_id, cd.origin_space, cd.destination_space, cd.total_flow
+        );
+        out.push_str(&format!(
+            "    C{} [label=\"{}\",shape=box,style=filled,fillcolor=\"#d0e8ff\"];\n",
+            cd.commodity_id, label
+        ));
+    }
+    out.push_str("  }\n\n");
+
+    // Edges: transport → commodity
+    for td in &esd.transport_details {
+        for ca in &td.assigned_commodities {
+            out.push_str(&format!(
+                "  T{} -> C{} [label=\"{}\",penwidth={:.1}];\n",
+                td.transport_id,
+                ca.commodity_id,
+                ca.assigned_flow,
+                1.0 + ca.assigned_flow as f64 * 0.3
+            ));
+        }
+    }
+
+    out.push_str("}\n");
+    out
 }

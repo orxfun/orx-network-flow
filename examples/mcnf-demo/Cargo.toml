@@ -22,6 +22,7 @@ leptos = { version = "0.6", features = ["csr"] }
 wasm-bindgen = "0.2"
 web-sys = "0.3"
 wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
 
 # Reference parent crate
 orx-network-flow = { path = "../.." }
