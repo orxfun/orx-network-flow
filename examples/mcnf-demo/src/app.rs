@@ -147,83 +147,103 @@ pub fn App() -> impl IntoView {
     let (stats_data, set_stats) = create_signal::<Option<Value>>(None);
     let (problem_input, set_problem_input) =
         create_signal::<Option<crate::serialization::ProblemInput>>(None);
+    let (active_tab, set_active_tab) = create_signal("input".to_string());
 
     let on_problem_built = move |input: crate::serialization::ProblemInput| {
         set_problem_input.set(Some(input));
         set_problem_built.set(true);
         set_error.set(None);
+        set_active_tab.set("network".to_string());
     };
 
     let on_error = move |msg: String| {
         set_error.set(Some(msg));
-        set_problem_built.set(false);
     };
 
     let on_stats_loaded = move |stats: Value| {
         set_stats.set(Some(stats));
         set_show_stats.set(true);
+        set_active_tab.set("solution".to_string());
     };
 
     view! {
         <div class="app-container">
             <header class="app-header">
                 <h1>"MCNF Interactive Demo"</h1>
-                <p>"Solve network flow problems with configurable solvers"</p>
+                <p>"Multi-Commodity Network Flow — interactive problem builder and solver"</p>
             </header>
 
             {move || {
                 error_message.get().map(|msg| {
                     view! {
                         <div class="error-banner">
+                            <span class="error-icon">"⚠"</span>
                             <p>{msg}</p>
                         </div>
                     }
                 })
             }}
 
-            <div class="content-grid">
-                <section class="form-section">
-                    <ProblemForm
-                        on_built=on_problem_built
-                        on_error=on_error
-                    />
-                </section>
+            // ── Tab bar ──────────────────────────────────────────────────
+            <nav class="tab-bar">
+                <button
+                    class=move || format!("tab-btn{}", if active_tab.get() == "input" { " active" } else { "" })
+                    on:click=move |_| set_active_tab.set("input".to_string())
+                >
+                    <span class="tab-icon">"①"</span>
+                    "Input"
+                </button>
+                <div class="tab-separator"></div>
+                <button
+                    class=move || format!("tab-btn{}{}", if active_tab.get() == "network" { " active" } else { "" }, if !problem_built.get() { " disabled" } else { "" })
+                    disabled=move || !problem_built.get()
+                    on:click=move |_| { if problem_built.get() { set_active_tab.set("network".to_string()); } }
+                >
+                    <span class="tab-icon">"②"</span>
+                    "Network"
+                    {move || problem_built.get().then(|| view! { <span class="tab-badge tab-ready">"●"</span> })}
+                </button>
+                <div class="tab-separator"></div>
+                <button
+                    class=move || format!("tab-btn{}{}", if active_tab.get() == "solution" { " active" } else { "" }, if !show_stats.get() { " disabled" } else { "" })
+                    disabled=move || !show_stats.get()
+                    on:click=move |_| { if show_stats.get() { set_active_tab.set("solution".to_string()); } }
+                >
+                    <span class="tab-icon">"③"</span>
+                    "Solution"
+                    {move || show_stats.get().then(|| view! { <span class="tab-badge tab-solved">"●"</span> })}
+                </button>
+            </nav>
 
-                {move || {
-                    if problem_built.get() {
-                        view! {
-                            <section class="selector-section">
-                                <NetworkSelector
-                                    problem_input=problem_input
-                                    on_stats_loaded=on_stats_loaded
-                                    on_error=on_error
-                                />
-                            </section>
-                        }
-                    } else {
-                        view! {
-                            <section class="selector-section disabled">
-                                <p>"Complete the problem form to enable"</p>
-                            </section>
-                        }
-                    }
-                }}
+            // ── Tab panels ───────────────────────────────────────────────
+            <div class="tab-panels">
+                // Input tab
+                {move || (active_tab.get() == "input").then(|| view! {
+                    <div class="tab-panel">
+                        <ProblemForm
+                            on_built=on_problem_built
+                            on_error=on_error
+                        />
+                    </div>
+                })}
 
-                {move || {
-                    if show_stats.get() {
-                        view! {
-                            <section class="stats-section">
-                                <StatsPanel stats=stats_data />
-                            </section>
-                        }
-                    } else {
-                        view! {
-                            <section class="stats-section placeholder">
-                                <p>"Statistics will appear here"</p>
-                            </section>
-                        }
-                    }
-                }}
+                // Network tab
+                {move || (active_tab.get() == "network").then(|| view! {
+                    <div class="tab-panel">
+                        <NetworkSelector
+                            problem_input=problem_input
+                            on_stats_loaded=on_stats_loaded
+                            on_error=on_error
+                        />
+                    </div>
+                })}
+
+                // Solution tab
+                {move || (active_tab.get() == "solution" && show_stats.get()).then(|| view! {
+                    <div class="tab-panel">
+                        <StatsPanel stats=stats_data />
+                    </div>
+                })}
             </div>
         </div>
     }
@@ -729,11 +749,8 @@ fn NetworkSelector(
                 grouping_strategy: grouping_strategy.get().to_string(),
                 solver_backend: solver_backend.get().to_string(),
             };
-
-            // Call backend to solve
             match crate::solver_handler::solve_network_from_input(&input, &network_choice) {
                 Ok(response) => {
-                    // Include all response fields: stats + solution data
                     let stats_json = json!({
                         "num_variables": response.num_variables,
                         "num_constraints": response.num_constraints,
@@ -755,108 +772,126 @@ fn NetworkSelector(
     };
 
     view! {
-        <div class="network-selector">
-            <h2>"Configure Network"</h2>
+        <div class="network-tab-layout">
 
-            <fieldset>
-                <legend>"Network Type"</legend>
-                <label>
-                    <input
-                        type="radio"
-                        name="network_type"
-                        value="aon"
-                        checked=true
-                        on:change=move |_| set_network_type.set("aon")
-                    />
-                    "Activity-On-Node (AON) Wait"
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="network_type"
-                        value="aoa"
-                        on:change=move |_| set_network_type.set("aoa")
-                    />
-                    "Activity-On-Arc (AOA) Wait"
-                </label>
-            </fieldset>
+            // ── Left: Problem summary ────────────────────────────────────
+            <div class="network-summary-card">
+                <h2>"Problem Summary"</h2>
+                {move || {
+                    problem_input.get().map(|input| view! {
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="summary-value">{input.spaces.len()}</span>
+                                <span class="summary-label">"Spaces"</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-value">{input.commodities.len()}</span>
+                                <span class="summary-label">"Commodities"</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-value">{input.transports.len()}</span>
+                                <span class="summary-label">"Transports"</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-value">{input.lost_revenue_costs.len()}</span>
+                                <span class="summary-label">"Cost rules"</span>
+                            </div>
+                        </div>
+                        <div class="summary-details">
+                            <div class="summary-section">
+                                <h4>"Spaces"</h4>
+                                <div class="chip-list">
+                                    {input.spaces.iter().map(|s| view! {
+                                        <span class="chip chip-space">{s.name.clone()}</span>
+                                    }).collect_view()}
+                                </div>
+                            </div>
+                            <div class="summary-section">
+                                <h4>"Commodities"</h4>
+                                {input.commodities.iter().map(|c| view! {
+                                    <div class="summary-row">
+                                        <span class="summary-row-id">{format!("C{}", c.id)}</span>
+                                        <span class="summary-row-route">{format!("{} → {}", c.origin, c.destination)}</span>
+                                        <span class="summary-row-qty">{format!("qty {}", c.quantity)}</span>
+                                    </div>
+                                }).collect_view()}
+                            </div>
+                            <div class="summary-section">
+                                <h4>"Transports"</h4>
+                                {input.transports.iter().map(|t| view! {
+                                    <div class="summary-row">
+                                        <span class="summary-row-id">{format!("T{}", t.id)}</span>
+                                        <span class="summary-row-route">{format!("{} → {}", t.origin, t.destination)}</span>
+                                        <span class="summary-row-qty">{format!("cap {}", t.capacity)}</span>
+                                    </div>
+                                }).collect_view()}
+                            </div>
+                        </div>
+                    })
+                }}
+            </div>
 
-            <fieldset>
-                <legend>"Grouping Strategy"</legend>
-                <label>
-                    <input
-                        type="radio"
-                        name="grouping"
-                        value="dd"
-                        checked=true
-                        on:change=move |_| set_grouping_strategy.set("dd")
-                    />
-                    "Demand-Demand (DD)"
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="grouping"
-                        value="ro"
-                        on:change=move |_| set_grouping_strategy.set("ro")
-                    />
-                    "Reception-Order (RO)"
-                </label>
-            </fieldset>
+            // ── Right: Network configuration ─────────────────────────────
+            <div class="network-config-card">
+                <h2>"Configure Network"</h2>
 
-            <fieldset>
-                <legend>"Solver Backend"</legend>
-                <label>
-                    <input
-                        type="radio"
-                        name="solver"
-                        value="microlp"
-                        checked=true
-                        on:change=move |_| set_solver_backend.set("microlp")
-                    />
-                    "MicroLP (Pure Rust)"
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="solver"
-                        value="cplex"
-                        on:change=move |_| set_solver_backend.set("cplex")
-                    />
-                    "CPLEX (External)"
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="solver"
-                        value="highs"
-                        on:change=move |_| set_solver_backend.set("highs")
-                    />
-                    "HiGHS"
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="solver"
-                        value="scip"
-                        on:change=move |_| set_solver_backend.set("scip")
-                    />
-                    "SCIP"
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        name="solver"
-                        value="cbc"
-                        on:change=move |_| set_solver_backend.set("cbc")
-                    />
-                    "CBC"
-                </label>
-            </fieldset>
+                <div class="config-section">
+                    <h3>"Network Type"</h3>
+                    <div class="radio-cards">
+                        <label class=move || format!("radio-card{}", if network_type.get() == "aon" { " selected" } else { "" })>
+                            <input type="radio" name="network_type" value="aon" checked=true on:change=move |_| set_network_type.set("aon") />
+                            <strong>"AON Wait"</strong>
+                            <small>"Activity-On-Node"</small>
+                        </label>
+                        <label class=move || format!("radio-card{}", if network_type.get() == "aoa" { " selected" } else { "" })>
+                            <input type="radio" name="network_type" value="aoa" on:change=move |_| set_network_type.set("aoa") />
+                            <strong>"AOA Wait"</strong>
+                            <small>"Activity-On-Arc"</small>
+                        </label>
+                    </div>
+                </div>
 
-            <button class="btn-solve" on:click=on_solve>
-                "Solve Network"
-            </button>
+                <div class="config-section">
+                    <h3>"Grouping Strategy"</h3>
+                    <div class="radio-cards">
+                        <label class=move || format!("radio-card{}", if grouping_strategy.get() == "dd" { " selected" } else { "" })>
+                            <input type="radio" name="grouping" value="dd" checked=true on:change=move |_| set_grouping_strategy.set("dd") />
+                            <strong>"DD"</strong>
+                            <small>"Demand-Demand"</small>
+                        </label>
+                        <label class=move || format!("radio-card{}", if grouping_strategy.get() == "ro" { " selected" } else { "" })>
+                            <input type="radio" name="grouping" value="ro" on:change=move |_| set_grouping_strategy.set("ro") />
+                            <strong>"RO"</strong>
+                            <small>"Reception-Order"</small>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>"Solver"</h3>
+                    <div class="radio-cards solver-cards">
+                        <label class=move || format!("radio-card{}", if solver_backend.get() == "microlp" { " selected" } else { "" })>
+                            <input type="radio" name="solver" value="microlp" checked=true on:change=move |_| set_solver_backend.set("microlp") />
+                            <strong>"MicroLP"</strong>
+                            <small>"Pure Rust"</small>
+                        </label>
+                        <label class=move || format!("radio-card{}", if solver_backend.get() == "cplex" { " selected" } else { "" })>
+                            <input type="radio" name="solver" value="cplex" on:change=move |_| set_solver_backend.set("cplex") />
+                            <strong>"CPLEX"</strong>
+                            <small>"External"</small>
+                        </label>
+                        <label class=move || format!("radio-card{}", if solver_backend.get() == "highs" { " selected" } else { "" })>
+                            <input type="radio" name="solver" value="highs" on:change=move |_| set_solver_backend.set("highs") />
+                            <strong>"HiGHS"</strong>
+                            <small>"External"</small>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn-solve" on:click=on_solve>
+                    "▶ Solve Network"
+                </button>
+            </div>
         </div>
     }
 }
