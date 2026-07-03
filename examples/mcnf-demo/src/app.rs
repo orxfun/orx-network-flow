@@ -934,17 +934,20 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                     let transport_dot_g = esd.get("transport_dot").and_then(|v| v.as_str()).map(|s| s.to_string()).unwrap_or_default();
                                     move || {
                                         if view_mode.get() != "graph" { return view! { <div></div> }.into_view(); }
-                                        let cdot = commodity_dot_g.clone();
-                                        let tdot = transport_dot_g.clone();
-                                        let pers = perspective.get();
-                                        let dot_src = if pers == "transport" { tdot.clone() } else { cdot.clone() };
-                                        let container_id = if pers == "transport" { "graph-transport" } else { "graph-commodity" };
-                                        // Trigger JS rendering on next tick via effect
+                                        let dot_src = if perspective.get() == "transport" {
+                                            transport_dot_g.clone()
+                                        } else {
+                                            commodity_dot_g.clone()
+                                        };
+                                        let container_id = if perspective.get() == "transport" {
+                                            "graph-transport"
+                                        } else {
+                                            "graph-commodity"
+                                        };
                                         let dot_for_effect = dot_src.clone();
-                                        let cid_for_effect = container_id;
                                         create_effect(move |_| {
                                             let dot = dot_for_effect.clone();
-                                            let cid = cid_for_effect;
+                                            let cid = container_id;
                                             leptos::request_animation_frame(move || {
                                                 let _ = js_sys::eval(&format!(
                                                     "window.renderDot('{}', {})",
