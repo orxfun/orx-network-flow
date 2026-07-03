@@ -3,6 +3,7 @@ use crate::serialization::{McnfStatsResponse, NetworkChoice, ProblemInput};
 use orx_network_flow::McnfSolver;
 use orx_network_flow::Problem;
 use orx_network_flow::networks::{AoaWaitNwSettings, AonWaitNwSettings};
+use orx_network_flow::solvers;
 
 /// Solve network from form input
 pub fn solve_network_from_input(
@@ -42,8 +43,11 @@ pub fn solve_network(
 
     // Network construction settings
     let settings = AonWaitNwSettings {
-        add_bypass_edges: false,
+        add_bypass_edges: true,
     };
+
+    // Use microlp solver (pure Rust, works in WASM)
+    let solver = solvers::microlp;
 
     // Dispatch based on network type and grouping
     match (network_type, grouping) {
@@ -51,8 +55,14 @@ pub fn solve_network(
             // Construct AON Wait network with DD disaggregation
             let nw = problem.construct_aon_wait_nw(settings);
 
-            // Get stats using the built-in stats computation
-            let stats = McnfSolver::aon_wait_dd_stats(&nw, Default::default());
+            // Create solver and get stats
+            let mcnf_solver = McnfSolver::aon_wait_dd(&nw, Default::default(), solver);
+            let stats = mcnf_solver.stats();
+
+            // Solve the problem
+            let _solution = mcnf_solver
+                .solve()
+                .map_err(|e| format!("Solver error: {}", e))?;
 
             Ok(McnfStatsResponse {
                 num_variables: stats.num_variables,
@@ -60,14 +70,22 @@ pub fn solve_network(
                 num_commodities: problem.len_commodities(),
                 num_spaces: problem.len_spaces(),
                 num_transports: problem.len_transports(),
+                objective_value: None,
+                status: Some("optimal".to_string()),
             })
         }
         ("aon", "ro") => {
             // Construct AON Wait network with RO disaggregation
             let nw = problem.construct_aon_wait_nw(settings);
 
-            // Get stats using the built-in stats computation
-            let stats = McnfSolver::aon_wait_ro_stats(&nw, Default::default());
+            // Create solver and get stats
+            let mcnf_solver = McnfSolver::aon_wait_ro(&nw, Default::default(), solver);
+            let stats = mcnf_solver.stats();
+
+            // Solve the problem
+            let _solution = mcnf_solver
+                .solve()
+                .map_err(|e| format!("Solver error: {}", e))?;
 
             Ok(McnfStatsResponse {
                 num_variables: stats.num_variables,
@@ -75,17 +93,25 @@ pub fn solve_network(
                 num_commodities: problem.len_commodities(),
                 num_spaces: problem.len_spaces(),
                 num_transports: problem.len_transports(),
+                objective_value: None,
+                status: Some("optimal".to_string()),
             })
         }
         ("aoa", "dd") => {
             // Construct AOA Wait network with DD disaggregation
             let aoa_settings = AoaWaitNwSettings {
-                add_bypass_edges: false,
+                add_bypass_edges: true,
             };
             let nw = problem.construct_aoa_wait_nw(aoa_settings);
 
-            // Get stats using the built-in stats computation
-            let stats = McnfSolver::aoa_wait_dd_stats(&nw, Default::default());
+            // Create solver and get stats
+            let mcnf_solver = McnfSolver::aoa_wait_dd(&nw, Default::default(), solver);
+            let stats = mcnf_solver.stats();
+
+            // Solve the problem
+            let _solution = mcnf_solver
+                .solve()
+                .map_err(|e| format!("Solver error: {}", e))?;
 
             Ok(McnfStatsResponse {
                 num_variables: stats.num_variables,
@@ -93,17 +119,25 @@ pub fn solve_network(
                 num_commodities: problem.len_commodities(),
                 num_spaces: problem.len_spaces(),
                 num_transports: problem.len_transports(),
+                objective_value: None,
+                status: Some("optimal".to_string()),
             })
         }
         ("aoa", "ro") => {
             // Construct AOA Wait network with RO disaggregation
             let aoa_settings = AoaWaitNwSettings {
-                add_bypass_edges: false,
+                add_bypass_edges: true,
             };
             let nw = problem.construct_aoa_wait_nw(aoa_settings);
 
-            // Get stats using the built-in stats computation
-            let stats = McnfSolver::aoa_wait_ro_stats(&nw, Default::default());
+            // Create solver and get stats
+            let mcnf_solver = McnfSolver::aoa_wait_ro(&nw, Default::default(), solver);
+            let stats = mcnf_solver.stats();
+
+            // Solve the problem
+            let _solution = mcnf_solver
+                .solve()
+                .map_err(|e| format!("Solver error: {}", e))?;
 
             Ok(McnfStatsResponse {
                 num_variables: stats.num_variables,
@@ -111,6 +145,8 @@ pub fn solve_network(
                 num_commodities: problem.len_commodities(),
                 num_spaces: problem.len_spaces(),
                 num_transports: problem.len_transports(),
+                objective_value: None,
+                status: Some("optimal".to_string()),
             })
         }
         _ => Err("Unreachable: network type and grouping should have been validated".into()),

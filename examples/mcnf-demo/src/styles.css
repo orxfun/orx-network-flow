@@ -306,6 +306,15 @@ input[type="radio"] {
   transform: translateY(-4px);
 }
 
+.stat-card.solution {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.stat-card.solution:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
 .stat-value {
   font-size: 2em;
   font-weight: 700;

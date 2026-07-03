@@ -351,4 +351,165 @@ mod tests {
         assert!(result.is_err());
         assert!(result.unwrap_err().contains("destination"));
     }
+
+    #[test]
+    fn test_network_construction_with_demo_data() {
+        use orx_network_flow::networks::AonWaitNwSettings;
+
+        // Create demo data similar to what the app uses
+        let input = ProblemInput {
+            spaces: vec![
+                FormGeographicSpace {
+                    name: "AMS".into(),
+                    latitude: 52.31,
+                    longitude: 4.76,
+                },
+                FormGeographicSpace {
+                    name: "BRU".into(),
+                    latitude: 50.90,
+                    longitude: 4.48,
+                },
+                FormGeographicSpace {
+                    name: "LEJ".into(),
+                    latitude: 51.25,
+                    longitude: 12.14,
+                },
+                FormGeographicSpace {
+                    name: "CVG".into(),
+                    latitude: 39.05,
+                    longitude: -84.67,
+                },
+                FormGeographicSpace {
+                    name: "SIN".into(),
+                    latitude: 1.35,
+                    longitude: 103.99,
+                },
+                FormGeographicSpace {
+                    name: "EMA".into(),
+                    latitude: 52.83,
+                    longitude: -1.33,
+                },
+            ],
+            commodities: vec![
+                FormCommodity {
+                    id: 0,
+                    origin: "AMS".into(),
+                    ready_time: 0,
+                    destination: "BRU".into(),
+                    due_time: 20,
+                    quantity: 100,
+                },
+                FormCommodity {
+                    id: 1,
+                    origin: "AMS".into(),
+                    ready_time: 0,
+                    destination: "CVG".into(),
+                    due_time: 20,
+                    quantity: 100,
+                },
+                FormCommodity {
+                    id: 2,
+                    origin: "AMS".into(),
+                    ready_time: 0,
+                    destination: "LEJ".into(),
+                    due_time: 20,
+                    quantity: 100,
+                },
+                FormCommodity {
+                    id: 3,
+                    origin: "AMS".into(),
+                    ready_time: 0,
+                    destination: "LEJ".into(),
+                    due_time: 20,
+                    quantity: 100,
+                },
+                FormCommodity {
+                    id: 4,
+                    origin: "LEJ".into(),
+                    ready_time: 0,
+                    destination: "CVG".into(),
+                    due_time: 20,
+                    quantity: 100,
+                },
+            ],
+            transports: vec![
+                FormTransport {
+                    id: 0,
+                    vehicle_type: "77X".into(),
+                    origin: "AMS".into(),
+                    departure_time: 1,
+                    destination: "BRU".into(),
+                    arrival_time: 2,
+                    capacity: 10,
+                },
+                FormTransport {
+                    id: 1,
+                    vehicle_type: "77X".into(),
+                    origin: "AMS".into(),
+                    departure_time: 4,
+                    destination: "BRU".into(),
+                    arrival_time: 5,
+                    capacity: 10,
+                },
+                FormTransport {
+                    id: 2,
+                    vehicle_type: "77X".into(),
+                    origin: "AMS".into(),
+                    departure_time: 4,
+                    destination: "LEJ".into(),
+                    arrival_time: 5,
+                    capacity: 10,
+                },
+                FormTransport {
+                    id: 3,
+                    vehicle_type: "77X".into(),
+                    origin: "LEJ".into(),
+                    departure_time: 1,
+                    destination: "BRU".into(),
+                    arrival_time: 2,
+                    capacity: 10,
+                },
+                FormTransport {
+                    id: 4,
+                    vehicle_type: "77X".into(),
+                    origin: "LEJ".into(),
+                    departure_time: 4,
+                    destination: "BRU".into(),
+                    arrival_time: 5,
+                    capacity: 10,
+                },
+                FormTransport {
+                    id: 5,
+                    vehicle_type: "77X".into(),
+                    origin: "BRU".into(),
+                    departure_time: 7,
+                    destination: "CVG".into(),
+                    arrival_time: 12,
+                    capacity: 10,
+                },
+            ],
+            lost_revenue_costs: vec![],
+        };
+
+        let result = build_problem_from_input(input);
+        assert!(result.is_ok(), "Failed to build problem");
+
+        let problem = result.unwrap();
+        assert_eq!(problem.len_spaces(), 6);
+        assert_eq!(problem.len_commodities(), 5);
+        assert_eq!(problem.len_transports(), 6);
+
+        // Try to construct network
+        let settings = AonWaitNwSettings {
+            add_bypass_edges: true,
+        };
+        let nw = problem.construct_aon_wait_nw(settings);
+
+        // Try to solve the network
+        use orx_network_flow::{McnfSolver, solvers};
+        let solver = solvers::microlp;
+        let mcnf_solver = McnfSolver::aon_wait_dd(&nw, Default::default(), solver);
+        let result = mcnf_solver.solve();
+        assert!(result.is_ok(), "Failed to solve");
+    }
 }

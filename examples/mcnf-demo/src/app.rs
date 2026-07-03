@@ -797,10 +797,14 @@ fn NetworkSelector(
 fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
     view! {
         <div class="stats-panel">
-            <h2>"Network Statistics"</h2>
+            <h2>"Network Statistics & Solution"</h2>
 
             {move || {
                 stats.get().map(|s| {
+                    // Extract values outside closures to avoid lifetime issues
+                    let obj_val = s.get("objective_value").and_then(|v| v.as_f64());
+                    let status = s.get("status").and_then(|v| v.as_str()).map(|s| s.to_string());
+
                     view! {
                         <div class="stats-grid">
                             <div class="stat-card">
@@ -837,6 +841,26 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                 </div>
                                 <div class="stat-label">"Transports"</div>
                             </div>
+
+                            {obj_val.map(|ov| {
+                                view! {
+                                    <div class="stat-card solution">
+                                        <div class="stat-value">
+                                            {format!("{:.2}", ov)}
+                                        </div>
+                                        <div class="stat-label">"Objective Value"</div>
+                                    </div>
+                                }
+                            })}
+
+                            {status.map(|st| {
+                                view! {
+                                    <div class="stat-card solution">
+                                        <div class="stat-value">{st}</div>
+                                        <div class="stat-label">"Status"</div>
+                                    </div>
+                                }
+                            })}
                         </div>
                     }
                 })
