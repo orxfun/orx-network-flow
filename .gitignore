@@ -21,3 +21,14 @@ target
 #.idea/
 
 cplex.log
+
+# Web build outputs (Leptos/Trunk, Vite, etc)
+dist/
+node_modules/
+*.wasm
+
+# IDE and OS files
+.DS_Store
+*.swp
+*.swo
+*~

@@ -1,0 +1,19 @@
+{
+    "name": "mcnf-demo",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "trunk serve",
+        "build": "trunk build --release",
+        "watch": "trunk watch",
+        "tauri": "tauri"
+    },
+    "dependencies": {
+        "@tauri-apps/api": "^2.0.0"
+    },
+    "devDependencies": {
+        "@tauri-apps/cli": "^2.0.0",
+        "trunk": "^0.19.0"
+    }
+}

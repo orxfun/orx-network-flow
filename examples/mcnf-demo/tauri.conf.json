@@ -1,0 +1,21 @@
+{
+    "build": {
+        "beforeBuildCommand": "npm run build",
+        "devUrl": "http://localhost:5173",
+        "frontendDist": "../dist"
+    },
+    "app": {
+        "windows": [
+            {
+                "fullscreen": false,
+                "height": 800,
+                "resizable": true,
+                "title": "MCNF Interactive Demo",
+                "width": 1200
+            }
+        ]
+    },
+    "security": {
+        "csp": null
+    }
+}
