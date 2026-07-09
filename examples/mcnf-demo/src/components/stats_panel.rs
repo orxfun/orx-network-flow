@@ -81,16 +81,11 @@ pub fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
             {move || {
                 stats.get().and_then(|s| {
                     s.get("enhanced_solution_data").map(|esd| {
-                        let network_type = s
-                            .get("network_type")
+                        let network_dot = esd
+                            .get("network_dot")
                             .and_then(|v| v.as_str())
-                            .unwrap_or("aon");
-                        let grouping_strategy = s
-                            .get("grouping_strategy")
-                            .and_then(|v| v.as_str())
-                            .unwrap_or("dd");
-                        let selected_dot_g = selected_example_dot(network_type, grouping_strategy)
-                            .to_string();
+                            .map(|s| s.to_string())
+                            .unwrap_or_default();
                         let total_flow = esd.get("total_flow_routed").and_then(|v| v.as_u64()).unwrap_or(0);
                         let commodity_details = esd.get("commodity_details")
                             .and_then(|v| v.as_array())
@@ -139,7 +134,7 @@ pub fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                                 </div>
 
                                 {
-                                    let selected_dot = selected_dot_g.clone();
+                                    let selected_dot = network_dot.clone();
                                     move || {
                                         if view_mode.get() != "graph" {
                                             return view! { <div></div> }.into_view();
@@ -497,15 +492,5 @@ pub fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
                 })
             }}
         </div>
-    }
-}
-
-fn selected_example_dot(network_type: &str, grouping_strategy: &str) -> &'static str {
-    match (network_type, grouping_strategy) {
-        ("aoa", "dd") => include_str!("../../assets/aoa_wait_dd_nw.dot"),
-        ("aoa", "ro") => include_str!("../../assets/aoa_wait_ro_nw.dot"),
-        ("aon", "ro") => include_str!("../../assets/aon_wait_ro_nw.dot"),
-        ("aon", "dd") => include_str!("../../assets/aon_wait_dd_nw.dot"),
-        _ => include_str!("../../assets/aon_wait_dd_nw.dot"),
     }
 }
