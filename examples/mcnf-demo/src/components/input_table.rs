@@ -2,16 +2,37 @@ use leptos::*;
 use std::rc::Rc;
 
 pub type RemoveItemFn = Rc<dyn Fn(usize)>;
+pub type InputValueFn = Rc<dyn Fn() -> String>;
+pub type InputHandlerFn = Rc<dyn Fn(ev::Event)>;
 
 #[derive(Clone)]
 pub struct InputCell {
-    pub content: View,
-    pub class: &'static str,
+    pub input_type: &'static str,
+    pub placeholder: &'static str,
+    pub value: InputValueFn,
+    pub on_input: InputHandlerFn,
+    pub step: Option<&'static str>,
 }
 
 impl InputCell {
-    pub fn new(content: View) -> Self {
-        Self { content, class: "" }
+    pub fn new(
+        input_type: &'static str,
+        placeholder: &'static str,
+        value: impl Fn() -> String + 'static,
+        on_input: impl Fn(ev::Event) + 'static,
+    ) -> Self {
+        Self {
+            input_type,
+            placeholder,
+            value: Rc::new(value),
+            on_input: Rc::new(on_input),
+            step: None,
+        }
+    }
+
+    pub fn with_step(mut self, step: &'static str) -> Self {
+        self.step = Some(step);
+        self
     }
 }
 
@@ -63,7 +84,33 @@ where
                                                 .cells
                                                 .into_iter()
                                                 .map(|cell| {
-                                                    view! { <td class={cell.class}>{cell.content}</td> }
+                                                    let value = Rc::clone(&cell.value);
+                                                    let on_input = Rc::clone(&cell.on_input);
+                                                    match cell.step {
+                                                        Some(step) => view! {
+                                                            <td>
+                                                                <input
+                                                                    type={cell.input_type}
+                                                                    placeholder={cell.placeholder}
+                                                                    step={step}
+                                                                    prop:value=move || value()
+                                                                    on:input=move |e| on_input(e)
+                                                                />
+                                                            </td>
+                                                        }
+                                                        .into_view(),
+                                                        None => view! {
+                                                            <td>
+                                                                <input
+                                                                    type={cell.input_type}
+                                                                    placeholder={cell.placeholder}
+                                                                    prop:value=move || value()
+                                                                    on:input=move |e| on_input(e)
+                                                                />
+                                                            </td>
+                                                        }
+                                                        .into_view(),
+                                                    }
                                                 })
                                                 .collect_view()}
                                             {remove_item.as_ref().map(|remove| {

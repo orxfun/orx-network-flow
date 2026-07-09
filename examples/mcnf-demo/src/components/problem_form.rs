@@ -135,54 +135,46 @@ pub fn ProblemForm(
                             .enumerate()
                             .map(|(idx, _)| {
                                 InputRow::new(vec![
-                                    InputCell::new(view! {
-                                        <input
-                                            type="text"
-                                            placeholder="Space name"
-                                            prop:value=move || spaces.get().get(idx).map(|s| s.name.clone()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_spaces.update(|s| {
-                                                    if let Some(space) = s.get_mut(idx) {
-                                                        space.name = event_target_value(&e);
+                                    InputCell::new(
+                                        "text",
+                                        "Space name",
+                                        move || spaces.get().get(idx).map(|s| s.name.clone()).unwrap_or_default(),
+                                        move |e| {
+                                            set_spaces.update(|s| {
+                                                if let Some(space) = s.get_mut(idx) {
+                                                    space.name = event_target_value(&e);
+                                                }
+                                            });
+                                        },
+                                    ),
+                                    InputCell::new(
+                                        "number",
+                                        "Latitude",
+                                        move || spaces.get().get(idx).map(|s| s.latitude.to_string()).unwrap_or_default(),
+                                        move |e| {
+                                            set_spaces.update(|s| {
+                                                if let Some(space) = s.get_mut(idx) {
+                                                    if let Ok(lat) = event_target_value(&e).parse::<f64>() {
+                                                        space.latitude = lat;
                                                     }
-                                                });
-                                            }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input
-                                            type="number"
-                                            placeholder="Latitude"
-                                            step="0.001"
-                                            prop:value=move || spaces.get().get(idx).map(|s| s.latitude.to_string()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_spaces.update(|s| {
-                                                    if let Some(space) = s.get_mut(idx) {
-                                                        if let Ok(lat) = event_target_value(&e).parse::<f64>() {
-                                                            space.latitude = lat;
-                                                        }
+                                                }
+                                            });
+                                        },
+                                    ).with_step("0.001"),
+                                    InputCell::new(
+                                        "number",
+                                        "Longitude",
+                                        move || spaces.get().get(idx).map(|s| s.longitude.to_string()).unwrap_or_default(),
+                                        move |e| {
+                                            set_spaces.update(|s| {
+                                                if let Some(space) = s.get_mut(idx) {
+                                                    if let Ok(lon) = event_target_value(&e).parse::<f64>() {
+                                                        space.longitude = lon;
                                                     }
-                                                });
-                                            }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input
-                                            type="number"
-                                            placeholder="Longitude"
-                                            step="0.001"
-                                            prop:value=move || spaces.get().get(idx).map(|s| s.longitude.to_string()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_spaces.update(|s| {
-                                                    if let Some(space) = s.get_mut(idx) {
-                                                        if let Ok(lon) = event_target_value(&e).parse::<f64>() {
-                                                            space.longitude = lon;
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        />
-                                    }.into_view()),
+                                                }
+                                            });
+                                        },
+                                    ).with_step("0.001"),
                                 ])
                             })
                             .collect()
@@ -204,86 +196,56 @@ pub fn ProblemForm(
                             .enumerate()
                             .map(|(idx, _)| {
                                 InputRow::new(vec![
-                                    InputCell::new(view! {
-                                        <input type="number" placeholder="Commodity ID"
-                                            prop:value=move || commodities.get().get(idx).map(|c| c.id.to_string()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_commodities.update(|c| {
-                                                    if let Some(commodity) = c.get_mut(idx) {
-                                                        if let Ok(id) = event_target_value(&e).parse::<usize>() {
-                                                            commodity.id = id;
-                                                        }
-                                                    }
-                                                });
+                                    InputCell::new("number", "Commodity ID", move || commodities.get().get(idx).map(|c| c.id.to_string()).unwrap_or_default(), move |e| {
+                                        set_commodities.update(|c| {
+                                            if let Some(commodity) = c.get_mut(idx) {
+                                                if let Ok(id) = event_target_value(&e).parse::<usize>() {
+                                                    commodity.id = id;
+                                                }
                                             }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input type="text" placeholder="Origin"
-                                            prop:value=move || commodities.get().get(idx).map(|c| c.origin.clone()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_commodities.update(|c| {
-                                                    if let Some(commodity) = c.get_mut(idx) {
-                                                        commodity.origin = event_target_value(&e);
-                                                    }
-                                                });
+                                        });
+                                    }),
+                                    InputCell::new("text", "Origin", move || commodities.get().get(idx).map(|c| c.origin.clone()).unwrap_or_default(), move |e| {
+                                        set_commodities.update(|c| {
+                                            if let Some(commodity) = c.get_mut(idx) {
+                                                commodity.origin = event_target_value(&e);
                                             }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input type="number" placeholder="Ready time"
-                                            prop:value=move || commodities.get().get(idx).map(|c| c.ready_time.to_string()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_commodities.update(|c| {
-                                                    if let Some(commodity) = c.get_mut(idx) {
-                                                        if let Ok(rt) = event_target_value(&e).parse::<i64>() {
-                                                            commodity.ready_time = rt;
-                                                        }
-                                                    }
-                                                });
+                                        });
+                                    }),
+                                    InputCell::new("number", "Ready time", move || commodities.get().get(idx).map(|c| c.ready_time.to_string()).unwrap_or_default(), move |e| {
+                                        set_commodities.update(|c| {
+                                            if let Some(commodity) = c.get_mut(idx) {
+                                                if let Ok(rt) = event_target_value(&e).parse::<i64>() {
+                                                    commodity.ready_time = rt;
+                                                }
                                             }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input type="text" placeholder="Destination"
-                                            prop:value=move || commodities.get().get(idx).map(|c| c.destination.clone()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_commodities.update(|c| {
-                                                    if let Some(commodity) = c.get_mut(idx) {
-                                                        commodity.destination = event_target_value(&e);
-                                                    }
-                                                });
+                                        });
+                                    }),
+                                    InputCell::new("text", "Destination", move || commodities.get().get(idx).map(|c| c.destination.clone()).unwrap_or_default(), move |e| {
+                                        set_commodities.update(|c| {
+                                            if let Some(commodity) = c.get_mut(idx) {
+                                                commodity.destination = event_target_value(&e);
                                             }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input type="number" placeholder="Due time"
-                                            prop:value=move || commodities.get().get(idx).map(|c| c.due_time.to_string()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_commodities.update(|c| {
-                                                    if let Some(commodity) = c.get_mut(idx) {
-                                                        if let Ok(due) = event_target_value(&e).parse::<i64>() {
-                                                            commodity.due_time = due;
-                                                        }
-                                                    }
-                                                });
+                                        });
+                                    }),
+                                    InputCell::new("number", "Due time", move || commodities.get().get(idx).map(|c| c.due_time.to_string()).unwrap_or_default(), move |e| {
+                                        set_commodities.update(|c| {
+                                            if let Some(commodity) = c.get_mut(idx) {
+                                                if let Ok(due) = event_target_value(&e).parse::<i64>() {
+                                                    commodity.due_time = due;
+                                                }
                                             }
-                                        />
-                                    }.into_view()),
-                                    InputCell::new(view! {
-                                        <input type="number" placeholder="Quantity"
-                                            prop:value=move || commodities.get().get(idx).map(|c| c.quantity.to_string()).unwrap_or_default()
-                                            on:input=move |e| {
-                                                set_commodities.update(|c| {
-                                                    if let Some(commodity) = c.get_mut(idx) {
-                                                        if let Ok(qty) = event_target_value(&e).parse::<u64>() {
-                                                            commodity.quantity = qty;
-                                                        }
-                                                    }
-                                                });
+                                        });
+                                    }),
+                                    InputCell::new("number", "Quantity", move || commodities.get().get(idx).map(|c| c.quantity.to_string()).unwrap_or_default(), move |e| {
+                                        set_commodities.update(|c| {
+                                            if let Some(commodity) = c.get_mut(idx) {
+                                                if let Ok(qty) = event_target_value(&e).parse::<u64>() {
+                                                    commodity.quantity = qty;
+                                                }
                                             }
-                                        />
-                                    }.into_view()),
+                                        });
+                                    }),
                                 ])
                             })
                             .collect()
@@ -305,84 +267,63 @@ pub fn ProblemForm(
                             .enumerate()
                             .map(|(idx, _)| {
                                 InputRow::new(vec![
-                                    InputCell::new(view! { <input type="number" placeholder="Transport ID"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.id.to_string()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    if let Ok(id) = event_target_value(&e).parse::<usize>() {
-                                                        transport.id = id;
-                                                    }
+                                    InputCell::new("number", "Transport ID", move || transports.get().get(idx).map(|t| t.id.to_string()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                if let Ok(id) = event_target_value(&e).parse::<usize>() {
+                                                    transport.id = id;
                                                 }
-                                            });
-                                        }
-                                    /> }.into_view()),
-                                    InputCell::new(view! { <input type="text" placeholder="Vehicle type"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.vehicle_type.clone()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    transport.vehicle_type = event_target_value(&e);
+                                            }
+                                        });
+                                    }),
+                                    InputCell::new("text", "Vehicle type", move || transports.get().get(idx).map(|t| t.vehicle_type.clone()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                transport.vehicle_type = event_target_value(&e);
+                                            }
+                                        });
+                                    }),
+                                    InputCell::new("text", "Origin", move || transports.get().get(idx).map(|t| t.origin.clone()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                transport.origin = event_target_value(&e);
+                                            }
+                                        });
+                                    }),
+                                    InputCell::new("number", "Departure time", move || transports.get().get(idx).map(|t| t.departure_time.to_string()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                if let Ok(dt) = event_target_value(&e).parse::<i64>() {
+                                                    transport.departure_time = dt;
                                                 }
-                                            });
-                                        }
-                                    /> }.into_view()),
-                                    InputCell::new(view! { <input type="text" placeholder="Origin"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.origin.clone()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    transport.origin = event_target_value(&e);
+                                            }
+                                        });
+                                    }),
+                                    InputCell::new("text", "Destination", move || transports.get().get(idx).map(|t| t.destination.clone()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                transport.destination = event_target_value(&e);
+                                            }
+                                        });
+                                    }),
+                                    InputCell::new("number", "Arrival time", move || transports.get().get(idx).map(|t| t.arrival_time.to_string()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                if let Ok(at) = event_target_value(&e).parse::<i64>() {
+                                                    transport.arrival_time = at;
                                                 }
-                                            });
-                                        }
-                                    /> }.into_view()),
-                                    InputCell::new(view! { <input type="number" placeholder="Departure time"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.departure_time.to_string()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    if let Ok(dt) = event_target_value(&e).parse::<i64>() {
-                                                        transport.departure_time = dt;
-                                                    }
+                                            }
+                                        });
+                                    }),
+                                    InputCell::new("number", "Capacity", move || transports.get().get(idx).map(|t| t.capacity.to_string()).unwrap_or_default(), move |e| {
+                                        set_transports.update(|t| {
+                                            if let Some(transport) = t.get_mut(idx) {
+                                                if let Ok(cap) = event_target_value(&e).parse::<u64>() {
+                                                    transport.capacity = cap;
                                                 }
-                                            });
-                                        }
-                                    /> }.into_view()),
-                                    InputCell::new(view! { <input type="text" placeholder="Destination"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.destination.clone()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    transport.destination = event_target_value(&e);
-                                                }
-                                            });
-                                        }
-                                    /> }.into_view()),
-                                    InputCell::new(view! { <input type="number" placeholder="Arrival time"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.arrival_time.to_string()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    if let Ok(at) = event_target_value(&e).parse::<i64>() {
-                                                        transport.arrival_time = at;
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    /> }.into_view()),
-                                    InputCell::new(view! { <input type="number" placeholder="Capacity"
-                                        prop:value=move || transports.get().get(idx).map(|t| t.capacity.to_string()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_transports.update(|t| {
-                                                if let Some(transport) = t.get_mut(idx) {
-                                                    if let Ok(cap) = event_target_value(&e).parse::<u64>() {
-                                                        transport.capacity = cap;
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    /> }.into_view()),
+                                            }
+                                        });
+                                    }),
                                 ])
                             })
                             .collect()
@@ -400,38 +341,24 @@ pub fn ProblemForm(
                     rows=move || {
                         lost_revenue_items.get().into_iter().enumerate().map(|(idx, _)| {
                             InputRow::new(vec![
-                                InputCell::new(view! {
-                                    <input
-                                        type="number"
-                                        placeholder="Commodity ID"
-                                        prop:value=move || lost_revenue_items.get().get(idx).map(|(id, _)| id.to_string()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_lost_revenue_items.update(|items| {
-                                                if let Some(item) = items.get_mut(idx) {
-                                                    if let Ok(id) = event_target_value(&e).parse::<usize>() {
-                                                        item.0 = id;
-                                                    }
-                                                }
-                                            });
+                                InputCell::new("number", "Commodity ID", move || lost_revenue_items.get().get(idx).map(|(id, _)| id.to_string()).unwrap_or_default(), move |e| {
+                                    set_lost_revenue_items.update(|items| {
+                                        if let Some(item) = items.get_mut(idx) {
+                                            if let Ok(id) = event_target_value(&e).parse::<usize>() {
+                                                item.0 = id;
+                                            }
                                         }
-                                    />
-                                }.into_view()),
-                                InputCell::new(view! {
-                                    <input
-                                        type="number"
-                                        placeholder="Revenue per unit"
-                                        prop:value=move || lost_revenue_items.get().get(idx).map(|(_, cost)| cost.to_string()).unwrap_or_default()
-                                        on:input=move |e| {
-                                            set_lost_revenue_items.update(|items| {
-                                                if let Some(item) = items.get_mut(idx) {
-                                                    if let Ok(cost) = event_target_value(&e).parse::<i64>() {
-                                                        item.1 = cost;
-                                                    }
-                                                }
-                                            });
+                                    });
+                                }),
+                                InputCell::new("number", "Revenue per unit", move || lost_revenue_items.get().get(idx).map(|(_, cost)| cost.to_string()).unwrap_or_default(), move |e| {
+                                    set_lost_revenue_items.update(|items| {
+                                        if let Some(item) = items.get_mut(idx) {
+                                            if let Ok(cost) = event_target_value(&e).parse::<i64>() {
+                                                item.1 = cost;
+                                            }
                                         }
-                                    />
-                                }.into_view()),
+                                    });
+                                }),
                             ])
                         }).collect()
                     }
