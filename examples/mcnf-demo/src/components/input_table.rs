@@ -47,7 +47,7 @@ where
                                 .into_iter()
                                 .map(|header| view! { <th>{header}</th> })
                                 .collect_view()}
-                            {remove_item.is_some().then(|| view! { <th class="form-table-action-col">"Action"</th> })}
+                            {remove_item.is_some().then(|| view! { <th class="form-table-action-col">""</th> })}
                         </tr>
                     </thead>
                     <tbody>
@@ -74,7 +74,7 @@ where
                                                             class="btn-remove"
                                                             on:click=move |_| remove(idx)
                                                         >
-                                                            "Remove"
+                                                            "✖"
                                                         </button>
                                                     </td>
                                                 }
