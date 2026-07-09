@@ -1,5 +1,6 @@
 use crate::{Problem, Transport, Variant};
-use alloc::{string::String, vec::Vec};
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 use core::fmt::{Debug, Display, Write};
 use orx_iterable::Iterable;
 
@@ -128,6 +129,46 @@ impl Path {
         }
 
         str
+    }
+
+    /// Returns the transport keys (as strings) for actual (non-wait) transports in this path,
+    /// joined by "-". For example "1" or "1-5" for a two-leg journey.
+    pub fn to_str_as_transport_keys<V: Variant>(&self, p: &Problem<V>) -> String
+    where
+        V::T: core::fmt::Display,
+    {
+        self.used_transports(p)
+            .map(|t| p.transports.key(t).expect("validated problem").to_string())
+            .collect::<Vec<_>>()
+            .join("-")
+    }
+
+    /// Returns a human-readable multi-leg path with segments showing (space-space)@(dept-arrival).
+    /// Segments are connected with " → " to show the journey progression.
+    /// E.g. "LEJ-BRU@4-5 → BRU-CVG@7-12" for a two-leg path.
+    pub fn to_str_as_vertices<V: Variant>(&self, p: &Problem<V>) -> String
+    where
+        V::S: core::fmt::Display,
+    {
+        let mut segments: Vec<String> = Vec::new();
+
+        for t in self.used_transports(p) {
+            let td = p.transport_by_idx(t);
+            let origin_space = p.space_key(td.origin().space());
+            let destination_space = p.space_key(td.destination().space());
+            let dept_time = td.origin().time();
+            let arrival_time = td.destination().time();
+
+            segments.push(alloc::format!(
+                "{}-{}@{}-{}",
+                origin_space,
+                destination_space,
+                dept_time,
+                arrival_time
+            ));
+        }
+
+        segments.join(" → ")
     }
 }
 

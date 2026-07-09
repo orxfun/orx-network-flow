@@ -234,72 +234,6 @@ where
     total_cost as f64
 }
 
-/// Extract path representations from a Transport slice (via IntoInner indices)
-/// Returns (transport_path_str, space_path_str, vertex_path_str, num_transports)
-fn build_path_strings_from_slice<V: Variant>(
-    problem: &Problem<V>,
-    transport_indices: &[usize],
-) -> (String, String, String, usize)
-where
-    V::S: ToString,
-    V::T: From<usize>,
-{
-    use orx_network_flow::IdxCore;
-
-    if transport_indices.is_empty() {
-        return ("[No path]".to_string(), String::new(), String::new(), 0);
-    }
-
-    let num_transports = transport_indices.len();
-
-    // Transport index string: "3-4-5"
-    let transport_path = transport_indices
-        .iter()
-        .map(|i| i.to_string())
-        .collect::<Vec<_>>()
-        .join("-");
-
-    // Space path: origin of first + destinations of all
-    let mut space_parts = Vec::new();
-    if let Some(&first) = transport_indices.first() {
-        let key = V::T::from(first);
-        if let Some(t_data) = problem.transports.get_by_key(&key) {
-            if let Some(name) = problem.spaces.key(t_data.origin().space()) {
-                space_parts.push(name.to_string());
-            }
-        }
-    }
-    for &t in transport_indices {
-        let key = V::T::from(t);
-        if let Some(t_data) = problem.transports.get_by_key(&key) {
-            if let Some(name) = problem.spaces.key(t_data.destination().space()) {
-                space_parts.push(name.to_string());
-            }
-        }
-    }
-    let space_path = space_parts.join("-");
-
-    // Vertex sequence: each space-time node
-    let mut vertices = Vec::new();
-    if let Some(&first) = transport_indices.first() {
-        let key = V::T::from(first);
-        if let Some(t_data) = problem.transports.get_by_key(&key) {
-            let ori = t_data.origin();
-            vertices.push(format!("S{}-T{}", ori.space().into_inner(), ori.time()));
-        }
-    }
-    for &t in transport_indices {
-        let key = V::T::from(t);
-        if let Some(t_data) = problem.transports.get_by_key(&key) {
-            let des = t_data.destination();
-            vertices.push(format!("S{}-T{}", des.space().into_inner(), des.time()));
-        }
-    }
-    let vertex_path = vertices.join("-");
-
-    (transport_path, space_path, vertex_path, num_transports)
-}
-
 /// Extract solution data (commodity paths and transport utilization)
 fn extract_solution_data<V: Variant>(
     problem: &Problem<V>,
@@ -307,8 +241,8 @@ fn extract_solution_data<V: Variant>(
 ) -> SolutionData
 where
     V::F: Into<u64>,
-    V::S: ToString,
-    V::T: From<usize>,
+    V::S: core::fmt::Display + ToString,
+    V::T: core::fmt::Display,
 {
     // Extract commodity routing information
     let mut commodity_solutions = Vec::new();
@@ -323,17 +257,10 @@ where
             let flow_u64: u64 = path_flow.flow.into();
             total_flow_u64 += flow_u64;
 
-            let t_indices: Vec<usize> = {
-                use orx_network_flow::IdxCore;
-                path_flow
-                    .path
-                    .as_slice()
-                    .iter()
-                    .map(|t| t.into_inner())
-                    .collect()
-            };
-            let (transport_path, space_path, vertex_path, num_transports) =
-                build_path_strings_from_slice(problem, &t_indices);
+            let transport_path = path_flow.path.to_str_as_transport_keys(problem);
+            let space_path = path_flow.path.to_str_as_spaces(problem);
+            let vertex_path = path_flow.path.to_str_as_vertices(problem);
+            let num_transports = path_flow.path.used_transports(problem).count();
 
             commodity_paths.push(CommodityPath {
                 path_index: path_idx,
@@ -394,8 +321,8 @@ fn extract_enhanced_solution_data<V: Variant>(
 ) -> EnhancedSolutionData
 where
     V::F: Into<u64> + Copy,
-    V::S: ToString,
-    V::T: From<usize>,
+    V::S: core::fmt::Display + ToString,
+    V::T: core::fmt::Display + From<usize>,
 {
     use orx_network_flow::IdxCore;
 
@@ -413,20 +340,14 @@ where
             let flow_u64: u64 = path_flow.flow.into();
             total_flow_u64 += flow_u64;
 
-            let t_indices: Vec<usize> = {
-                use orx_network_flow::IdxCore;
-                path_flow
-                    .path
-                    .as_slice()
-                    .iter()
-                    .map(|t| t.into_inner())
-                    .collect()
-            };
-            let (transport_path, space_path, vertex_path, num_transports) =
-                build_path_strings_from_slice(problem, &t_indices);
+            let transport_path = path_flow.path.to_str_as_transport_keys(problem);
+            let space_path = path_flow.path.to_str_as_spaces(problem);
+            let vertex_path = path_flow.path.to_str_as_vertices(problem);
+            let num_transports = path_flow.path.used_transports(problem).count();
 
-            // Collect all unique transport ids used
-            for &t_id in &t_indices {
+            // Collect actual (non-wait) transport arc indices
+            for t_arc in path_flow.path.used_transports(problem) {
+                let t_id = t_arc.into_inner();
                 if !all_transport_ids.contains(&t_id) {
                     all_transport_ids.push(t_id);
                 }

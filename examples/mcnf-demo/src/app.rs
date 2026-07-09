@@ -857,12 +857,12 @@ fn NetworkSelector(
                         <label class=move || format!("radio-card{}", if grouping_strategy.get() == "dd" { " selected" } else { "" })>
                             <input type="radio" name="grouping" value="dd" checked=true on:change=move |_| set_grouping_strategy.set("dd") />
                             <strong>"DD"</strong>
-                            <small>"Demand-Demand"</small>
+                            <small>"Due-Destination"</small>
                         </label>
                         <label class=move || format!("radio-card{}", if grouping_strategy.get() == "ro" { " selected" } else { "" })>
                             <input type="radio" name="grouping" value="ro" on:change=move |_| set_grouping_strategy.set("ro") />
                             <strong>"RO"</strong>
-                            <small>"Reception-Order"</small>
+                            <small>"Ready-Origin"</small>
                         </label>
                     </div>
                 </div>
