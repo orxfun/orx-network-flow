@@ -249,6 +249,16 @@ pub fn App() -> impl IntoView {
     }
 }
 
+fn selected_example_dot(network_type: &str, grouping_strategy: &str) -> &'static str {
+    match (network_type, grouping_strategy) {
+        ("aoa", "dd") => include_str!("../assets/aoa_wait_dd_nw.dot"),
+        ("aoa", "ro") => include_str!("../assets/aoa_wait_ro_nw.dot"),
+        ("aon", "ro") => include_str!("../assets/aon_wait_ro_nw.dot"),
+        ("aon", "dd") => include_str!("../assets/aon_wait_dd_nw.dot"),
+        _ => include_str!("../assets/aon_wait_dd_nw.dot"),
+    }
+}
+
 #[component]
 fn ProblemForm(
     on_built: impl Fn(crate::serialization::ProblemInput) + 'static,
@@ -752,6 +762,8 @@ fn NetworkSelector(
             match crate::solver_handler::solve_network_from_input(&input, &network_choice) {
                 Ok(response) => {
                     let stats_json = json!({
+                        "network_type": network_choice.network_type,
+                        "grouping_strategy": network_choice.grouping_strategy,
                         "num_variables": response.num_variables,
                         "num_constraints": response.num_constraints,
                         "num_commodities": response.num_commodities,
@@ -976,6 +988,16 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
             {move || {
                 stats.get().and_then(|s| {
                     s.get("enhanced_solution_data").map(|esd| {
+                        let network_type = s
+                            .get("network_type")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("aon");
+                        let grouping_strategy = s
+                            .get("grouping_strategy")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("dd");
+                        let selected_dot_g = selected_example_dot(network_type, grouping_strategy)
+                            .to_string();
                         let total_flow = esd.get("total_flow_routed").and_then(|v| v.as_u64()).unwrap_or(0);
                         let commodity_details = esd.get("commodity_details")
                             .and_then(|v| v.as_array())
@@ -1028,20 +1050,11 @@ fn StatsPanel(stats: ReadSignal<Option<Value>>) -> impl IntoView {
 
                                 // ── Graph view ──────────────────────────────
                                 {
-                                    let commodity_dot_g = esd.get("commodity_dot").and_then(|v| v.as_str()).map(|s| s.to_string()).unwrap_or_default();
-                                    let transport_dot_g = esd.get("transport_dot").and_then(|v| v.as_str()).map(|s| s.to_string()).unwrap_or_default();
+                                    let selected_dot = selected_dot_g.clone();
                                     move || {
                                         if view_mode.get() != "graph" { return view! { <div></div> }.into_view(); }
-                                        let dot_src = if perspective.get() == "transport" {
-                                            transport_dot_g.clone()
-                                        } else {
-                                            commodity_dot_g.clone()
-                                        };
-                                        let container_id = if perspective.get() == "transport" {
-                                            "graph-transport"
-                                        } else {
-                                            "graph-commodity"
-                                        };
+                                        let dot_src = selected_dot.clone();
+                                        let container_id = "graph-network";
                                         let dot_for_effect = dot_src.clone();
                                         create_effect(move |_| {
                                             let dot = dot_for_effect.clone();
