@@ -2,6 +2,7 @@ use std::sync::Mutex;
 
 pub mod app;
 pub mod commands;
+pub mod components;
 pub mod problem_builder;
 pub mod serialization;
 pub mod solver_handler;
