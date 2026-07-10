@@ -1,12 +1,14 @@
-use dioxus::prelude::*;
+use leptos::*;
 
 fn main() {
-    dioxus::launch(App);
+    mount_to_body(|| {
+        view! { <App /> }
+    })
 }
 
 #[component]
-fn App() -> Element {
-    rsx! {
-        div { "time_expansion" }
+fn App() -> impl IntoView {
+    view! {
+        <div>"time_expansion"</div>
     }
 }

@@ -5,5 +5,6 @@ edition = "2024"
 publish = ["artifactory"]
 
 [dependencies]
-dioxus = { version = "0.6.3", features = ["web"] }
+derive-new = { version = "0.7.0", registry = "artifactory" }
+leptos = { version = "0.6", features = ["csr"] }
 orx-network-flow = { path = "../../.." }
