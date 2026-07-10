@@ -16,7 +16,7 @@ pub fn TopNavBar() -> impl IntoView {
                 <nav class="top-nav__links" aria-label="Primary">
                     <For
                         each=move || PageIdx::ALL
-                        key=|page| *page as usize
+                        key=|page| page.key()
                         children=move |page| {
                             let is_active = move || app.page_idx.get() == page;
 
