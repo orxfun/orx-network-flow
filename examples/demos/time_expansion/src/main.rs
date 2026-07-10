@@ -1,3 +1,7 @@
+mod app_data;
+mod page;
+
+use crate::app_data::AppData;
 use leptos::*;
 
 fn main() {
@@ -8,6 +12,8 @@ fn main() {
 
 #[component]
 fn App() -> impl IntoView {
+    provide_context(AppData::create());
+
     view! {
         <div>"time_expansion"</div>
     }
