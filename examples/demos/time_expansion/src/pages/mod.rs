@@ -1,7 +1,7 @@
+mod network;
 mod page_idx;
-mod page_network;
-mod page_problem;
+mod problem;
 
+pub use network::PageNetwork;
 pub use page_idx::PageIdx;
-pub use page_network::PageNetwork;
-pub use page_problem::PageProblem;
+pub use problem::PageProblem;
