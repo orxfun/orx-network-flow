@@ -1,4 +1,4 @@
-use crate::components::{NetworkSelector, ProblemForm, StatsPanel};
+use crate::components::{FormProblem, NetworkSelector, StatsPanel};
 use leptos::*;
 use serde_json::Value;
 
@@ -83,7 +83,7 @@ pub fn App() -> impl IntoView {
                 // Input tab
                 {move || (active_tab.get() == "input").then(|| view! {
                     <div class="tab-panel">
-                        <ProblemForm
+                        <FormProblem
                             on_built=on_problem_built
                             on_error=on_error
                         />

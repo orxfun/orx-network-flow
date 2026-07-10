@@ -1,10 +1,11 @@
-use crate::components::{InputCell, InputRow, InputTable, RemoveItemFn};
+use crate::components::{FormSpaces, InputCell, InputRow, InputTable, RemoveItemFn, SpaceInput};
+use crate::serialization::ProblemInput;
 use leptos::*;
 use std::rc::Rc;
 
 #[component]
-pub fn ProblemForm(
-    on_built: impl Fn(crate::serialization::ProblemInput) + 'static,
+pub fn FormProblem(
+    on_built: impl Fn(ProblemInput) + 'static,
     on_error: impl Fn(String) + 'static,
 ) -> impl IntoView {
     let (spaces, set_spaces) = create_signal(vec![SpaceInput::default()]);
@@ -120,6 +121,12 @@ pub fn ProblemForm(
                     "📋 Demo Input"
                 </button>
             </div>
+
+
+            <FormSpaces
+                spaces=spaces
+                set_spaces=set_spaces
+            />
 
             <fieldset>
                 <legend>"Geographic Spaces"</legend>
@@ -510,24 +517,7 @@ fn demo_data() -> (Vec<SpaceInput>, Vec<CommodityInput>, Vec<TransportInput>) {
 }
 
 #[derive(Clone, Debug)]
-struct SpaceInput {
-    name: String,
-    latitude: f64,
-    longitude: f64,
-}
-
-impl Default for SpaceInput {
-    fn default() -> Self {
-        Self {
-            name: String::new(),
-            latitude: 0.0,
-            longitude: 0.0,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-struct CommodityInput {
+pub struct CommodityInput {
     id: usize,
     origin: String,
     ready_time: i64,
@@ -550,7 +540,7 @@ impl Default for CommodityInput {
 }
 
 #[derive(Clone, Debug)]
-struct TransportInput {
+pub struct TransportInput {
     id: usize,
     vehicle_type: String,
     origin: String,

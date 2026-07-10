@@ -1,0 +1,9 @@
+[package]
+name = "time_expansion"
+version = "0.1.0"
+edition = "2024"
+publish = ["artifactory"]
+
+[dependencies]
+dioxus = { version = "0.6.3", features = ["web"] }
+orx-network-flow = { path = "../../.." }
