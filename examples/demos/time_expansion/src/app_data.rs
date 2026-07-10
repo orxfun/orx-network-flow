@@ -3,13 +3,13 @@ use leptos::prelude::*;
 
 #[derive(Clone)]
 pub struct AppData {
-    pub view: RwSignal<PageIdx>,
+    pub page_idx: RwSignal<PageIdx>,
 }
 
 impl AppData {
     pub fn create() -> Self {
         Self {
-            view: RwSignal::new(PageIdx::default()),
+            page_idx: RwSignal::new(PageIdx::default()),
         }
     }
 }

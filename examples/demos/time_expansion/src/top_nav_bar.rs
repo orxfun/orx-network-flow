@@ -18,13 +18,13 @@ pub fn TopNavBar() -> impl IntoView {
                         each=move || PageIdx::ALL
                         key=|page| *page as usize
                         children=move |page| {
-                            let is_active = move || app.view.get() == page;
+                            let is_active = move || app.page_idx.get() == page;
 
                             view! {
                                 <button
                                     class="top-nav__link"
                                     class=("top-nav__link--active", is_active)
-                                    on:click=move |_| app.view.set(page)
+                                    on:click=move |_| app.page_idx.set(page)
                                 >
                                     {page.label()}
                                 </button>
