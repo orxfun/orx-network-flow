@@ -1,20 +1,14 @@
 mod app_data;
-mod page;
-mod page_network;
-mod page_problem;
+mod pages;
 mod top_nav_bar;
 
 use crate::app_data::AppData;
-use crate::page::PageIdx;
-use crate::page_network::PageNetwork;
-use crate::page_problem::PageProblem;
+use crate::pages::{PageIdx, PageNetwork, PageProblem};
 use crate::top_nav_bar::TopNavBar;
 use leptos::*;
 
 fn main() {
-    mount_to_body(|| {
-        view! { <App /> }
-    })
+    mount_to_body(|| view! { <App /> })
 }
 
 #[component]

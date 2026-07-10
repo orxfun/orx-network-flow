@@ -1,4 +1,4 @@
-use crate::page::PageIdx;
+use crate::pages::PageIdx;
 use leptos::prelude::*;
 
 #[derive(Clone)]
