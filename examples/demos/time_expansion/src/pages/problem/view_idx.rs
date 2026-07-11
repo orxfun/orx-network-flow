@@ -9,5 +9,17 @@ pub enum ProblemViewIdx {
 impl ProblemViewIdx {
     pub const ALL: [Self; 3] = [Self::Spaces, Self::Commodities, Self::Transports];
 
-    pub const ALL_KEYS: [&str; 3] = ["Spaces", "Commodities", "Transports"];
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::Spaces => "Spaces",
+            Self::Commodities => "Commodities",
+            Self::Transports => "Transports",
+        }
+    }
+
+    pub const ALL_KEYS: [&str; 3] = [
+        Self::Spaces.label(),
+        Self::Commodities.label(),
+        Self::Transports.label(),
+    ];
 }

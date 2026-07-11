@@ -6,8 +6,6 @@ use leptos::*;
 pub fn LeftNavBar() -> impl IntoView {
     let app = expect_context::<AppData>();
 
-    let view_keys = app.view_keys().to_vec();
-
     view! {
         <aside class="left-nav" aria-label="Within page navigation">
             <div class="left-nav__inner">

@@ -7,5 +7,11 @@ pub enum NetworkViewIdx {
 impl NetworkViewIdx {
     pub const ALL: [Self; 1] = [Self::ConnectionSettings];
 
-    pub const ALL_KEYS: [&str; 1] = ["Connection Settings"];
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::ConnectionSettings => "Connection Settings",
+        }
+    }
+
+    pub const ALL_KEYS: [&str; 1] = [Self::ConnectionSettings.label()];
 }
