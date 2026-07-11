@@ -15,16 +15,16 @@ pub fn TopNavBar() -> impl IntoView {
                 </div>
                 <nav class="top-nav__links" aria-label="Primary">
                     <For
-                        each=move || PageIdx::ALL
-                        key=|page| page.key()
+                        each=move || app.page_keys().to_vec()
+                        key=|page| page.to_string()
                         children=move |page| {
                             view! {
                                 <button
                                     class="top-nav__link"
-                                    class=("top-nav__link--active", app.page_idx.get() == page)
-                                    on:click=move |_| app.page_idx.set(page)
+                                    class=("top-nav__link--active", move || app.active_page_key() == page)
+                                    on:click=move |_| app.set_active_page(page)
                                 >
-                                    {page.label()}
+                                    {page}
                                 </button>
                             }
                         }

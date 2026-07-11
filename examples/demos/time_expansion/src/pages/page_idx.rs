@@ -20,6 +20,8 @@ impl PageIdx {
         }
     }
 
+    pub const ALL_KEYS: [&str; 2] = [Self::Problem.label(), Self::Network.label()];
+
     pub const fn description(self) -> &'static str {
         match self {
             Self::Problem => "Explore the time-expanded problem setup and inputs.",
@@ -27,10 +29,12 @@ impl PageIdx {
         }
     }
 
-    pub fn key(self) -> usize {
-        match self {
-            PageIdx::Problem => 0,
-            PageIdx::Network => 1,
-        }
+    pub fn from_label(label: &str) -> Self {
+        Self::ALL_KEYS
+            .iter()
+            .enumerate()
+            .find(|(_, x)| **x == label)
+            .map(|(i, _)| Self::ALL[i])
+            .expect("Unknown problem view label")
     }
 }
