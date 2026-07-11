@@ -24,10 +24,10 @@ impl AppData {
         }
     }
 
-    // pub fn active_view_key(&self) -> &'static str {
-    //     match self.page_idx.get() {
-    //         PageIdx::Problem => &ProblemViewIdx::ALL_KEYS,
-    //         PageIdx::Network => &NetworkViewIdx::ALL_KEYS,
-    //     }
-    // }
+    pub fn active_view_key(&self) -> &'static str {
+        match self.page_idx.get() {
+            PageIdx::Problem => self.view_idx_pr.get().label(),
+            PageIdx::Network => self.view_idx_nw.get().label(),
+        }
+    }
 }

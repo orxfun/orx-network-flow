@@ -5,6 +5,7 @@ use leptos::*;
 #[component]
 pub fn TopNavBar() -> impl IntoView {
     let app = expect_context::<AppData>();
+    let active_page_idx = app.page_idx.get();
 
     view! {
         <header class="top-nav">
@@ -18,12 +19,10 @@ pub fn TopNavBar() -> impl IntoView {
                         each=move || PageIdx::ALL
                         key=|page| page.key()
                         children=move |page| {
-                            let is_active = move || app.page_idx.get() == page;
-
                             view! {
                                 <button
                                     class="top-nav__link"
-                                    class=("top-nav__link--active", is_active)
+                                    class=("top-nav__link--active", active_page_idx == page)
                                     on:click=move |_| app.page_idx.set(page)
                                 >
                                     {page.label()}
