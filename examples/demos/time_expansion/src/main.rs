@@ -30,7 +30,7 @@ fn App() -> impl IntoView {
                 <section class="content-panel">
                     {move || match current_page.get() {
                         PageIdx::Problem(_) => PageProblem().into_view(),
-                        PageIdx::Network => PageNetwork().into_view(),
+                        PageIdx::Network(_) => PageNetwork().into_view(),
                     }}
                 </section>
             </main>

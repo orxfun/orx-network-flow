@@ -1,9 +1,9 @@
-use crate::pages::problem::ProblemViewIdx;
+use crate::pages::{network::NetworkViewIdx, problem::ProblemViewIdx};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PageIdx {
     Problem(ProblemViewIdx),
-    Network,
+    Network(NetworkViewIdx),
 }
 
 impl Default for PageIdx {
@@ -13,26 +13,29 @@ impl Default for PageIdx {
 }
 
 impl PageIdx {
-    pub const ALL: [Self; 2] = [Self::Problem(ProblemViewIdx::Spaces), Self::Network];
+    pub const ALL: [Self; 2] = [
+        Self::Problem(ProblemViewIdx::Spaces),
+        Self::Network(NetworkViewIdx::ConnectionSettings),
+    ];
 
     pub const fn label(self) -> &'static str {
         match self {
             Self::Problem(_) => "Problem",
-            Self::Network => "Network",
+            Self::Network(_) => "Network",
         }
     }
 
     pub const fn description(self) -> &'static str {
         match self {
             Self::Problem(_) => "Explore the time-expanded problem setup and inputs.",
-            Self::Network => "Inspect the generated network structure and flow behavior.",
+            Self::Network(_) => "Inspect the generated network structure and flow behavior.",
         }
     }
 
     pub fn key(self) -> usize {
         match self {
             PageIdx::Problem(_) => 0,
-            PageIdx::Network => 1,
+            PageIdx::Network(_) => 1,
         }
     }
 }
