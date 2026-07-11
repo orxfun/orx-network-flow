@@ -2,6 +2,7 @@ mod app_data;
 mod left_nav_bar;
 mod pages;
 mod problem_variant;
+mod space_kind;
 mod top_nav_bar;
 
 use crate::app_data::AppData;
