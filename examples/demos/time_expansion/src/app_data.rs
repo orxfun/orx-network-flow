@@ -30,4 +30,8 @@ impl AppData {
             PageIdx::Network => self.view_idx_nw.get().label(),
         }
     }
+
+    pub fn set_active_view(&self, view_idx: &str) {
+        todo!()
+    }
 }

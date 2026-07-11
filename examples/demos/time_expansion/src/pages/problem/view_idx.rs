@@ -22,4 +22,13 @@ impl ProblemViewIdx {
         Self::Commodities.label(),
         Self::Transports.label(),
     ];
+
+    pub fn from_label(label: &str) -> Self {
+        Self::ALL_KEYS
+            .iter()
+            .enumerate()
+            .find(|(_, x)| **x == label)
+            .map(|(i, _)| Self::ALL[i])
+            .expect("Unknown problem view label")
+    }
 }
