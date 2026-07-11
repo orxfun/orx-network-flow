@@ -65,26 +65,6 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         }
     }
 
-    pub fn spaces(self) -> ProblemBuilder<V, DefiningProblem> {
-        ProblemBuilder {
-            spaces: self.spaces,
-            vehicle_types: self.vehicle_types,
-            vehicles: self.vehicles,
-            commodities: self.commodities,
-            transports: self.transports,
-            connectivity: self.connectivity,
-            costs: self.costs,
-            time_bounds: self.time_bounds,
-            ori_sorted_commodities: self.ori_sorted_commodities,
-            des_sorted_commodities: self.des_sorted_commodities,
-            ori_des_sorted_transports: self.ori_des_sorted_transports,
-            des_ori_sorted_transports: self.des_ori_sorted_transports,
-            sorted_ro_commodities: self.sorted_ro_commodities,
-            sorted_dd_commodities: self.sorted_dd_commodities,
-            p: PhantomData,
-        }
-    }
-
     pub fn with_basic_spaces(
         mut self,
         spaces: impl IntoIterator<Item = V::S>,
