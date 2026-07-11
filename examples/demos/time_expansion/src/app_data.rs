@@ -7,7 +7,9 @@ pub struct AppData {
     pub page_idx: RwSignal<PageIdx>,
     pub view_idx_pr: RwSignal<ProblemViewIdx>,
     pub view_idx_nw: RwSignal<NetworkViewIdx>,
-    pub pr_builder_spaces: RwSignal<Option<PrBuilderSpaces>>,
+    pub spaces_basic: RwSignal<Vec<String>>,
+    pub spaces_euclidean: RwSignal<Vec<(String, f64, f64)>>,
+    pub spaces_geographic: RwSignal<Vec<(String, f64, f64)>>,
 }
 
 impl AppData {
@@ -16,7 +18,9 @@ impl AppData {
             page_idx: RwSignal::new(Default::default()),
             view_idx_pr: RwSignal::new(Default::default()),
             view_idx_nw: RwSignal::new(Default::default()),
-            pr_builder_spaces: RwSignal::new(Some(PrBuilderSpaces::new())),
+            spaces_basic: RwSignal::new(Default::default()),
+            spaces_euclidean: RwSignal::new(Default::default()),
+            spaces_geographic: RwSignal::new(Default::default()),
         }
     }
 

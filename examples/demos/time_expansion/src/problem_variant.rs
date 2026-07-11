@@ -1,9 +1,9 @@
 use orx_network_flow::{DefiningProblem, DefiningSpaces, Problem, ProblemBuilder, Variant};
 
 #[derive(Clone, Copy, Default)]
-pub struct ProblemVariant;
+pub struct PrVar;
 
-impl Variant for ProblemVariant {
+impl Variant for PrVar {
     type S = String;
 
     type K = String;
@@ -23,8 +23,8 @@ impl Variant for ProblemVariant {
     }
 }
 
-pub type PrBuilderSpaces = ProblemBuilder<ProblemVariant, DefiningSpaces>;
+pub type PrBuilderSpaces = ProblemBuilder<PrVar, DefiningSpaces>;
 
-pub type PrBuilder = ProblemBuilder<ProblemVariant, DefiningProblem>;
+pub type PrBuilder = ProblemBuilder<PrVar, DefiningProblem>;
 
-pub type Pr = Problem<ProblemVariant>;
+pub type Pr = Problem<PrVar>;
