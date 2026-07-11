@@ -171,6 +171,12 @@ textarea {
   background: rgba(255, 255, 255, 0.45);
 }
 
+.left-nav__link--active {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border-color: rgba(13, 107, 111, 0.24);
+}
+
 .hero-panel,
 .content-panel {
   background: var(--panel);
