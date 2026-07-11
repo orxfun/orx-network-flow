@@ -15,10 +15,9 @@ fn main() {
 
 #[component]
 fn App() -> impl IntoView {
-    let app_data = AppData::create();
-    let current_page = app_data.page_idx;
+    let app = AppData::create();
 
-    provide_context(app_data);
+    provide_context(app);
 
     view! {
         <div class="app-shell">
@@ -28,11 +27,11 @@ fn App() -> impl IntoView {
                 <div class="app-content">
                     <section class="hero-panel">
                         <p class="eyebrow">"orx-network-flow demo"</p>
-                        <h1>{move || current_page.get().label()}</h1>
-                        <p class="hero-copy">{move || current_page.get().description()}</p>
+                        <h1>{move || app.page_idx.get().label()}</h1>
+                        <p class="hero-copy">{move || app.page_idx.get().description()}</p>
                     </section>
                     <section class="content-panel">
-                        {move || match current_page.get() {
+                        {move || match app.page_idx.get() {
                             PageIdx::Problem => PageProblem().into_view(),
                             PageIdx::Network => PageNetwork().into_view(),
                         }}

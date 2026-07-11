@@ -1,5 +1,4 @@
 use crate::app_data::AppData;
-use crate::pages::PageIdx;
 use leptos::*;
 
 #[component]
