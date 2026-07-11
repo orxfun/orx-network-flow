@@ -2,4 +2,10 @@
 pub enum ProblemViewIdx {
     #[default]
     Spaces,
+    Commodities,
+    Transports,
+}
+
+impl ProblemViewIdx {
+    pub const ALL: [Self; 3] = [Self::Spaces, Self::Commodities, Self::Transports];
 }

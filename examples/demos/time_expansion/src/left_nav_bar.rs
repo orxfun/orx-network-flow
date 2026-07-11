@@ -1,7 +1,11 @@
+use crate::app_data::AppData;
+use crate::pages::PageIdx;
 use leptos::*;
 
 #[component]
 pub fn LeftNavBar() -> impl IntoView {
+    let app = expect_context::<AppData>();
+
     view! {
         <aside class="left-nav" aria-label="Within page navigation">
             <div class="left-nav__inner">
