@@ -1,7 +1,7 @@
 use crate::pages::{NetworkViewIdx, PageIdx, ProblemViewIdx};
 use leptos::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct AppData {
     pub page_idx: RwSignal<PageIdx>,
     pub view_idx_pr: RwSignal<ProblemViewIdx>,
@@ -31,7 +31,10 @@ impl AppData {
         }
     }
 
-    pub fn set_active_view(&self, view_idx: &str) {
-        todo!()
+    pub fn set_active_view(&self, view_label: &str) {
+        match self.page_idx.get() {
+            PageIdx::Problem => self.view_idx_pr.set(ProblemViewIdx::from_label(view_label)),
+            PageIdx::Network => self.view_idx_nw.set(NetworkViewIdx::from_label(view_label)),
+        }
     }
 }
