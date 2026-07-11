@@ -6,13 +6,25 @@ use leptos::*;
 pub fn LeftNavBar() -> impl IntoView {
     let app = expect_context::<AppData>();
 
+    let view_keys = app.view_keys().to_vec();
+
     view! {
         <aside class="left-nav" aria-label="Within page navigation">
             <div class="left-nav__inner">
                 <p class="left-nav__title">"Within This Page"</p>
-                <button class="left-nav__button" type="button">"Overview"</button>
-                <button class="left-nav__button" type="button">"Inputs"</button>
-                <button class="left-nav__button" type="button">"Results"</button>
+                <For
+                    each=move || app.view_keys().to_vec()
+                    key=|view| view.to_string()
+                    children=move |view| {
+                        view! {
+                            <button
+                                class="left-nav__button"
+                            >
+                                {view}
+                            </button>
+                        }
+                    }
+                />
             </div>
         </aside>
     }

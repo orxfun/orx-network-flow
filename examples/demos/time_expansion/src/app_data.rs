@@ -16,4 +16,11 @@ impl AppData {
             view_idx_nw: RwSignal::new(Default::default()),
         }
     }
+
+    pub fn view_keys(&self) -> &'static [&'static str] {
+        match self.page_idx.get() {
+            PageIdx::Problem => &ProblemViewIdx::ALL_KEYS,
+            PageIdx::Network => &NetworkViewIdx::ALL_KEYS,
+        }
+    }
 }
