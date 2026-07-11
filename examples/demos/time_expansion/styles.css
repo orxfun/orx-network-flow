@@ -177,6 +177,108 @@ textarea {
   border-color: rgba(13, 107, 111, 0.24);
 }
 
+.spaces-view {
+  display: grid;
+  gap: 1rem;
+}
+
+.spaces-kind-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.spaces-kind-tabs__button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+.spaces-kind-tabs__button:hover {
+  color: var(--accent-strong);
+  border-color: rgba(13, 107, 111, 0.2);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.spaces-kind-tabs__button--active {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border-color: rgba(13, 107, 111, 0.24);
+}
+
+.spaces-table-wrap {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.spaces-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.spaces-table th,
+.spaces-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.35rem;
+  text-align: left;
+}
+
+.spaces-table th {
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.spaces-table__actions-col,
+.spaces-table__actions-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.spaces-table__input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0.42rem 0.55rem;
+}
+
+.spaces-table__input:focus {
+  outline: none;
+  border-color: rgba(13, 107, 111, 0.5);
+  box-shadow: 0 0 0 3px rgba(13, 107, 111, 0.12);
+}
+
+.spaces-table__remove,
+.spaces-table__add {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--accent-strong);
+  border-radius: 10px;
+  padding: 0.46rem 0.72rem;
+  cursor: pointer;
+}
+
+.spaces-table__remove:hover,
+.spaces-table__add:hover {
+  border-color: rgba(13, 107, 111, 0.24);
+  background: var(--accent-soft);
+}
+
+.spaces-table__add {
+  justify-self: start;
+}
+
 .hero-panel,
 .content-panel {
   background: var(--panel);
