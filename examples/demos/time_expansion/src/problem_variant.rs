@@ -1,4 +1,4 @@
-use orx_network_flow::Variant;
+use orx_network_flow::{DefiningProblem, DefiningSpaces, Problem, ProblemBuilder, Variant};
 
 #[derive(Clone, Copy, Default)]
 pub struct ProblemVariant;
@@ -22,3 +22,9 @@ impl Variant for ProblemVariant {
         flow as i64
     }
 }
+
+pub type PrBuilderSpaces = ProblemBuilder<ProblemVariant, DefiningSpaces>;
+
+pub type PrBuilder = ProblemBuilder<ProblemVariant, DefiningProblem>;
+
+pub type Pr = Problem<ProblemVariant>;

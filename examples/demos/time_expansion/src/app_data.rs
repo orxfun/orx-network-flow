@@ -1,4 +1,5 @@
 use crate::pages::{NetworkViewIdx, PageIdx, ProblemViewIdx};
+use crate::problem_variant::{Pr, PrBuilder, PrBuilderSpaces};
 use leptos::prelude::*;
 
 #[derive(Clone, Copy)]
@@ -6,6 +7,7 @@ pub struct AppData {
     pub page_idx: RwSignal<PageIdx>,
     pub view_idx_pr: RwSignal<ProblemViewIdx>,
     pub view_idx_nw: RwSignal<NetworkViewIdx>,
+    pub pr_builder_spaces: RwSignal<Option<PrBuilderSpaces>>,
 }
 
 impl AppData {
@@ -14,6 +16,7 @@ impl AppData {
             page_idx: RwSignal::new(Default::default()),
             view_idx_pr: RwSignal::new(Default::default()),
             view_idx_nw: RwSignal::new(Default::default()),
+            pr_builder_spaces: RwSignal::new(Some(PrBuilderSpaces::new())),
         }
     }
 
