@@ -1,4 +1,5 @@
 mod app_data;
+mod left_nav_bar;
 mod pages;
 mod top_nav_bar;
 
