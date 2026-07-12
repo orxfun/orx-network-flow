@@ -2,23 +2,6 @@ use crate::app_data::AppData;
 use crate::space_kind::SpaceKind;
 use leptos::*;
 
-fn space_kind_key(kind: SpaceKind) -> &'static str {
-    match kind {
-        SpaceKind::Basic => "basic",
-        SpaceKind::Euclidean => "euclidean",
-        SpaceKind::Geographic => "geographic",
-    }
-}
-
-fn space_kind_from_key(key: &str) -> SpaceKind {
-    match key {
-        "basic" => SpaceKind::Basic,
-        "euclidean" => SpaceKind::Euclidean,
-        "geographic" => SpaceKind::Geographic,
-        _ => SpaceKind::Basic,
-    }
-}
-
 #[component]
 pub fn ViewSpaces() -> impl IntoView {
     let app = expect_context::<AppData>();
@@ -30,15 +13,19 @@ pub fn ViewSpaces() -> impl IntoView {
                 <select
                     id="space-kind-select"
                     class="spaces-kind-select"
-                    prop:value=move || space_kind_key(app.active_space_kind.get())
+                    prop:value=move || app.active_space_kind.get().label()
                     on:change=move |ev| {
                         let selected = event_target_value(&ev);
-                        app.active_space_kind.set(space_kind_from_key(&selected));
+                        app.active_space_kind.set(SpaceKind::from_label(&selected));
                     }
                 >
-                    <option value="basic">"Basic"</option>
-                    <option value="euclidean">"Euclidean"</option>
-                    <option value="geographic">"Geographic"</option>
+                    <For
+                        each=|| SpaceKind::ALL_KEYS.to_vec()
+                        key=|kind| kind.to_string()
+                        children=move |kind| view! {
+                            <option value={kind}>{kind}</option>
+                        }
+                    />
                 </select>
             </div>
 
