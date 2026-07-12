@@ -182,6 +182,34 @@ textarea {
   gap: 1rem;
 }
 
+.spaces-kind-picker {
+  display: grid;
+  gap: 0.45rem;
+  max-width: 320px;
+}
+
+.spaces-kind-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.spaces-kind-select {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+}
+
+.spaces-kind-select:focus {
+  outline: none;
+  border-color: rgba(13, 107, 111, 0.5);
+  box-shadow: 0 0 0 3px rgba(13, 107, 111, 0.12);
+}
+
 .spaces-kind-tabs {
   display: flex;
   flex-wrap: wrap;

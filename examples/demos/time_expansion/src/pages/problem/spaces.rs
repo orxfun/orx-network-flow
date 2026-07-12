@@ -2,37 +2,44 @@ use crate::app_data::AppData;
 use crate::space_kind::SpaceKind;
 use leptos::*;
 
+fn space_kind_key(kind: SpaceKind) -> &'static str {
+    match kind {
+        SpaceKind::Basic => "basic",
+        SpaceKind::Euclidean => "euclidean",
+        SpaceKind::Geographic => "geographic",
+    }
+}
+
+fn space_kind_from_key(key: &str) -> SpaceKind {
+    match key {
+        "basic" => SpaceKind::Basic,
+        "euclidean" => SpaceKind::Euclidean,
+        "geographic" => SpaceKind::Geographic,
+        _ => SpaceKind::Basic,
+    }
+}
+
 #[component]
 pub fn ViewSpaces() -> impl IntoView {
     let app = expect_context::<AppData>();
 
     view! {
         <section class="spaces-view">
-            <div class="spaces-kind-tabs" role="tablist" aria-label="Space kind">
-                <button
-                    class="spaces-kind-tabs__button"
-                    class=("spaces-kind-tabs__button--active", move || matches!(app.active_space_kind.get(), SpaceKind::Basic))
-                    on:click=move |_| app.active_space_kind.set(SpaceKind::Basic)
-                    type="button"
+            <div class="spaces-kind-picker">
+                <label class="spaces-kind-label" for="space-kind-select">"Space Type"</label>
+                <select
+                    id="space-kind-select"
+                    class="spaces-kind-select"
+                    prop:value=move || space_kind_key(app.active_space_kind.get())
+                    on:change=move |ev| {
+                        let selected = event_target_value(&ev);
+                        app.active_space_kind.set(space_kind_from_key(&selected));
+                    }
                 >
-                    "Basic"
-                </button>
-                <button
-                    class="spaces-kind-tabs__button"
-                    class=("spaces-kind-tabs__button--active", move || matches!(app.active_space_kind.get(), SpaceKind::Euclidean))
-                    on:click=move |_| app.active_space_kind.set(SpaceKind::Euclidean)
-                    type="button"
-                >
-                    "Euclidean"
-                </button>
-                <button
-                    class="spaces-kind-tabs__button"
-                    class=("spaces-kind-tabs__button--active", move || matches!(app.active_space_kind.get(), SpaceKind::Geographic))
-                    on:click=move |_| app.active_space_kind.set(SpaceKind::Geographic)
-                    type="button"
-                >
-                    "Geographic"
-                </button>
+                    <option value="basic">"Basic"</option>
+                    <option value="euclidean">"Euclidean"</option>
+                    <option value="geographic">"Geographic"</option>
+                </select>
             </div>
 
             {move || match app.active_space_kind.get() {
