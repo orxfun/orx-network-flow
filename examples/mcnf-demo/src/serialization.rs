@@ -132,6 +132,8 @@ pub struct EnhancedSolutionData {
     pub total_flow_routed: u64,
     pub commodity_details: Vec<CommodityDetail>,
     pub transport_details: Vec<TransportDetail>,
+    /// Dot source for the selected solved network graph
+    pub network_dot: String,
     /// Dot source for the commodity network graph
     pub commodity_dot: String,
     /// Dot source for the transport network graph

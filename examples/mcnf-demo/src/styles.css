@@ -486,17 +486,53 @@ legend {
   margin-bottom: 12px;
 }
 
-.form-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
+.form-table-wrap {
+  overflow-x: auto;
 }
 
-.form-row input,
-.form-row select {
-  flex: 1;
+.form-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  table-layout: fixed;
+}
+
+.form-table th {
+  padding: 0 10px 4px;
+  color: #6b7280;
+  font-size: 0.76em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.form-table td {
+  padding: 0 10px;
+  vertical-align: middle;
+}
+
+.form-table-action-col,
+.form-table-action-cell {
+  width: 110px;
+}
+
+.form-table-action-cell {
+  height: 46px;
+}
+
+.form-action-spacer {
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+
+.form-table input,
+.form-table select {
+  width: 100%;
   min-width: 120px;
+  box-sizing: border-box;
+  height: 46px;
   padding: 11px 14px;
   border: 1.5px solid #e0e0e0;
   border-radius: 8px;
@@ -506,23 +542,23 @@ legend {
   font-weight: 500;
 }
 
-.form-row input::placeholder {
+.form-table input::placeholder {
   color: #aaa;
   font-weight: 500;
 }
 
-.form-row input:hover {
+.form-table input:hover {
   border-color: #d0d0d0;
 }
 
-.form-row input:focus {
+.form-table input:focus {
   outline: none;
   border-color: #667eea;
   background: white;
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-.form-row select:focus {
+.form-table select:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
@@ -605,7 +641,9 @@ button:disabled {
 .btn-remove {
   background: #ff6b6b;
   color: white;
-  padding: 8px 14px;
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
   font-size: 0.9em;
   border: 1px solid #ff6b6b;
   box-shadow: 0 2px 6px rgba(255, 107, 107, 0.2);
@@ -917,13 +955,8 @@ input[type="radio"]:hover {
     font-size: 0.95em;
   }
 
-  .form-row {
-    flex-direction: column;
-  }
-
-  .form-row input,
-  .form-row button {
-    width: 100%;
+  .form-table {
+    min-width: 720px;
   }
 
   .stats-grid {

@@ -5,6 +5,7 @@ use crate::serialization::{
 };
 use orx_network_flow::McnfSolver;
 use orx_network_flow::Problem;
+use orx_network_flow::graphs::visualization::dot::DotGraph;
 use orx_network_flow::networks::{AoaWaitNwSettings, AonWaitNwSettings};
 use orx_network_flow::solvers;
 use orx_network_flow::{McnfSolution, Variant};
@@ -67,11 +68,17 @@ pub fn solve_network(
             let solution = mcnf_solver
                 .solve()
                 .map_err(|e| format!("Solver error: {}", e))?;
+            let network_dot = nw
+                .as_dot_graph(None)
+                .with_solution(&solution)
+                .with_stats(stats)
+                .dot_string();
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.network_dot = network_dot;
             esd.commodity_dot = generate_commodity_dot(&esd);
             esd.transport_dot = generate_transport_dot(&esd);
 
@@ -99,11 +106,17 @@ pub fn solve_network(
             let solution = mcnf_solver
                 .solve()
                 .map_err(|e| format!("Solver error: {}", e))?;
+            let network_dot = nw
+                .as_dot_graph(None)
+                .with_solution(&solution)
+                .with_stats(stats)
+                .dot_string();
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.network_dot = network_dot;
             esd.commodity_dot = generate_commodity_dot(&esd);
             esd.transport_dot = generate_transport_dot(&esd);
 
@@ -134,11 +147,17 @@ pub fn solve_network(
             let solution = mcnf_solver
                 .solve()
                 .map_err(|e| format!("Solver error: {}", e))?;
+            let network_dot = nw
+                .as_dot_graph(None)
+                .with_solution(&solution)
+                .with_stats(stats)
+                .dot_string();
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.network_dot = network_dot;
             esd.commodity_dot = generate_commodity_dot(&esd);
             esd.transport_dot = generate_transport_dot(&esd);
 
@@ -169,11 +188,17 @@ pub fn solve_network(
             let solution = mcnf_solver
                 .solve()
                 .map_err(|e| format!("Solver error: {}", e))?;
+            let network_dot = nw
+                .as_dot_graph(None)
+                .with_solution(&solution)
+                .with_stats(stats)
+                .dot_string();
 
             // Compute objective value from solution
             let objective_value = compute_objective_value(&problem, &solution);
             let solution_data = extract_solution_data(&problem, &solution);
             let mut esd = extract_enhanced_solution_data(&problem, &solution);
+            esd.network_dot = network_dot;
             esd.commodity_dot = generate_commodity_dot(&esd);
             esd.transport_dot = generate_transport_dot(&esd);
 
@@ -498,6 +523,7 @@ where
         total_flow_routed,
         commodity_details,
         transport_details,
+        network_dot: String::new(),   // populated below
         commodity_dot: String::new(), // populated below
         transport_dot: String::new(), // populated below
     }

@@ -39,7 +39,8 @@ mod vehicles;
 
 pub use indices::{Idx, IdxCore};
 pub use problem::{
-    EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
+    DefiningProblem, DefiningSpaces, EuclideanConnectivity, GeographicalConnectivity, Problem,
+    ProblemBuilder, Variant,
 };
 pub use solution_deprecated::SolutionDeprecated;
 
