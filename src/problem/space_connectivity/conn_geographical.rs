@@ -14,6 +14,18 @@ pub struct ConnectivityGeographical {
     pub epsilon_ac_km: f64,
 }
 
+impl Default for ConnectivityGeographical {
+    fn default() -> Self {
+        Self {
+            near_ac_km: 500.0,
+            far_via_b_km: 900.0,
+            min_detour_ratio: 1.8,
+            min_excess_km: 700.0,
+            epsilon_ac_km: 50.0,
+        }
+    }
+}
+
 impl LocationConnectivity for ConnectivityGeographical {
     type L = Geographical;
 

@@ -1,6 +1,6 @@
 use crate::{NoLocation, problem::space_connectivity::LocationConnectivity};
 
-#[derive(derive_new::new)]
+#[derive(derive_new::new, Default)]
 pub struct ConnectivityNoLocation;
 
 impl LocationConnectivity for ConnectivityNoLocation {

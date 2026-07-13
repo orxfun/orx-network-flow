@@ -34,3 +34,15 @@ impl LocationConnectivity for ConnectivityEuclidean {
         !banned
     }
 }
+
+impl Default for ConnectivityEuclidean {
+    fn default() -> Self {
+        Self {
+            near_ac: 500.0,
+            far_via_b: 900.0,
+            min_detour_ratio: 1.8,
+            min_excess: 700.0,
+            epsilon_ac: 50.0,
+        }
+    }
+}
