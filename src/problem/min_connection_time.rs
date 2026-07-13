@@ -1,5 +1,5 @@
 use crate::spaces::Spaces;
-use crate::{Problem, Variant, spaces::Space, time::Time, utils::std_utils::Map};
+use crate::{Variant, spaces::Space, time::Time, utils::std_utils::Map};
 
 #[derive(derive_new::new)]
 pub struct MinConnectionTimeBuilder<'a, V: Variant> {
@@ -33,13 +33,7 @@ impl Default for MinConnectionTime {
 }
 
 impl MinConnectionTime {
-    pub fn can_connect<V: Variant>(
-        &self,
-        p: &Problem<V>,
-        space: Space,
-        first_at: Time,
-        second_dt: Time,
-    ) -> bool {
+    pub fn can_connect(&self, space: Space, first_at: Time, second_dt: Time) -> bool {
         match second_dt >= first_at {
             false => false,
             true => {

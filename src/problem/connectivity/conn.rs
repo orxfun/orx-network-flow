@@ -1,4 +1,5 @@
 use crate::problem::connectivity::TemporalConnectivity;
+use crate::problem::min_connection_time::MinConnectionTime;
 use crate::problem::space_connectivity::SpaceConnectivity;
 use crate::spaces::Space;
 use crate::transports::Transport;
@@ -7,7 +8,7 @@ use crate::{Problem, Variant};
 #[derive(Default)]
 pub struct Connectivity<V: Variant> {
     pub space: SpaceConnectivity<V>,
-    pub temporal: TemporalConnectivity,
+    pub min_conn_time: MinConnectionTime,
 }
 
 impl<V: Variant> Connectivity<V> {
@@ -24,6 +25,6 @@ impl<V: Variant> Connectivity<V> {
         let at = i.destination().time();
         let dt = j.origin().time();
 
-        self.temporal.can_connect(p, b, at, dt)
+        self.min_conn_time.can_connect(b, at, dt)
     }
 }

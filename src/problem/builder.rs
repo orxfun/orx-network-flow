@@ -5,6 +5,7 @@ use crate::problem::connectivity::{
     Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
+use crate::problem::min_connection_time::{MinConnectionTime, MinConnectionTimeBuilder};
 use crate::problem::space_connectivity::{SpaceConnectivity, SpaceConnectivityBuilder};
 use crate::spaces::{Coordinate, Geocode, SpaceData};
 use crate::spaces::{Geographical, Spaces};
@@ -134,11 +135,11 @@ impl<V: Variant> ProblemBuilder<V> {
         SpaceConnectivityBuilder::new(spaces, space)
     }
 
-    pub fn temporal_connectivity(&mut self) -> TemporalConnectivityBuilder<'_, V> {
+    pub fn min_connection_time(&mut self) -> MinConnectionTimeBuilder<'_, V> {
         let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
-        let temporal =
-            unsafe { &mut *(&mut self.connectivity.temporal as *mut TemporalConnectivity) };
-        TemporalConnectivityBuilder::new(spaces, temporal)
+        let min_con_time =
+            unsafe { &mut *(&mut self.connectivity.min_conn_time as *mut MinConnectionTime) };
+        MinConnectionTimeBuilder::new(spaces, min_con_time)
     }
 
     // costs
