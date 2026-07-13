@@ -1,6 +1,7 @@
 mod builder;
 mod connectivity;
 mod debug;
+mod min_connection_time;
 mod prob;
 mod space_connectivity;
 mod variant;
