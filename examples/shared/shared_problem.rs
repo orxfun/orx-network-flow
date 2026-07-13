@@ -4,7 +4,7 @@ use orx_network_flow::*;
 pub struct MyVariant;
 
 impl Variant for MyVariant {
-    type L = NoLocation;
+    type L = Geographical;
     type S = String;
     type K = usize;
     type W = String;
@@ -19,16 +19,18 @@ impl Variant for MyVariant {
 }
 
 pub fn sample_problem() -> orx_network_flow::Problem<MyVariant> {
-    let builder: ProblemBuilder<MyVariant, _> = ProblemBuilder::new();
+    let mut builder = ProblemBuilder::<MyVariant>::new();
 
-    let mut builder = builder.with_geographic_spaces([
-        ("AMS".to_string(), 52.308_613, 4.763_889),
-        ("BRU".to_string(), 50.901_389, 4.484_444),
-        ("LEJ".to_string(), 51.25, 12.14),
-        ("CVG".to_string(), 39.0488, -84.6678),
-        ("SIN".to_string(), 1.350_189, 103.994_433),
-        ("EMA".to_string(), 52.831_111, -1.328_056),
-    ]);
+    [
+        ("AMS".to_string(), Geographical::new(52.308_613, 4.763_889)),
+        ("BRU".to_string(), Geographical::new(50.901_389, 4.484_444)),
+        ("LEJ".to_string(), Geographical::new(51.25, 12.14)),
+        ("CVG".to_string(), Geographical::new(39.0488, -84.6678)),
+        ("SIN".to_string(), Geographical::new(1.350_189, 103.994_433)),
+        ("EMA".to_string(), Geographical::new(52.831_111, -1.328_056)),
+    ]
+    .into_iter()
+    .for_each(|(key, loc)| _ = builder.push_space(key, loc));
 
     // commodities
     let mut c_idx = 0;

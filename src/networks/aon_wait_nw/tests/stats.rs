@@ -21,8 +21,11 @@ impl Variant for TestVariant {
 
 #[test]
 fn compute_stats_matches_stats_after_construction() {
-    let mut builder: ProblemBuilder<TestVariant, _> =
-        ProblemBuilder::new().with_basic_spaces(["A", "X", "B"]);
+    let mut builder = ProblemBuilder::<TestVariant>::new();
+
+    ["A", "X", "B"]
+        .into_iter()
+        .for_each(|x| _ = builder.push_basic_space(x));
 
     builder.push_commodity(0, "A", 0_i64, "B", 10_i64, 7);
     builder.push_transport(0, 0, "veh", "A", 1_i64, "X", 2_i64, 100);

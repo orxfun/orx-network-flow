@@ -28,8 +28,11 @@ impl Variant for TestVariant {
 
 #[test]
 fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transport() {
-    let mut builder: ProblemBuilder<TestVariant, _> =
-        ProblemBuilder::new().with_basic_spaces(["A", "X", "B", "C"]);
+    let mut builder = ProblemBuilder::<TestVariant>::new();
+
+    ["A", "X", "B", "C"]
+        .into_iter()
+        .for_each(|x| _ = builder.push_basic_space(x));
 
     builder.push_commodity(0, "A", 0_i64, "B", 10_i64, 4);
     builder.push_commodity(1, "A", 0_i64, "C", 10_i64, 6);
@@ -127,8 +130,11 @@ fn greedy_disaggregation_propagates_destinations_through_shared_upstream_transpo
 
 #[test]
 fn greedy_disaggregation_splits_within_same_destination_by_remaining_amount() {
-    let mut builder: ProblemBuilder<TestVariant, _> =
-        ProblemBuilder::new().with_basic_spaces(["A", "B"]);
+    let mut builder = ProblemBuilder::<TestVariant>::new();
+
+    ["A", "B"]
+        .into_iter()
+        .for_each(|x| _ = builder.push_basic_space(x));
 
     builder.push_commodity(0, "A", 0_i64, "B", 10_i64, 2);
     builder.push_commodity(1, "A", 0_i64, "B", 10_i64, 8);
@@ -201,8 +207,11 @@ fn greedy_disaggregation_splits_within_same_destination_by_remaining_amount() {
 
 #[test]
 fn greedy_disaggregation_handles_larger_branching_instance() {
-    let mut builder: ProblemBuilder<TestVariant, _> =
-        ProblemBuilder::new().with_basic_spaces(["A", "X", "Y", "B", "C", "D"]);
+    let mut builder = ProblemBuilder::<TestVariant>::new();
+
+    ["A", "X", "Y", "B", "C", "D"]
+        .into_iter()
+        .for_each(|x| _ = builder.push_basic_space(x));
 
     builder.push_commodity(0, "A", 0_i64, "B", 10_i64, 5);
     builder.push_commodity(1, "A", 0_i64, "C", 10_i64, 7);
@@ -337,8 +346,11 @@ fn greedy_disaggregation_handles_larger_branching_instance() {
 
 #[test]
 fn greedy_disaggregation_extracts_multiple_paths_for_single_commodity() {
-    let mut builder: ProblemBuilder<TestVariant, _> =
-        ProblemBuilder::new().with_basic_spaces(["A", "X", "Y", "B"]);
+    let mut builder = ProblemBuilder::<TestVariant>::new();
+
+    ["A", "X", "Y", "B"]
+        .into_iter()
+        .for_each(|x| _ = builder.push_basic_space(x));
 
     builder.push_commodity(0, "A", 0_i64, "B", 10_i64, 10);
 

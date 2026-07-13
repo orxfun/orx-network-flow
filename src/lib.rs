@@ -39,8 +39,7 @@ mod vehicles;
 
 pub use indices::{Idx, IdxCore};
 pub use problem::{
-    DefiningProblem, DefiningSpaces, EuclideanConnectivity, GeographicalConnectivity, Problem,
-    ProblemBuilder, Variant,
+    EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
 };
 pub use solution_deprecated::SolutionDeprecated;
 
@@ -54,7 +53,9 @@ pub use mcnf::AonWaitRoMcnfParams;
 pub use mcnf::{McnfSolution, McnfSolver};
 pub use networks::AoaWaitNwSettings;
 pub use networks::GraphStats;
-pub use spaces::{Euclidean, Geocode, Location, NoLocation, Space, SpaceTime, SpaceTimeOd};
+pub use spaces::{
+    Euclidean, Geocode, Geographical, Location, NoLocation, Space, SpaceTime, SpaceTimeOd,
+};
 pub(crate) use time::Time;
 pub(crate) use transports::{Transport, TransportData, Transports, VecTransport};
 pub(crate) use vehicles::Vehicle;
