@@ -1,18 +1,13 @@
-use crate::problem::connectivity::{SpatialConnectivity, TemporalConnectivity};
+use crate::problem::connectivity::TemporalConnectivity;
 use crate::problem::space_connectivity::SpaceConnectivity;
 use crate::spaces::Space;
 use crate::transports::Transport;
 use crate::{Problem, Variant};
 
+#[derive(Default)]
 pub struct Connectivity<V: Variant> {
     pub space: SpaceConnectivity<V>,
     pub temporal: TemporalConnectivity,
-}
-
-impl<V: Variant> Default for Connectivity<V> {
-    fn default() -> Self {
-        todo!()
-    }
 }
 
 impl<V: Variant> Connectivity<V> {

@@ -24,14 +24,16 @@ pub struct SpaceConnectivity<V: Variant> {
     location_connectivity: <V::L as Location>::Connectivity,
 }
 
-impl<V: Variant> SpaceConnectivity<V> {
-    pub fn new(location_connectivity: <V::L as Location>::Connectivity) -> Self {
+impl<V: Variant> Default for SpaceConnectivity<V> {
+    fn default() -> Self {
         Self {
             taboo_set: Default::default(),
-            location_connectivity,
+            location_connectivity: Default::default(),
         }
     }
+}
 
+impl<V: Variant> SpaceConnectivity<V> {
     pub fn can_connect(&self, p: &Problem<V>, a: Space, b: Space, c: Space) -> bool {
         match self.taboo_set.contains(&(a, b, c)) {
             true => false,
