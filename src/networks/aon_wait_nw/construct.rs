@@ -89,7 +89,7 @@ pub fn construct<V: Variant>(p: &Problem<V>, settings: AonWaitNwSettings) -> Out
                 for (y, head_sorted_transports) in map_head_sorted_transports.iter() {
                     // head: des => y
 
-                    match p.connectivity.can_connect_spatially(p, [*x, *des, *y]) {
+                    match p.connectivity.can_connect_by_space(p, [*x, *des, *y]) {
                         false => continue,
                         true => {
                             let tails_rev = tail_sorted_transports.iter().copied().rev();
@@ -199,7 +199,7 @@ fn conn_t_t_find_head_for_tail<V: Variant>(
     tail: Transport,
 ) -> Option<Transport> {
     // TODO: minor speed improvement possible by caching at of tail
-    let feasible = |head: Transport| p.connectivity.can_connect_temporally(p, tail, head);
+    let feasible = |head: Transport| p.connectivity.can_connect_by_time(p, tail, head);
 
     if !feasible(curr_head) {
         // none of the further heads can be connected to tail

@@ -116,7 +116,7 @@ where
             for (des, tail_sorted_transports) in des_sorted_transports.iter() {
                 if let Some(map_head_sorted_transports) = p.ori_des_sorted_transports.get(des) {
                     for (y, head_sorted_transports) in map_head_sorted_transports.iter() {
-                        if !p.connectivity.can_connect_spatially(p, [*x, *des, *y]) {
+                        if !p.connectivity.can_connect_by_space(p, [*x, *des, *y]) {
                             continue;
                         }
 
@@ -127,9 +127,8 @@ where
                         let mut curr_head_idx = head_sorted_transports.len() - 1;
                         for &tail in tail_sorted_transports.iter().rev() {
                             let mut curr_head = head_sorted_transports[curr_head_idx];
-                            let feasible = |head: Transport| {
-                                p.connectivity.can_connect_temporally(p, tail, head)
-                            };
+                            let feasible =
+                                |head: Transport| p.connectivity.can_connect_by_time(p, tail, head);
 
                             if !feasible(curr_head) {
                                 continue;

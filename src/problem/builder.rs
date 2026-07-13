@@ -5,6 +5,7 @@ use crate::problem::connectivity::{
     Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
+use crate::problem::space_connectivity::{SpaceConnectivity, SpaceConnectivityBuilder};
 use crate::spaces::{Coordinate, Geocode, SpaceData};
 use crate::spaces::{Geographical, Spaces};
 use crate::time_bounds::TimeBounds;
@@ -23,7 +24,7 @@ pub struct ProblemBuilder<V: Variant> {
     vehicles: Vehicles<V>,
     commodities: Commodities<V>,
     transports: Transports<V>,
-    connectivity: Connectivity,
+    connectivity: Connectivity<V>,
     costs: Costs<V>,
     time_bounds: TimeBounds,
     ori_sorted_commodities: SortedKeyMapBuilder<Space, Vec<Commodity>>,
@@ -127,10 +128,10 @@ impl<V: Variant> ProblemBuilder<V> {
             .push(transport);
     }
 
-    pub fn spatial_connectivity(&mut self) -> SpatialConnectivityBuilder<'_, V> {
+    pub fn spatial_connectivity(&mut self) -> SpaceConnectivityBuilder<'_, V> {
         let spaces = unsafe { &*(&self.spaces as *const Spaces<V>) };
-        let spatial = unsafe { &mut *(&mut self.connectivity.spatial as *mut SpatialConnectivity) };
-        SpatialConnectivityBuilder::new(spaces, spatial)
+        let space = unsafe { &mut *(&mut self.connectivity.space as *mut SpaceConnectivity<V>) };
+        SpaceConnectivityBuilder::new(spaces, space)
     }
 
     pub fn temporal_connectivity(&mut self) -> TemporalConnectivityBuilder<'_, V> {

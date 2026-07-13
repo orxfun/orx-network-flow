@@ -18,7 +18,7 @@ pub struct Problem<V: Variant> {
     pub vehicles: Vehicles<V>,
     pub commodities: Commodities<V>,
     pub transports: Transports<V>,
-    pub connectivity: Connectivity,
+    pub connectivity: Connectivity<V>,
     pub costs: Costs<V>,
     pub time_bounds: TimeBounds,
     pub ori_sorted_commodities: SortedKeyMap<Space, Vec<Commodity>>,
