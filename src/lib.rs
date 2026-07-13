@@ -38,8 +38,8 @@ mod vehicles;
 
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
 pub use flow_units::FlowUnit;
+pub(crate) use indices::IdxMap;
 pub use indices::{Idx, IdxCore};
-pub(crate) use indices::{IdxMap, IdxMapSubset};
 pub use mcnf::AoaWaitDdMcnfParams;
 pub use mcnf::AoaWaitRoMcnfParams;
 pub use mcnf::AonWaitDdMcnfParams;
