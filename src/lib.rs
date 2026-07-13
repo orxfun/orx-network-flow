@@ -54,7 +54,7 @@ pub use mcnf::AonWaitRoMcnfParams;
 pub use mcnf::{McnfSolution, McnfSolver};
 pub use networks::AoaWaitNwSettings;
 pub use networks::GraphStats;
-pub(crate) use spaces::{Space, SpaceTime, SpaceTimeOd};
+pub use spaces::{Euclidean, Geocode, Location, NoLocation, Space, SpaceTime, SpaceTimeOd};
 pub(crate) use time::Time;
 pub(crate) use transports::{Transport, TransportData, Transports, VecTransport};
 pub(crate) use vehicles::Vehicle;

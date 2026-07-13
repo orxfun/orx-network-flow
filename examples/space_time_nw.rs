@@ -1,14 +1,12 @@
 use orx_network_flow::graphs::Graph;
 use orx_network_flow::graphs::visualization::dot::DotGraph;
-use orx_network_flow::solvers;
-use orx_network_flow::{
-    AoaWaitNwSettings, AoaWaitRoMcnfParams, McnfSolver, ProblemBuilder, Variant,
-};
+use orx_network_flow::*;
 
 #[derive(Clone, Copy, Default)]
 struct MyVariant;
 
 impl Variant for MyVariant {
+    type L = NoLocation;
     type S = String;
     type K = usize;
     type W = String;

@@ -1,4 +1,5 @@
 use super::super::disaggregate_greedy::disaggregate_ro_greedy;
+use crate::NoLocation;
 use crate::graphs::{EIdx, Edge, Graph, VecEdge, Vertex};
 use crate::mcnf::solution::{CommodityLoad, CommodityPaths, Path};
 use crate::networks::{AonWaitEdge, AonWaitNwSettings, AonWaitVertex};
@@ -11,6 +12,7 @@ use alloc::vec::Vec;
 struct TestVariant;
 
 impl Variant for TestVariant {
+    type L = NoLocation;
     type S = &'static str;
     type K = usize;
     type W = &'static str;

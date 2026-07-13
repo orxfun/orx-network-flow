@@ -1,10 +1,11 @@
 use crate::networks::{AonWaitNw, AonWaitNwSettings};
-use crate::{ProblemBuilder, Variant};
+use crate::{NoLocation, ProblemBuilder, Variant};
 
 #[derive(Clone, Copy, Default)]
 struct TestVariant;
 
 impl Variant for TestVariant {
+    type L = NoLocation;
     type S = &'static str;
     type K = usize;
     type W = &'static str;

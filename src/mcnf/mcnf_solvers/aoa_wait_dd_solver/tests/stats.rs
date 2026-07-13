@@ -1,6 +1,6 @@
 use crate::mcnf::mcnf_solvers::aoa_wait_dd_solver::{AoaWaitDdMcnfParams, AoaWaitDdMcnfSolver};
 use crate::networks::AoaWaitNwSettings;
-use crate::{ProblemBuilder, Variant};
+use crate::{NoLocation, ProblemBuilder, Variant};
 #[cfg(feature = "solver-lp-solvers")]
 use alloc::string::ToString;
 #[cfg(feature = "solver-lp-solvers")]
@@ -12,6 +12,7 @@ use lp_solvers::solvers::Cplex;
 struct TestVariant;
 
 impl Variant for TestVariant {
+    type L = NoLocation;
     type S = &'static str;
     type K = usize;
     type W = &'static str;

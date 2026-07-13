@@ -6,7 +6,7 @@ use crate::problem::connectivity::{
     TemporalConnectivityBuilder,
 };
 use crate::spaces::Spaces;
-use crate::spaces::{Coordinate, Geocode, Location, SpaceData};
+use crate::spaces::{Coordinate, Geocode, LocationDepr, SpaceData};
 use crate::time_bounds::TimeBounds;
 use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
 use crate::transports::Transports;
@@ -70,7 +70,7 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         spaces: impl IntoIterator<Item = V::S>,
     ) -> ProblemBuilder<V, DefiningProblem> {
         for s in spaces {
-            self.spaces.push(s, SpaceData::new(Location::Basic));
+            self.spaces.push(s, SpaceData::new(LocationDepr::Basic));
         }
         ProblemBuilder {
             spaces: self.spaces,
@@ -96,8 +96,10 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         spaces: impl IntoIterator<Item = (V::S, f64, f64)>,
     ) -> ProblemBuilder<V, DefiningProblem> {
         for (s, x, y) in spaces {
-            self.spaces
-                .push(s, SpaceData::new(Location::Euclidean(Coordinate { x, y })));
+            self.spaces.push(
+                s,
+                SpaceData::new(LocationDepr::Euclidean(Coordinate { x, y })),
+            );
         }
         ProblemBuilder {
             spaces: self.spaces,
@@ -125,7 +127,7 @@ impl<V: Variant> ProblemBuilder<V, DefiningSpaces> {
         for (s, lat, lon) in spaces {
             self.spaces.push(
                 s,
-                SpaceData::new(Location::Geographic(Geocode { lat, lon })),
+                SpaceData::new(LocationDepr::Geographic(Geocode { lat, lon })),
             );
         }
         ProblemBuilder {

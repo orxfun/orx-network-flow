@@ -1,16 +1,16 @@
 #[derive(derive_new::new)]
 pub struct SpaceData {
-    pub location: Location,
+    pub location: LocationDepr,
 }
 
 #[derive(Clone, Copy)]
-pub enum Location {
+pub enum LocationDepr {
     Basic,
     Euclidean(Coordinate),
     Geographic(Geocode),
 }
 
-impl Location {
+impl LocationDepr {
     pub fn distance(self, other: Self) -> f64 {
         match (self, other) {
             (Self::Basic, Self::Basic) => 0.0,

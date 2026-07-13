@@ -8,6 +8,7 @@ mod space;
 mod space_time;
 
 pub use collection::Spaces;
-pub use data::{Coordinate, Geocode, Location, SpaceData};
+pub use data::{Coordinate, Geocode, LocationDepr, SpaceData};
+pub use locations::{Euclidean, Geographical, Location, NoLocation};
 pub use space::{Space, VecSpace};
 pub use space_time::{SpaceTime, SpaceTimeOd};

@@ -1,10 +1,10 @@
-use orx_network_flow::solvers;
-use orx_network_flow::{ProblemBuilder, Variant};
+use orx_network_flow::*;
 
 #[derive(Clone, Copy, Default)]
 pub struct MyVariant;
 
 impl Variant for MyVariant {
+    type L = NoLocation;
     type S = String;
     type K = usize;
     type W = String;
