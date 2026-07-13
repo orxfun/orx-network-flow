@@ -27,7 +27,6 @@ mod indices;
 mod mcnf;
 pub mod networks;
 mod problem;
-mod solution_deprecated;
 pub mod solvers;
 mod spaces;
 mod time;
@@ -37,12 +36,9 @@ mod utils;
 mod vehicle_types;
 mod vehicles;
 
-pub use indices::{Idx, IdxCore};
-pub use problem::{Problem, ProblemBuilder, Variant};
-pub use solution_deprecated::SolutionDeprecated;
-
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
 pub use flow_units::FlowUnit;
+pub use indices::{Idx, IdxCore};
 pub(crate) use indices::{IdxMap, IdxMapSubset};
 pub use mcnf::AoaWaitDdMcnfParams;
 pub use mcnf::AoaWaitRoMcnfParams;
@@ -51,6 +47,7 @@ pub use mcnf::AonWaitRoMcnfParams;
 pub use mcnf::{McnfSolution, McnfSolver};
 pub use networks::AoaWaitNwSettings;
 pub use networks::GraphStats;
+pub use problem::{Problem, ProblemBuilder, Variant};
 pub use spaces::{
     Euclidean, Geocode, Geographical, Location, NoLocation, Space, SpaceTime, SpaceTimeOd,
 };

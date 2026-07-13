@@ -6,7 +6,6 @@ pub mod visualization;
 mod construct;
 mod edge_data;
 mod nw;
-mod output;
 mod vertex_data;
 
 pub use edge_data::AonWaitEdge;
