@@ -18,4 +18,3 @@ pub struct SpaceConnectivity<V: {
     /// Euclidean connectivity rules
     euclidean_connectivity: Option<EuclideanConnectivity>,
 }
-wip
