@@ -2,6 +2,7 @@ mod builder;
 mod connectivity;
 mod debug;
 mod prob;
+mod space_connectivity;
 mod variant;
 
 pub use builder::ProblemBuilder;
