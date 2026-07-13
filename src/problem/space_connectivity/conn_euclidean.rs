@@ -17,6 +17,14 @@ pub struct ConnectivityEuclidean {
 impl LocationConnectivity for ConnectivityEuclidean {
     type L = Euclidean;
 
+    fn allow_all(&mut self) {
+        self.near_ac = f64::INFINITY;
+        self.far_via_b = f64::INFINITY;
+        self.min_detour_ratio = 1.0;
+        self.min_excess = f64::NEG_INFINITY;
+        self.epsilon_ac = 50.0;
+    }
+
     fn can_connect(&self, a: Self::L, b: Self::L, c: Self::L) -> bool {
         let d_ab = a.distance(b);
         let d_bc = b.distance(c);

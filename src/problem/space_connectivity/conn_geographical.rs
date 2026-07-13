@@ -29,6 +29,14 @@ impl Default for ConnectivityGeographical {
 impl LocationConnectivity for ConnectivityGeographical {
     type L = Geographical;
 
+    fn allow_all(&mut self) {
+        self.near_ac_km = f64::INFINITY;
+        self.far_via_b_km = f64::INFINITY;
+        self.min_detour_ratio = 1.0;
+        self.min_excess_km = f64::NEG_INFINITY;
+        self.epsilon_ac_km = 50.0;
+    }
+
     fn can_connect(&self, a: Self::L, b: Self::L, c: Self::L) -> bool {
         let d_ab = a.distance_km(b);
         let d_bc = b.distance_km(c);
