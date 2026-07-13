@@ -1,25 +1,20 @@
+use crate::Variant;
+
 #[derive(derive_new::new)]
-pub struct SpaceData {
-    pub location: LocationDepr,
+pub struct SpaceData<V: Variant> {
+    pub location: V::L,
 }
 
-#[derive(Clone, Copy)]
-pub enum LocationDepr {
-    Basic,
-    Euclidean(Coordinate),
-    Geographic(Geocode),
-}
-
-impl LocationDepr {
-    pub fn distance(self, other: Self) -> f64 {
-        match (self, other) {
-            (Self::Basic, Self::Basic) => 0.0,
-            (Self::Euclidean(x), Self::Euclidean(y)) => x.distance(y),
-            (Self::Geographic(x), Self::Geographic(y)) => x.distance_km(y),
-            _ => unreachable!("location kinds are consistent by problem construction"),
-        }
-    }
-}
+// impl LocationDepr {
+//     pub fn distance(self, other: Self) -> f64 {
+//         match (self, other) {
+//             (Self::Basic, Self::Basic) => 0.0,
+//             (Self::Euclidean(x), Self::Euclidean(y)) => x.distance(y),
+//             (Self::Geographic(x), Self::Geographic(y)) => x.distance_km(y),
+//             _ => unreachable!("location kinds are consistent by problem construction"),
+//         }
+//     }
+// }
 
 #[derive(Clone, Copy)]
 pub struct Coordinate {

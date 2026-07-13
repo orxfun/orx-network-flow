@@ -1,5 +1,5 @@
 use crate::spaces::Spaces;
-use crate::spaces::{Coordinate, Geocode, LocationDepr, Space};
+use crate::spaces::{Coordinate, Geocode, Space};
 use crate::{Problem, Variant, utils::std_utils::Set};
 
 #[derive(derive_new::new)]
@@ -32,28 +32,29 @@ impl<'a, V: Variant> SpatialConnectivityBuilder<'a, V> {
             return false;
         }
 
-        let [a, b, c] =
-            [a, b, c].map(|s| self.spaces.get_by_idx(s).expect("invalid space").location);
-        match (a, b, c) {
-            (LocationDepr::Basic, LocationDepr::Basic, LocationDepr::Basic) => true,
-            (
-                LocationDepr::Euclidean(a),
-                LocationDepr::Euclidean(b),
-                LocationDepr::Euclidean(c),
-            ) => match &self.conn.euclidean_connectivity {
-                None => true,
-                Some(conn) => conn.can_connect(a, b, c),
-            },
-            (
-                LocationDepr::Geographic(a),
-                LocationDepr::Geographic(b),
-                LocationDepr::Geographic(c),
-            ) => match &self.conn.geographical_connectivity {
-                None => true,
-                Some(conn) => conn.can_connect(a, b, c),
-            },
-            _ => unreachable!("consistent locations by construction"),
-        }
+        // let [a, b, c] =
+        //     [a, b, c].map(|s| self.spaces.get_by_idx(s).expect("invalid space").location);
+        // match (a, b, c) {
+        //     (LocationDepr::Basic, LocationDepr::Basic, LocationDepr::Basic) => true,
+        //     (
+        //         LocationDepr::Euclidean(a),
+        //         LocationDepr::Euclidean(b),
+        //         LocationDepr::Euclidean(c),
+        //     ) => match &self.conn.euclidean_connectivity {
+        //         None => true,
+        //         Some(conn) => conn.can_connect(a, b, c),
+        //     },
+        //     (
+        //         LocationDepr::Geographic(a),
+        //         LocationDepr::Geographic(b),
+        //         LocationDepr::Geographic(c),
+        //     ) => match &self.conn.geographical_connectivity {
+        //         None => true,
+        //         Some(conn) => conn.can_connect(a, b, c),
+        //     },
+        //     _ => unreachable!("consistent locations by construction"),
+        // }
+        todo!()
     }
 }
 
@@ -81,27 +82,28 @@ impl SpatialConnectivity {
         match self.taboo_set.contains(&(a, b, c)) {
             true => false,
             false => {
-                let [a, b, c] = [a, b, c].map(|s| p.space_by_idx(s).location);
-                match (a, b, c) {
-                    (LocationDepr::Basic, LocationDepr::Basic, LocationDepr::Basic) => true,
-                    (
-                        LocationDepr::Euclidean(a),
-                        LocationDepr::Euclidean(b),
-                        LocationDepr::Euclidean(c),
-                    ) => match &self.euclidean_connectivity {
-                        None => true,
-                        Some(conn) => conn.can_connect(a, b, c),
-                    },
-                    (
-                        LocationDepr::Geographic(a),
-                        LocationDepr::Geographic(b),
-                        LocationDepr::Geographic(c),
-                    ) => match &self.geographical_connectivity {
-                        None => true,
-                        Some(conn) => conn.can_connect(a, b, c),
-                    },
-                    _ => unreachable!("consistent locations by construction"),
-                }
+                todo!()
+                // let [a, b, c] = [a, b, c].map(|s| p.space_by_idx(s).location);
+                // match (a, b, c) {
+                //     (LocationDepr::Basic, LocationDepr::Basic, LocationDepr::Basic) => true,
+                //     (
+                //         LocationDepr::Euclidean(a),
+                //         LocationDepr::Euclidean(b),
+                //         LocationDepr::Euclidean(c),
+                //     ) => match &self.euclidean_connectivity {
+                //         None => true,
+                //         Some(conn) => conn.can_connect(a, b, c),
+                //     },
+                //     (
+                //         LocationDepr::Geographic(a),
+                //         LocationDepr::Geographic(b),
+                //         LocationDepr::Geographic(c),
+                //     ) => match &self.geographical_connectivity {
+                //         None => true,
+                //         Some(conn) => conn.can_connect(a, b, c),
+                //     },
+                //     _ => unreachable!("consistent locations by construction"),
+                // }
             }
         }
     }

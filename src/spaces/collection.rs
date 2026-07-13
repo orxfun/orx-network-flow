@@ -3,7 +3,7 @@ use crate::indices::IdxMap;
 use crate::spaces::{Space, SpaceData};
 
 pub struct Spaces<V: Variant> {
-    map: IdxMap<V::S, SpaceData, Space>,
+    map: IdxMap<V::S, SpaceData<V>, Space>,
 }
 
 impl<V: Variant> Default for Spaces<V> {
@@ -15,7 +15,7 @@ impl<V: Variant> Default for Spaces<V> {
 }
 
 impl<V: Variant> Spaces<V> {
-    pub fn push(&mut self, key: V::S, data: SpaceData) -> Space {
+    pub fn push(&mut self, key: V::S, data: SpaceData<V>) -> Space {
         self.map.push_or_update(key, data)
     }
 
@@ -38,7 +38,7 @@ impl<V: Variant> Spaces<V> {
         self.map.key_to_idx(key)
     }
 
-    pub fn get_by_idx(&self, idx: Space) -> Option<&SpaceData> {
+    pub fn get_by_idx(&self, idx: Space) -> Option<&SpaceData<V>> {
         self.map.value(idx)
     }
 }

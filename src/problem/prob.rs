@@ -95,7 +95,7 @@ impl<V: Variant> Problem<V> {
 
     // get by idx
 
-    pub(crate) fn space_by_idx(&self, s: Space) -> &SpaceData {
+    pub(crate) fn space_by_idx(&self, s: Space) -> &SpaceData<V> {
         self.spaces.get_by_idx(s).expect("validated problem")
     }
 

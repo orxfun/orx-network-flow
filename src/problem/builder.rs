@@ -5,15 +5,15 @@ use crate::problem::connectivity::{
     Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
     TemporalConnectivityBuilder,
 };
-use crate::spaces::Spaces;
-use crate::spaces::{Coordinate, Geocode, LocationDepr, SpaceData};
+use crate::spaces::{Coordinate, Geocode, SpaceData};
+use crate::spaces::{Geographical, Spaces};
 use crate::time_bounds::TimeBounds;
 use crate::time_bounds::{ArrivalTimeBoundsBuilder, DepartureTimeBoundsBuilder};
 use crate::transports::Transports;
 use crate::utils::std_utils::Map;
 use crate::vehicle_types::VehicleTypes;
 use crate::vehicles::Vehicles;
-use crate::{Commodities, IdxMap, NoLocation};
+use crate::{Commodities, Euclidean, IdxMap, NoLocation};
 use crate::{Commodity, Problem, Space, SpaceTime, Time, Transport, Variant};
 use alloc::vec::Vec;
 
@@ -56,13 +56,13 @@ impl<V: Variant> ProblemBuilder<V> {
 
     // build
 
-    pub fn push_space(&mut self, key: V::S, location: V::L) {
-        //
+    pub fn push_space(&mut self, key: V::S, location: V::L) -> Space {
+        self.spaces.push(key, SpaceData::new(location))
     }
 }
 
 impl<V: Variant<L = NoLocation>> ProblemBuilder<V> {
-    pub fn push_basic_space(&mut self, key: V::S) {
-        // self.spaces.push(key, data)
+    pub fn push_basic_space(&mut self, key: V::S) -> Space {
+        self.spaces.push(key, SpaceData::new(NoLocation))
     }
 }
