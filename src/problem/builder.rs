@@ -1,10 +1,7 @@
 use crate::common_ds::{SortedKeyMap, SortedKeyMapBuilder};
 use crate::costs::Costs;
 use crate::costs::{EarlinessCost, LatenessCost, LostRevenue, LostRevenueBuilder, TransportCost};
-use crate::problem::connectivity::{
-    Connectivity, SpatialConnectivity, SpatialConnectivityBuilder, TemporalConnectivity,
-    TemporalConnectivityBuilder,
-};
+use crate::problem::connectivity::Connectivity;
 use crate::problem::min_connection_time::{MinConnectionTime, MinConnectionTimeBuilder};
 use crate::problem::space_connectivity::{SpaceConnectivity, SpaceConnectivityBuilder};
 use crate::spaces::{Coordinate, Geocode, SpaceData};

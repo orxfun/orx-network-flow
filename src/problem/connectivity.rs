@@ -1,4 +1,3 @@
-use crate::problem::connectivity::TemporalConnectivity;
 use crate::problem::min_connection_time::MinConnectionTime;
 use crate::problem::space_connectivity::SpaceConnectivity;
 use crate::spaces::Space;

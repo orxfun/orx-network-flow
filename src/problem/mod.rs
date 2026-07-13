@@ -7,7 +7,6 @@ mod space_connectivity;
 mod variant;
 
 pub use builder::ProblemBuilder;
-pub use connectivity::{EuclideanConnectivity, GeographicalConnectivity};
 pub use prob::Problem;
 pub use space_connectivity::{
     ConnectivityEuclidean, ConnectivityGeographical, ConnectivityNoLocation, LocationConnectivity,

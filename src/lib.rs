@@ -38,9 +38,7 @@ mod vehicle_types;
 mod vehicles;
 
 pub use indices::{Idx, IdxCore};
-pub use problem::{
-    EuclideanConnectivity, GeographicalConnectivity, Problem, ProblemBuilder, Variant,
-};
+pub use problem::{Problem, ProblemBuilder, Variant};
 pub use solution_deprecated::SolutionDeprecated;
 
 pub(crate) use commodities::{Commodities, Commodity, CommodityData};
