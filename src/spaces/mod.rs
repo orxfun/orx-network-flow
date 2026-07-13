@@ -3,6 +3,7 @@ mod tests;
 
 mod collection;
 mod data;
+mod locations;
 mod space;
 mod space_time;
 
