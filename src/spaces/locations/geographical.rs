@@ -1,6 +1,9 @@
 use super::Location;
+use crate::problem::ConnectivityGeographical;
 
-impl Location for Geographical {}
+impl Location for Geographical {
+    type Connectivity = ConnectivityGeographical;
+}
 
 #[derive(derive_new::new, Clone, Copy, Debug)]
 pub struct Geographical {

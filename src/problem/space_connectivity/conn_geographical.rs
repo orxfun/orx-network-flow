@@ -1,7 +1,7 @@
 use crate::Geographical;
 use crate::problem::space_connectivity::LocationConnectivity;
 
-pub struct LimitedDetourGeographical {
+pub struct ConnectivityGeographical {
     /// A and C are considered close if direct distance is less than or equal to this threshold.
     pub near_ac_km: f64,
     /// B is considered far from both A and C if both legs exceed this threshold.
@@ -14,7 +14,7 @@ pub struct LimitedDetourGeographical {
     pub epsilon_ac_km: f64,
 }
 
-impl LocationConnectivity for LimitedDetourGeographical {
+impl LocationConnectivity for ConnectivityGeographical {
     type L = Geographical;
 
     fn can_connect(&self, a: Self::L, b: Self::L, c: Self::L) -> bool {

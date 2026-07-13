@@ -1,10 +1,10 @@
-mod allow_all;
-mod limited_detour_euclidean;
-mod limited_detour_geographical;
+mod conn_euclidean;
+mod conn_geographical;
+mod conn_no_location;
 mod location_connectivity;
 mod space_connectivity;
 
-use allow_all::AllowAll;
-use limited_detour_euclidean::LimitedDetourEuclidean;
-use limited_detour_geographical::LimitedDetourGeographical;
-use location_connectivity::LocationConnectivity;
+pub use conn_euclidean::ConnectivityEuclidean;
+pub use conn_geographical::ConnectivityGeographical;
+pub use conn_no_location::ConnectivityNoLocation;
+pub use location_connectivity::LocationConnectivity;

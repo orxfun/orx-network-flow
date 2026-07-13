@@ -1,6 +1,9 @@
 use super::Location;
+use crate::problem::ConnectivityEuclidean;
 
-impl Location for Euclidean {}
+impl Location for Euclidean {
+    type Connectivity = ConnectivityEuclidean;
+}
 
 #[derive(derive_new::new, Clone, Copy, Debug)]
 pub struct Euclidean {

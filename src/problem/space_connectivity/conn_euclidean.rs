@@ -1,7 +1,7 @@
 use crate::Euclidean;
 use crate::problem::space_connectivity::LocationConnectivity;
 
-pub struct LimitedDetourEuclidean {
+pub struct ConnectivityEuclidean {
     /// A and C are considered close if direct distance is less than or equal to this threshold.
     pub near_ac: f64,
     /// B is considered far from both A and C if both legs exceed this threshold.
@@ -14,7 +14,7 @@ pub struct LimitedDetourEuclidean {
     pub epsilon_ac: f64,
 }
 
-impl LocationConnectivity for LimitedDetourEuclidean {
+impl LocationConnectivity for ConnectivityEuclidean {
     type L = Euclidean;
 
     fn can_connect(&self, a: Self::L, b: Self::L, c: Self::L) -> bool {
